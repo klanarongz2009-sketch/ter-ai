@@ -2,9 +2,10 @@
 
 A small local Gemma 4 (E2B, quantized, CPU) writes the chat replies and reads images. The rule-based parts of TER-AI
 (calculator, date and time, unit conversion, memory, the Thai Wikipedia pack, web search) are its tools: their
-results are the only facts it may use. A grounding check compares every reply with the tool results and falls back
-to the rule answer when the reply adds numbers or facts that no tool gave. With no source it still says it does not
-know.
+results ground tool-backed replies. A grounding check keeps those replies tied to their evidence and falls back
+to the rule answer when they add unsupported numbers or facts. When no source is found, the language model may answer
+stable general-knowledge questions, but should acknowledge uncertainty and must not invent current, personal or
+project-specific facts that require verification.
 
 The weights are downloaded on first use (or with ``terai chat --setup``) and are never stored in this repository.
 """

@@ -5,11 +5,11 @@ One turn:
    calculator, units, the Thai Wikipedia pack, web search) its answer is the evidence.
 2. When no rule matched, the model picks a tool itself (JSON: tool + input, constrained by a grammar) and the
    tool runs on that input. This catches wordings the rules miss ("ห้าบวกเจ็ด", "ร้อยละ 20 ของ 500").
-3. The model writes the reply from the evidence only (or chats freely when there is no question of fact).
-4. Grounding check: every number in the reply must come from the evidence, the user's message or the memory;
-   the tool's main number must be in the reply; a knowledge reply must overlap the source text; a reply with no
-   source must say it does not know. A failed check is retried once at temperature 0, then the rule answer is
-   used. The knowledge citation is added by code, never written by the model.
+3. Tool-backed replies use their evidence; when no source is found, the model can answer stable general knowledge with appropriate uncertainty.
+4. Grounding check: tool-backed numbers must come from evidence, the user's message or memory; the tool's main
+   number must be in the reply; a knowledge reply must overlap the source text. With no retrieved source, the model
+   may answer stable general-knowledge questions, but must not invent current, personal or project-specific facts.
+   A failed check is retried once at temperature 0, then the rule answer is used. Citations are added by code.
 5. Identity guard (v0.17.0): questions about who it is, who made it or which model it uses are answered from fixed
    facts for the selected TER-AI variant and its open base model. TERAI1BETA remains a deprecated TERAI1 alias.
    Any reply that says it was developed or
@@ -32,7 +32,8 @@ TOOL_OF_STEP = {
     '_knowledge_reply': 'knowledge',
 }
 PLANNER_TOOLS = ('calculator', 'datetime', 'units', 'knowledge', 'none')
-REFUSAL = re.compile('ไม่รู้|ไม่มีข้อมูล|ไม่เดา|ไม่แน่ใจ|ตอบไม่ได้|ไม่ทราบ|ไม่พบ')
+REFUSAL = re.compile('ไม่รู้|ไม่มีข้อมูล|ไม่เดา|ไม่แน่ใจ|ตอบไม่ได้|ไม่ทราบ|ไม่พบ|ยืนยันไม่ได้|ตรวจสอบไม่ได้|ไม่สามารถยืนยัน|cannot verify|can\'t verify|do not know|don\'t know', re.I)
+UNVERIFIED_CONTEXT = re.compile(r'(?:TER.?AI|TERAI1|\bproject\b|\brepository\b|\brepo\b|\blatest\b|\bcurrent\b|\bright now\b|\btoday\b|\bprice\b|\bversion\b|\bmy\b|\byour\b|โปรเจก|รีโพ|เวอร์ชัน|รุ่นล่าสุด|ตอนนี้|ปัจจุบัน|วันนี้|เมื่อวาน|พรุ่งนี้|ราคา|ของฉัน|ของคุณ)', re.I)
 QUESTION = re.compile(r'\?|อะไร|ไหน|ใคร|เมื่อไร|เมื่อไหร่|เท่าไร|เท่าไหร่|กี่|ทำไม|อย่างไร|ยังไง|หรือเปล่า|ไหม|มั้ย|หรือไม่|'
                       r'^(?:what|who|when|where|why|how|which)\b', re.I)
 THAI_DIGITS = str.maketrans('๐๑๒๓๔๕๖๗๘๙', '0123456789')
@@ -90,8 +91,9 @@ SYSTEM = (
     'แทนตัวเองว่า "ผม" และลงท้ายว่า "ครับ" ตอบเป็นภาษาไทยที่เป็นธรรมชาติ สั้นๆ ไม่เกินสามประโยค ไม่ใช้ markdown\n'
     'สิ่งที่คุณทำได้: คิดเลข บอกวันและเวลา แปลงหน่วย จำเรื่องที่ผู้ใช้เล่า ตอบความรู้จาก Wikipedia ภาษาไทยที่มีในเครื่อง '
     'ค้นเว็บเมื่อผู้ใช้เปิด --web และอ่านภาพ สิ่งที่ทำไม่ได้: แปลภาษา ข่าว ราคา และข้อมูลแบบ real-time\n'
-    'กฎ: ข้อเท็จจริง ตัวเลข ชื่อ และวันที่ ใช้ได้เฉพาะที่อยู่ใน "ผลจากเครื่องมือ" หรือ "ความจำเกี่ยวกับผู้ใช้" เท่านั้น '
-    'ห้ามเติมข้อมูลอื่น ห้ามเดา ถ้าไม่มีข้อมูลให้บอกตรงๆ ว่าไม่รู้ ห้ามใส่ลิงก์ ห้ามอ้างว่าทำสิ่งที่ไม่ได้ทำ\n'
+    'กฎ: เมื่อมีผลจากเครื่องมือ ให้ยึดผลนั้นเท่านั้น ห้ามเติมข้อเท็จจริงเอง; เมื่อไม่มีผลค้น ให้ตอบความรู้ทั่วไปที่ค่อนข้างคงที่ได้จากความรู้ของโมเดล '
+    'ตอบอย่างระมัดระวังและบอกความไม่แน่ใจเมื่อไม่มั่นใจ ห้ามแต่งข้อมูลปัจจุบัน/ล่าสุด ข้อมูลส่วนตัว หรือรายละเอียดเฉพาะของ TER-AI ที่ไม่มีหลักฐาน; '
+    'ถ้าคำถามต้องใช้ข้อมูลเหล่านั้น ให้บอกว่ายืนยันไม่ได้ ห้ามอ้างว่าได้ค้นหาหรือทำสิ่งที่ไม่ได้ทำ ห้ามใส่ลิงก์\n'
     + IDENTITY_RULE
 )
 
@@ -240,7 +242,9 @@ class Brain:
         reply = re.sub(r'TER-?AI ?1 ?BETA', 'TERAI', reply, flags=re.I)
         allowed = numbers(evidence) | numbers(user) | numbers(self.memory_text()) | numbers(self.history_text())
         extra = sorted(numbers(reply) - allowed)
-        if extra:
+        # No-source answers may use numbers as part of stable model general knowledge. Queries about
+        # current/personal/project facts are separately required to acknowledge that they cannot be verified.
+        if extra and kind != 'no_source':
             problems.append('numbers not in any source: ' + ', '.join(extra[:5]))
         if kind == 'tool':
             ev_nums = NUM.findall(CITE.sub('', evidence).translate(THAI_DIGITS))
@@ -254,8 +258,8 @@ class Brain:
             s = support(reply, CITE.sub('', evidence), user)
             if s < self.min_support:
                 problems.append('reply not supported by the source (overlap %.2f)' % s)
-        if kind == 'no_source' and not REFUSAL.search(reply):
-            problems.append('no source but the reply does not say it does not know')
+        if kind == 'no_source' and UNVERIFIED_CONTEXT.search(user) and not REFUSAL.search(reply):
+            problems.append('no source for current, personal or project-specific question; the reply must say it cannot verify')
         if re.search('[\u0e00-\u0e7f]', user) and not re.search('[\u0e00-\u0e7f]', reply):
             problems.append('Thai question, reply not in Thai')
         if len(reply) > 600:
@@ -273,8 +277,10 @@ class Brain:
                     'ตอบคำถามของผู้ใช้เรื่องตัวตนหรือโมเดลโดยใช้ข้อมูลนี้เท่านั้น ห้ามบอกว่าถูกพัฒนาหรือสร้างโดย Google '
                     'และห้ามบอกว่าตัวเองคือ Gemma')
         elif kind == 'no_source':
-            task = ('ผลจากเครื่องมือ: ค้นแล้วไม่พบข้อมูลเรื่องนี้ (' + strip_politeness(evidence) + ')\n'
-                    'บอกผู้ใช้สั้นๆ ว่าไม่รู้เรื่องนี้ เพราะไม่มีข้อมูล ห้ามเดาคำตอบ')
+            task = ('ผลจากเครื่องมือ: ไม่พบแหล่งข้อมูลที่ตรงกับคำถาม (' + strip_politeness(evidence) + ')\n'
+                    'การค้นไม่พบไม่ได้แปลว่าตอบไม่ได้: ถ้าเป็นความรู้ทั่วไปที่ค่อนข้างคงที่และคุณมั่นใจ ให้ตอบตรงๆ จากความรู้ของโมเดล '
+                    'พร้อมบอกความไม่แน่ใจเมื่อจำเป็น; ห้ามแสร้งว่าคำตอบมาจากแหล่งที่ค้นพบ '
+                    'ถ้าเป็นเรื่องปัจจุบัน/ล่าสุด เรื่องส่วนตัว หรือรายละเอียดเฉพาะของ TER-AI ที่ไม่มีหลักฐาน ให้บอกว่ายืนยันไม่ได้ แทนการเดา')
         else:
             task = ('ไม่มีผลจากเครื่องมือ ข้อความนี้เป็นการคุยทั่วไป ตอบอย่างเป็นธรรมชาติและเป็นมิตร '
                     'ห้ามอ้างข้อเท็จจริง ตัวเลข หรือข่าว ถ้าเหมาะให้บอกว่าช่วยคิดเลข ถามวันเวลา แปลงหน่วย '
@@ -320,7 +326,12 @@ class Brain:
         reply, problems, tries = '', [], 0
         for temp, note in ((0.4, ''), (0.0, None)):
             if note is None:
-                note = 'คำตอบก่อนหน้าผิดกฎ (' + '; '.join(problems) + ') เขียนใหม่ให้ตรงกับผลจากเครื่องมือเท่านั้น'
+                if kind == 'no_source':
+                    instruction = ('เขียนใหม่ตามกติกากรณีไม่พบแหล่งข้อมูล: ตอบความรู้ทั่วไปที่มั่นใจได้; '
+                                   'ถ้าเป็นข้อมูลปัจจุบัน ส่วนตัว หรือเฉพาะโปรเจกต์ที่ไม่มีหลักฐาน ให้บอกว่ายืนยันไม่ได้')
+                else:
+                    instruction = 'เขียนใหม่ให้ตรงกับผลจากเครื่องมือเท่านั้น'
+                note = 'คำตอบก่อนหน้าผิดกฎ (' + '; '.join(problems) + ') ' + instruction
             tries += 1
             reply = self.lm.chat(self._messages(text, kind, tool, evidence, note), max_tokens=220,
                                  temperature=temp, seed=self.seed + self.chat.state['turns'])

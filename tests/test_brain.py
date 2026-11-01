@@ -75,12 +75,32 @@ def test_retry_fixes_the_reply():
     assert not b.last['fallback'] and b.last['tries'] == 2
 
 
-def test_no_source_must_say_it_does_not_know():
-    b, f = brain(json.dumps({'tool': 'none', 'input': ''}), 'ชื่อนายสมหมายครับ',
-                 'ชื่อนายสมหมายครับ')
-    r = b.reply('ประธานาธิบดีคนแรกของดาวอังคารชื่ออะไร')
+@pytest.mark.parametrize(('model', 'model_name'), [('e2b', 'TERAI1'), ('sml', 'TERAI1SML')])
+def test_no_source_allows_stable_general_knowledge_for_every_variant(model, model_name):
+    f = Fake(json.dumps({'tool': 'none', 'input': '', 'topic': ''}),
+             'ท้องฟ้าเห็นเป็นสีฟ้าเพราะอากาศกระเจิงแสงสีน้ำเงินได้มากกว่าแสงสีแดงครับ')
+    b = Brain(chat=Chat(now=NOW, seed=1), lm=LocalLM(client=f, model=model))
+    r = b.reply('ทำไมท้องฟ้าถึงเป็นสีฟ้า')
+    assert r == 'ท้องฟ้าเห็นเป็นสีฟ้าเพราะอากาศกระเจิงแสงสีน้ำเงินได้มากกว่าแสงสีแดงครับ'
+    assert b.last['kind'] == 'no_source' and not b.last['fallback']
+    prompt = f.seen[-1][0]['content'] + f.seen[-1][1]['content']
+    assert model_name in f.seen[-1][0]['content']
+    assert 'ความรู้ทั่วไปที่ค่อนข้างคงที่' in prompt
+    assert 'ข้อมูลปัจจุบัน/ล่าสุด' in prompt
+
+
+def test_no_source_numbers_can_come_from_general_knowledge():
+    b, _ = brain()
+    assert b.check('โลกมีดวงจันทร์ 1 ดวงครับ', 'no_source', 'ไม่พบแหล่งข้อมูล', 'โลกมีดวงจันทร์กี่ดวง') == []
+
+
+def test_no_source_current_project_facts_still_require_uncertainty():
+    b, f = brain(json.dumps({'tool': 'none', 'input': '', 'topic': ''}),
+                 'TER-AI รุ่นล่าสุดคือ 0.18.0 ครับ', 'TER-AI รุ่นล่าสุดคือ 0.18.0 ครับ')
+    r = b.reply('ตอนนี้ TER-AI รุ่นล่าสุดคืออะไร')
     assert b.last['kind'] == 'no_source' and b.last['fallback']
-    assert REFUSAL.search(r) and 'สมหมาย' not in r
+    assert any('cannot verify' in p for p in b.last['problems'])
+    assert REFUSAL.search(r)
 
 
 def test_no_source_refusal_from_model_is_kept():
