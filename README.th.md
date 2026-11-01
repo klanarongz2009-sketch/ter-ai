@@ -2,7 +2,7 @@
 
 [English README](README.md)
 
-> **ทดลองใช้แบบจำกัดเวลา: TERM AI ซึ่งเป็น Terminal AI ตัวดั้งเดิม กลับมาให้ลองถึง 2027-01-01 00:00:00 เวลาประเทศไทย (UTC+7)** ลองได้ด้วย `terai term` ([v0.14.0](https://github.com/klanarongz2009-sketch/terai-router/releases/tag/v0.14.0), [ประกาศ](https://github.com/klanarongz2009-sketch/terai-router/issues/6)) พอถึงเวลานั้นจะใช้ไม่ได้และถูกถอดออกจาก repo [รายละเอียด](#term-ai-ทดลองใช้แบบจำกัดเวลา)
+> **ทดลองใช้แบบจำกัดเวลา: TERM AI ซึ่งเป็น Terminal AI ตัวดั้งเดิม กลับมาให้ลองถึง 2027-01-01 00:00:00 เวลาประเทศไทย (UTC+7)** ลองได้ด้วย `terai term` ([v0.14.0](https://github.com/klanarongz2009-sketch/ter-ai/releases/tag/v0.14.0), [ประกาศ](https://github.com/klanarongz2009-sketch/ter-ai/issues/6)) พอถึงเวลานั้นจะใช้ไม่ได้และถูกถอดออกจาก repo [รายละเอียด](#term-ai-ทดลองใช้แบบจำกัดเวลา)
 
 TER-AI เป็นโครงการวิจัยและพัฒนา AI ภาษาไทยแบบอิสระที่ใช้ AI agent ช่วยพัฒนา โดยทดลองตั้งแต่ typo-tolerant intent routing, local chat/vision บน CPU ไปจนถึง Thai TTS, SVG graphics และ music-generation tools โครงการเผยแพร่ test sets, evaluation scripts, parity/regression checks, ข้อจำกัดของแต่ละโมดูล, license แยกตามข้อมูล/โมเดล และ Project Notice เกี่ยวกับความต่อเนื่องของการดูแล
 
@@ -10,7 +10,7 @@ TER-AI เป็นโครงการวิจัยและพัฒนา 
 
 > **ประกาศเกี่ยวกับโปรเจกต์:** TER-AI เป็นโปรเจกต์อินดี้ อาจหยุดชั่วคราวหรือปิดได้โดยแจ้งล่วงหน้าเพียงเล็กน้อย อ่าน[ประกาศเกี่ยวกับโปรเจกต์](PROJECT_NOTICE.th.md)
 
-## ส่วนที่ release แล้ว (v0.18.0-alpha; เพิ่มเครื่องมือประเมิน รุ่นโมเดลเดิมไม่เปลี่ยน)
+## ส่วนที่ release แล้ว (v0.18.0-beta1; ปรับหน้าเดโมและการเข้าถึง โดยพฤติกรรมคอมโพเนนต์เดิมไม่เปลี่ยน)
 
 | ส่วน | ทำอะไร | ตั้งแต่ |
 |---|---|---|
@@ -22,11 +22,11 @@ TER-AI เป็นโครงการวิจัยและพัฒนา 
 | MUML 1.0 HIQ | สร้างเพลงเป็นไฟล์เสียงจริง (.mp3/.wav) บน CPU จากคำสั่งภาษาไทยหรืออังกฤษ ใส่เนื้อร้องได้ ใช้ ACE-Step 1.5 กับเพลงบรรเลงและเพลงอังกฤษ และ YuE2-3B กับเนื้อไทย โหลด weights ครั้งเดียวด้วย `terai muml --hiq --setup` ยังช้าบน CPU และเนื้อไทยฟังออกแค่บางส่วน | v0.13.0 |
 | TERM AI (ทดลองใช้แบบจำกัดเวลา) | Terminal AI ตัวดั้งเดิมที่ TER-AI เติบโตมาจาก เป็น chatbot ภาษาไทยใน terminal ที่ใช้กฎกับโมเดลตัวแรกของโปรเจกต์ TER-AI-0.5 รันออฟไลน์ ไม่ต้องลง library เพิ่ม **ใช้ได้ถึง 2027-01-01 00:00:00 เวลาประเทศไทย (UTC+7) แล้วจะถอดออกจาก repo** | v0.14.0 |
 
-TERAI1CIBETA เป็น prototype v0.1 ที่ยังไม่ release และไม่ใช่ส่วนหนึ่งของ v0.18.0-alpha: โหมดวิเคราะห์เชิงป้องกันแบบ local/read-only สำหรับตรวจ source code ที่มีสิทธิ์ตรวจ และคัดแยก log/alert ที่ผู้ใช้ส่งให้ โดยใช้ Gemma ฐานเดิมของ TERAI1 ชื่อนี้มาจากการเล่นคำของเจ้าของ `CIBER + BETA → CIBETA`; ไม่ใช่ foundation model ที่ฝึกแยก ยังไม่มีผลประเมินด้าน cyber โดยเฉพาะ ดู [ขอบเขตและข้อจำกัดของ prototype](docs/TERAI1CIBETA.md)
+TERAI1CIBETA เป็น prototype v0.1 ที่ยังไม่ release และไม่ใช่ส่วนหนึ่งของ v0.18.0-beta1: โหมดวิเคราะห์เชิงป้องกันแบบ local/read-only สำหรับตรวจ source code ที่มีสิทธิ์ตรวจ และคัดแยก log/alert ที่ผู้ใช้ส่งให้ โดยใช้ Gemma ฐานเดิมของ TERAI1 ชื่อนี้มาจากการเล่นคำของเจ้าของ `CIBER + BETA → CIBETA`; ไม่ใช่ foundation model ที่ฝึกแยก ยังไม่มีผลประเมินด้าน cyber โดยเฉพาะ ดู [ขอบเขตและข้อจำกัดของ prototype](docs/TERAI1CIBETA.md)
 
-- หน้า demo: https://klanarongz2009-sketch.github.io/terai-router/
-- Repository: https://github.com/klanarongz2009-sketch/terai-router
-- Wiki: https://github.com/klanarongz2009-sketch/terai-router/wiki
+- หน้า demo: https://klanarongz2009-sketch.github.io/ter-ai/
+- Repository: https://github.com/klanarongz2009-sketch/ter-ai
+- Wiki: https://github.com/klanarongz2009-sketch/ter-ai/wiki
 
 ```
 $ terai "เส็ดหรือยัง"
@@ -37,7 +37,7 @@ status  1.00  เสร็จหรือยัง
 
 เวอร์ชันของ repo กับเวอร์ชันของโมเดลแยกกัน MuML 1.0 เป็นโมเดลแรกที่มีชื่อรุ่นของตัวเอง (v0.15.0) และ v0.16.0 เขียนหลักนี้ไว้ให้ใช้กับทุกโมเดล
 
-- **เวอร์ชันของ repo:** เป็น `0.X.Y` รุ่น alpha ล่าสุดคือ v0.18.0-alpha (เวอร์ชันแพ็กเกจ PEP 440 คือ 0.18.0a0) และขยับทุกครั้งที่ release เกณฑ์ที่ repo จะขึ้น 1.0 ยังเหมือนเดิมทุกข้อ
+- **เวอร์ชันของ repo:** เป็น `0.X.Y` รุ่น beta ล่าสุดคือ v0.18.0-beta1 (เวอร์ชันแพ็กเกจ PEP 440 คือ 0.18.0b1) และขยับทุกครั้งที่ release เกณฑ์ที่ repo จะขึ้น 1.0 ยังเหมือนเดิมทุกข้อ
 - **ชื่อรุ่นของโมเดล:** แต่ละโมเดลมีชื่อและเวอร์ชันของตัวเอง การ release repo ไม่เปลี่ยนชื่อรุ่นโมเดล และเลข 1.0 ในชื่อโมเดลไม่ใช่ 1.0 ของ repo
 
 | ชื่อรุ่นโมเดล | คืออะไร | ตั้งแต่ |
@@ -48,9 +48,9 @@ status  1.00  เสร็จหรือยัง
 | Temmo 1.0 | AI สร้างเกม indie ขนาดเล็ก (prototype ยังไม่ release) | - |
 | TER-AI-0.5 | โมเดล intent ใน TERM AI (ทดลองใช้แบบจำกัดเวลา) | v0.14.0 |
 
-`terai --version` แสดงทั้งสองอย่าง เช่น `terai-router 0.18.0a0 / model TERAI1` ส่วน `terai models` แสดงรายชื่อโมเดลทั้งหมด ชื่อรุ่นโมเดลต้องสะกดเหมือนเดิม ข้อยกเว้นเดียวคือ v0.17.0 เปลี่ยน TERAI1BETA เป็น TERAI1 ("beta" เป็นสถานะ ไม่ใช่ส่วนหนึ่งของชื่อ) `--brain terai1beta` และ `--engine terai1beta` ยังใช้ได้ และจะแสดงข้อความแจ้งว่าเลิกใช้แล้ว (deprecated)
+`terai --version` แสดงทั้งสองอย่าง เช่น `terai-router 0.18.0b1 / model TERAI1` ส่วน `terai models` แสดงรายชื่อโมเดลทั้งหมด ชื่อรุ่นโมเดลต้องสะกดเหมือนเดิม ข้อยกเว้นเดียวคือ v0.17.0 เปลี่ยน TERAI1BETA เป็น TERAI1 ("beta" เป็นสถานะ ไม่ใช่ส่วนหนึ่งของชื่อ) `--brain terai1beta` และ `--engine terai1beta` ยังใช้ได้ และจะแสดงข้อความแจ้งว่าเลิกใช้แล้ว (deprecated)
 
-## การประเมินที่ทำซ้ำได้ (v0.18.0-alpha)
+## การประเมินที่ทำซ้ำได้ (v0.18.0-beta1)
 
 รัน `python eval/router_report.py` เพื่อประเมิน intent router บนชุดทดสอบและชุด held-out v0.7 ที่ freeze ไว้ รายงาน hash, accuracy รวมและ macro, ผลแยกหมวด/intent, confidence และ feature coverage; `--threshold 0.80` เพิ่มการวิเคราะห์ coverage ที่ระบุชัดว่า confidence ยังไม่ได้ calibrate เครื่องมือนี้วัด router ภายในเท่านั้น ไม่ได้รันโมเดลแชตหรือเป็น benchmark อิสระ ดู [คู่มือประเมิน](docs/AI_EVALUATION.md) สำหรับวิธีวัดแต่ละส่วน การเทียบอย่างปลอดภัย และข้อจำกัด
 
@@ -59,7 +59,7 @@ status  1.00  เสร็จหรือยัง
 ก่อน v0.16.0 คำตอบในแชตมาจาก template ตายตัว เลยฟังเหมือนตอบตามสคริปต์ TERAI1 (ก่อน v0.17.0 ชื่อ TERAI1BETA) ยังใช้กฎเดิม แต่ให้กฎเป็นคนหาข้อมูลด้วย tool แล้วให้ Gemma 4 E2B เขียนคำตอบเป็นภาษาไทยที่เป็นธรรมชาติ ก่อนส่งคำตอบจะเช็กว่าตัวเลขทุกตัวมาจากผลของ tool ข้อความของผู้ใช้ หรือความจำ ถ้าไม่ผ่านจะให้โมเดลเขียนใหม่ 1 รอบ ถ้ายังไม่ผ่านจะใช้คำตอบจากกฎแทน
 
 ```
-pip install "terai-router[llm] @ git+https://github.com/klanarongz2009-sketch/terai-router.git@v0.17.0"
+pip install "terai-router[llm] @ git+https://github.com/klanarongz2009-sketch/ter-ai.git@v0.17.0"
 terai chat --setup                       # ครั้งแรก โหลดราว 4.3 GB
 terai chat                               # ใช้ TERAI1 ถ้าลงไว้แล้ว ไม่อย่างนั้นใช้แชตแบบกฎ
 terai chat --brain terai1                # ใช้ TERAI1 เสมอ (--brain terai1beta คือชื่อเดิม ยังใช้ได้)
@@ -129,7 +129,7 @@ TER มาจากคำว่า "เธอ" ใช้ได้ทั้งส
 ## MUML 1.0 HIQ
 
 ```
-pip install git+https://github.com/klanarongz2009-sketch/terai-router.git@v0.13.0
+pip install git+https://github.com/klanarongz2009-sketch/ter-ai.git@v0.13.0
 terai muml --hiq --setup     # ครั้งแรกครั้งเดียว: โหลด weights และ build acestep.cpp กับ yue2.cpp (ต้องมี git, cmake, C++17)
 terai muml --hiq "เพลงลูกทุ่งสนุกๆ มีพิณกับแคน จังหวะ 130" -o song.mp3
 terai muml --hiq "เพลงป๊อปช้าๆ ตอนกลางคืน" --lyrics lyrics_th.txt -o night.mp3
@@ -147,7 +147,7 @@ terai muml --hiq "เพลงป๊อปช้าๆ ตอนกลางค�
 TERM AI คือโปรแกรมแรกที่ TER-AI เติบโตมา เขียนขึ้นวันที่ 10 ต.ค. 2026 ก่อนจะมี repo นี้ เป็น chatbot ภาษาไทยใน terminal ตอบด้วยกฎ (regex) ก่อน ถ้าไม่มีกฎไหนตรง จะให้โมเดล TER-AI-0.5 (Naive Bayes จาก n-gram ตัวอักษร 11 intent, train จาก 149 ประโยค) เลือก intent และตอบเฉพาะตอนที่มั่นใจ 90% ขึ้นไป ไม่อย่างนั้นจะบอกว่าไม่เข้าใจ ตัวที่ใส่มาเหมือนของเดิมทุกอย่าง ทั้งกฎ คำตอบ และไฟล์โมเดล
 
 ```
-pip install git+https://github.com/klanarongz2009-sketch/terai-router.git@v0.15.0
+pip install git+https://github.com/klanarongz2009-sketch/ter-ai.git@v0.15.0
 terai term                      # โหมดคุยต่อเนื่อง พิมพ์ ออก, exit หรือ quit เพื่อจบ
 terai term "คำนวณ (12+8)*3"
 terai term --trial-info         # ดูเวลาที่หมดอายุ
@@ -166,7 +166,7 @@ TTH-MTL ("TTH หลายภาษา") เป็น engine เสริมข�
 
 ```bash
 # Python 3.10+ ต้องลง torch ด้วย weights ของ OmniVoice (ราว 3.3 GB) โหลดตอนใช้ครั้งแรก
-pip install "terai-router[tth,tth-mtl] @ git+https://github.com/klanarongz2009-sketch/terai-router.git@v0.17.0"
+pip install "terai-router[tth,tth-mtl] @ git+https://github.com/klanarongz2009-sketch/ter-ai.git@v0.17.0"
 
 terai tth --engine mtl "สวัสดีครับ ยินดีต้อนรับสู่ TER-AI" -o th.wav          # ภาษาไทย โคลนจากเสียง Wayu
 terai tth --engine mtl --lang en "Hello from TER-AI" -o en.wav                 # ภาษาอื่น

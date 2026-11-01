@@ -38,8 +38,8 @@ TER-AI ไม่มีงบประมาณ ทุกอย่างที่
 
 ขึ้นกับเหตุผล อาจเกิดบางข้อหรือทุกข้อ:
 
-- **repo ถูก archive (อ่านได้อย่างเดียว) หรือถูกลบ** ถ้าลบ คำสั่ง `pip install git+https://github.com/klanarongz2009-sketch/terai-router.git` จะใช้ไม่ได้
-- **หน้า demo ออฟไลน์:** https://klanarongz2009-sketch.github.io/terai-router/ อาจเปิดไม่ได้
+- **repo ถูก archive (อ่านได้อย่างเดียว) หรือถูกลบ** ถ้าลบ คำสั่ง `pip install git+https://github.com/klanarongz2009-sketch/ter-ai.git` จะใช้ไม่ได้
+- **หน้า demo ออฟไลน์:** https://klanarongz2009-sketch.github.io/ter-ai/ อาจเปิดไม่ได้
 - **Releases และ wiki** อาจถูกลบหรือไม่อัปเดตอีก
 - **ปิด issue และ pull request** การตอบ issue อัตโนมัติจะหยุด
 - **ไม่มีอัปเดตหรือแพตช์ความปลอดภัยอีก** รวมถึงเวอร์ชันที่โหลดไปแล้ว

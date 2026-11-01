@@ -27,7 +27,7 @@ MMPROJ = {
 }
 
 INSTALL_HINT = ("TERAI1 needs llama-cpp-python: pip install \"terai-router[llm] @ "
-                "git+https://github.com/klanarongz2009-sketch/terai-router.git\" (then terai chat --setup)")
+                "git+https://github.com/klanarongz2009-sketch/ter-ai.git\" (then terai chat --setup)")
 
 
 class LLMUnavailable(RuntimeError):

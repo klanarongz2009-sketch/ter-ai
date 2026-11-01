@@ -44,6 +44,12 @@ def main():
     import shutil
     import re
     chat_version = re.search(r"__version__ = '([^']+)'", (DATA.parent / '__init__.py').read_text(encoding='utf-8')).group(1)
+    package_version = re.search(r'^version\s*=\s*"([^"]+)"', (ROOT / 'pyproject.toml').read_text(encoding='utf-8'), re.M).group(1)
+    release_match = re.fullmatch(r'(\d+\.\d+\.\d+)(a|b|rc)(\d+)', package_version)
+    if release_match:
+        release_version = f"v{release_match.group(1)}-{ {'a': 'alpha', 'b': 'beta', 'rc': 'rc'}[release_match.group(2)] }{release_match.group(3)}"
+    else:
+        release_version = 'v' + package_version
     kb_src = DATA / 'knowledge_th.json'
     kb_dst = DOCS / 'knowledge_th.json'
     if not kb_dst.exists() or kb_dst.read_bytes() != kb_src.read_bytes():
@@ -53,7 +59,8 @@ def main():
     kb_meta = {'count': len(kb['docs']), 'retrieved': kb.get('retrieved', ''), 'bytes': len(kb_bytes)}
     gz_mb = len(gzip.compress(kb_bytes, 6)) / 1e6
     chitchat = json.loads((DATA / 'chitchat_th.json').read_text(encoding='utf-8'))['pairs']
-    html = (html.replace('__CHAT_VERSION__', 'v' + chat_version)
+    html = (html.replace('__RELEASE_VERSION__', release_version)
+                .replace('__CHAT_VERSION__', 'v' + chat_version)
                 .replace('__KB_COUNT__', f"{kb_meta['count']:,}")
                 .replace('__KB_MB__', f'{len(kb_bytes) / 1e6:.1f}')
                 .replace('__KB_GZ_MB__', f'{gz_mb:.1f}')

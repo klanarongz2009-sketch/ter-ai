@@ -304,7 +304,7 @@ class TTHUnavailable(TTHError):
 
 INSTALL_HINT = ('No TTH speech engine is installed. Local engine (Python 3.10+, downloads the Wayu weights from '
                 'Hugging Face on first use): pip install "terai-router[tth] @ '
-                'git+https://github.com/klanarongz2009-sketch/terai-router.git". Online fallback only: '
+                'git+https://github.com/klanarongz2009-sketch/ter-ai.git". Online fallback only: '
                 'pip install edge-tts')
 
 

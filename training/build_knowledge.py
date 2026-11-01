@@ -20,7 +20,7 @@ import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
-UA = 'TER-AI-knowledge-builder/0.8 (https://github.com/klanarongz2009-sketch/terai-router; klanarongz2009@gmail.com)'
+UA = 'TER-AI-knowledge-builder/0.8 (https://github.com/klanarongz2009-sketch/ter-ai; klanarongz2009@gmail.com)'
 MAX_CHARS = 600
 EN_PAGES = ['Wikipedia:Vital articles/Level/3'] + ['Wikipedia:Vital articles/Level/4/' + s for s in (
     'People', 'History', 'Geography', 'Arts', 'Philosophy and religion', 'Everyday life',

@@ -1,6 +1,6 @@
 # TER-AI evaluation and safe-comparison guide
 
-This guide turns the v0.18.0-alpha evaluation work into a repeatable practice. The first executable scorecard covers the intent router only; it does not imply that every TER-AI component has been benchmarked or that an external model is a suitable replacement.
+This guide began with the v0.18.0-alpha evaluation work and remains part of v0.18.0-beta1; it turns that work into a repeatable practice. The first executable scorecard covers the intent router only; it does not imply that every TER-AI component has been benchmarked or that an external model is a suitable replacement.
 
 ## What this release changes
 

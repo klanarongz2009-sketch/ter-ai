@@ -4,13 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
-<title>TER-AI demo: offline Thai chat and intent router</title>
+<title>TER-AI — Thai-first AI toolkit</title>
+<meta name="description" content="Explore TER-AI: Thai intent routing, browser chat, code-drawn pictures, generative music, and an indie game-making prototype.">
+<meta name="theme-color" content="#0a1020">
 <style>
-  :root { --bg:#0b0d10; --panel:#14181d; --line:#232a32; --text:#e6e9ee; --muted:#8b95a3; --accent:#5eead4; --warn:#fbbf24; }
+  :root { --bg:#080d18; --panel:#101827; --line:#243247; --text:#edf3fb; --muted:#a4b2c6; --accent:#70e1c1; --warn:#ffc76b; --blue:#83a9ff; --rose:#ee9b9b; --max:1080px; }
   * { box-sizing:border-box; }
-  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.5 system-ui, -apple-system, "Segoe UI", "Noto Sans Thai", sans-serif; }
-  main { max-width:720px; margin:0 auto; padding:32px 18px 48px; }
-  h1 { font-size:26px; margin:0 0 4px; }
+  body { margin:0; min-height:100vh; background:radial-gradient(ellipse at 12% -8%,#173350 0,transparent 35%),radial-gradient(ellipse at 92% 10%,#241c43 0,transparent 29%),var(--bg); color:var(--text); font:16px/1.55 system-ui,-apple-system,"Segoe UI","Noto Sans Thai",sans-serif; }
+  main { max-width:var(--max); margin:0 auto; padding:28px 22px 56px; }
+  h1 { font-size:clamp(40px,7vw,76px); line-height:1.02; letter-spacing:-.055em; margin:12px 0; }
+  h1 span { display:block; max-width:760px; color:#b9c8dc; font-size:.52em; font-weight:550; letter-spacing:-.035em; line-height:1.2; margin-top:10px; }
+  h2 { letter-spacing:-.025em; }
   .sub { color:var(--muted); margin:0 0 24px; }
   textarea { width:100%; min-height:84px; resize:vertical; background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:12px; padding:14px; font:inherit; font-size:18px; }
   textarea:focus { outline:2px solid var(--accent); outline-offset:1px; }
@@ -62,20 +66,72 @@
 #facts b{color:#8b949e;font-weight:normal;display:inline-block;min-width:84px}
 .reset{background:#21262d;color:#ffa198;border:1px solid #30363d;border-radius:8px;padding:8px 12px;font-size:14px}
 @media (max-width:600px){.log{height:52vh}.b{max-width:92%}}
+  .hero { position:relative; overflow:hidden; padding:clamp(24px,5vw,52px); border:1px solid #30435d; border-radius:28px; background:linear-gradient(128deg,rgba(14,27,44,.95),rgba(19,22,43,.91) 56%,rgba(32,24,50,.94)); box-shadow:0 24px 80px rgba(0,0,0,.22); }
+  .hero:after { content:""; position:absolute; width:330px; height:330px; right:-88px; top:-116px; border-radius:50%; border:1px solid rgba(112,225,193,.24); box-shadow:0 0 0 24px rgba(112,225,193,.035),0 0 0 52px rgba(131,169,255,.035),inset 0 0 70px rgba(112,225,193,.08); pointer-events:none; }
+  .hero-inner { position:relative; z-index:1; max-width:760px; }
+  .eyebrow { display:flex; flex-wrap:wrap; align-items:center; gap:10px; color:#a8c0d8; font-size:12px; font-weight:750; letter-spacing:.16em; text-transform:uppercase; }
+  .status-dot { width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 14px var(--accent); }
+  .release-pill { border:1px solid rgba(112,225,193,.36); border-radius:999px; padding:4px 10px; color:#a9f5dc; background:rgba(112,225,193,.08); letter-spacing:.04em; }
+  .hero-copy { max-width:650px; margin:18px 0 20px; color:#c2cede; font-size:clamp(16px,2vw,19px); }
+  .hero-links { display:flex; flex-wrap:wrap; gap:10px; margin-top:24px; }
+  .hero-links a { display:inline-flex; align-items:center; min-height:42px; padding:9px 15px; border:1px solid #40536c; border-radius:12px; color:var(--text); text-decoration:none; background:rgba(255,255,255,.035); }
+  .hero-links a:first-child { color:#071412; background:var(--accent); border-color:var(--accent); font-weight:750; }
+  .hero-links a:hover { transform:translateY(-1px); filter:brightness(1.08); }
+  .feature-line { display:flex; flex-wrap:wrap; gap:8px; margin-top:30px; }
+  .feature-line span { border:1px solid rgba(164,178,198,.17); border-radius:999px; padding:6px 11px; background:rgba(6,12,22,.38); color:#c5d0df; font-size:13px; }
+  .demo-intro { margin:30px 2px 12px; display:flex; justify-content:space-between; gap:18px; align-items:end; flex-wrap:wrap; }
+  .demo-intro h2 { margin:0 0 4px; font-size:26px; }
+  .demo-intro p { margin:0; color:var(--muted); }
+  .tabs { display:flex; gap:8px; margin:16px 0 18px; padding:7px; border:1px solid var(--line); border-radius:16px; background:rgba(13,21,34,.88); overflow-x:auto; }
+  .tab { flex:1 0 auto; min-width:100px; border:1px solid transparent; border-radius:11px; padding:11px 16px; color:#b9c7d9; background:transparent; font:inherit; font-weight:650; cursor:pointer; transition:background .18s,border .18s,color .18s; }
+  .tab:hover { color:#fff; background:rgba(255,255,255,.055); }
+  .tab.on { color:#081510; background:var(--accent); border-color:var(--accent); }
+  button,select,input { font:inherit; }
+  button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-visible { outline:3px solid var(--blue); outline-offset:3px; }
+  textarea,input,select { border-color:#34445b !important; border-radius:12px !important; background:#0b1321 !important; color:var(--text) !important; }
+  input[type="number"] { padding:7px 9px; }
+  textarea { min-height:100px; }
+  .card,.mem { border-color:#293a51; background:linear-gradient(145deg,rgba(20,31,48,.98),rgba(14,22,35,.98)); box-shadow:0 12px 36px rgba(0,0,0,.12); }
+  .log { background:#090f1a; border-color:#304058; }
+  .b.user { background:#294f81; }
+  .b.bot { background:#152133; border-color:#293b52; }
+  .chip { border-color:#384b63; color:#c2cedd; background:rgba(255,255,255,.025); }
+  .chip:hover { color:#081510; border-color:var(--accent); background:var(--accent); }
+  .chips-label { margin:16px 0 -4px; color:#b3c1d3; font-weight:600; }
+  .chatform button { min-height:46px; border-radius:11px; background:var(--accent); color:#081510; font-weight:750; cursor:pointer; }
+  .webrow { padding:10px 12px; border:1px solid rgba(164,178,198,.13); border-radius:12px; background:rgba(255,255,255,.025); }
+  .webnote { line-height:1.45; }
+  .reset { cursor:pointer; }
+  .demo-pane { padding:clamp(18px,3vw,30px); border:1px solid var(--line); border-radius:22px; background:rgba(14,22,35,.8); box-shadow:0 18px 50px rgba(0,0,0,.12); }
+  .demo-pane > .sub:first-child { max-width:850px; }
+  .demo-note { margin:16px 0 0; padding:12px 14px; border-left:3px solid var(--blue); border-radius:0 10px 10px 0; background:rgba(131,169,255,.07); color:#c7d3e4; font-size:14px; }
+  .tab:focus-visible { outline-offset:1px; }
+  [hidden] { display:none !important; }
+  footer { margin-top:28px; padding:16px 2px; border-top:1px solid var(--line); color:#9eacbf; }
+  @media (max-width:640px) { main{padding:14px 13px 36px}.hero{border-radius:20px}.hero:after{width:220px;height:220px;right:-120px;top:-85px}.tabs{margin:14px -1px 15px}.tab{min-width:88px;padding:10px 12px;font-size:14px}.demo-intro{margin-top:22px}.demo-pane{padding:16px;border-radius:17px}.row{flex-wrap:wrap}.v{text-align:left} }
+  @media (prefers-reduced-motion:reduce) { *,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important} }
 </style>
 </head>
 <body>
 <main>
-  <h1>TER-AI</h1>
-  <p class="sub">Offline Thai chat and typo-tolerant intent router. Runs fully in your browser, nothing is sent anywhere unless you turn on Web search. Made with Sesame.</p>
-  <div class="tabs" role="tablist">
-    <button type="button" class="tab on" id="tab-chat" role="tab" aria-selected="true">Chat</button>
-    <button type="button" class="tab" id="tab-router" role="tab" aria-selected="false">Router</button>
-    <button type="button" class="tab" id="tab-sankpup" role="tab" aria-selected="false">SANKPUP</button>
-    <button type="button" class="tab" id="tab-muml" role="tab" aria-selected="false">MuML</button>
-    <button type="button" class="tab" id="tab-temmo" role="tab" aria-selected="false">Temmo</button>
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow"><span class="status-dot" aria-hidden="true"></span> Thai-first applied AI <span class="release-pill">v0.18.0-beta1</span></div>
+      <h1>TER-AI<span>Small, practical AI systems—built to run close to home.</span></h1>
+      <p class="hero-copy">Explore a typo-tolerant Thai router, browser chat, code-drawn pictures, generative music, and a game-making prototype. TER-AI combines project-built tools with existing models; it is not a home-trained foundation model.</p>
+      <div class="hero-links"><a href="https://github.com/klanarongz2009-sketch/ter-ai/releases/tag/v0.18.0-beta1">See Beta 1 release</a><a href="https://github.com/klanarongz2009-sketch/ter-ai">Explore the source</a></div>
+      <div class="feature-line" aria-label="Available explorations"><span>Thai intent routing</span><span>Chat &amp; memory</span><span>SVG art</span><span>Music writing</span><span>Game prototype</span></div>
+    </div>
+  </header>
+  <div class="demo-intro"><div><h2>Try it in your browser</h2><p>Pick an experiment to explore. Each tab explains what runs here and what stays local.</p></div></div>
+  <div class="tabs" id="demo-tabs" role="tablist" aria-label="TER-AI demos">
+    <button type="button" class="tab on" id="tab-chat" role="tab" aria-controls="pane-chat" aria-selected="true" tabindex="0">Chat</button>
+    <button type="button" class="tab" id="tab-router" role="tab" aria-controls="pane-router" aria-selected="false" tabindex="-1">Router</button>
+    <button type="button" class="tab" id="tab-sankpup" role="tab" aria-controls="pane-sankpup" aria-selected="false" tabindex="-1">SANKPUP</button>
+    <button type="button" class="tab" id="tab-muml" role="tab" aria-controls="pane-muml" aria-selected="false" tabindex="-1">MuML</button>
+    <button type="button" class="tab" id="tab-temmo" role="tab" aria-controls="pane-temmo" aria-selected="false" tabindex="-1">Temmo</button>
   </div>
-  <section id="pane-chat">
+  <section class="demo-pane" id="pane-chat" role="tabpanel" aria-labelledby="tab-chat">
     <div id="log" class="log" aria-live="polite"></div>
     <div id="kbload" class="kbload" hidden></div>
     <form id="chatform" class="chatform" autocomplete="off">
@@ -98,7 +154,7 @@
       <button type="button" id="reset" class="reset">Clear session</button>
     </details>
   </section>
-  <section id="pane-router" hidden>
+  <section class="demo-pane" id="pane-router" role="tabpanel" aria-labelledby="tab-router" hidden>
 
   <textarea id="in" placeholder="Type Thai here, typos welcome"></textarea>
   <div class="chips-label">Try an example. The router reads Thai (typos on purpose); the English meaning is shown in grey.</div>
@@ -114,7 +170,7 @@
   </div>
 
   </section>
-  <section id="pane-sankpup" hidden>
+  <section class="demo-pane" id="pane-sankpup" role="tabpanel" aria-labelledby="tab-sankpup" hidden>
     <p class="sub">SANKPUP (from the Thai words "sang phap", make a picture): pictures made purely from code. Here the built-in offline generator writes SVG in your browser (byte-identical to <code>terai sankpup --engine offline</code>); the Python package can also let a local Gemma 4 model write the SVG. No pixel model, no cloud API.</p>
     <textarea id="sp-in" placeholder="Describe a picture in Thai or English, e.g. an orange cat sitting on the moon"></textarea>
     <div class="chips-label">Examples in English and Thai (English meaning shown in grey).</div>
@@ -124,7 +180,7 @@
     <div class="chips"><button type="button" class="chip" id="sp-png">Download PNG</button><button type="button" class="chip" id="sp-jpg">Download JPG</button><button type="button" class="chip" id="sp-svg">Download SVG code</button></div>
     <div class="row"><span class="k">Understood</span><span class="v" id="sp-info">-</span></div>
   </section>
-  <section id="pane-muml" hidden>
+  <section class="demo-pane" id="pane-muml" role="tabpanel" aria-labelledby="tab-muml" hidden>
     <p class="sub">MuML 1.0 WA (MuML 1.0 Web Audio API): music written and played in your browser. The trained MuML 1.0 network (a 3.3M-parameter transformer trained from scratch on the Nottingham folk tunes) writes the melody, chords and rhythm right here in JavaScript; the Web Audio API synthesizes every sound from oscillators, filters and noise. No soundfont, no server, no cloud API. The weights (<a href="muml-1.0-int8.bin">muml-1.0-int8.bin</a>, 3.4 MB) download once when you first write a song; if they cannot load, the older Markov v1 writer takes over. Same prompt and seed give the same song as <code>terai muml-wa</code> in Python. License: code MIT; the weights and the Markov table (<a href="muml_wa_table.js">muml_wa_table.js</a>), both built from the <a href="https://github.com/jukedeck/nottingham-dataset">Nottingham dataset</a>, are <a href="LICENSE-GPL-3.0.txt">GPL-3.0</a>.</p>
     <textarea id="mu-in" placeholder="Describe the song in Thai or English: mood, BPM, key, length, e.g. energetic rock 140 bpm in E minor 20 seconds"></textarea>
     <div class="chips-label">Examples in English and Thai (English meaning shown in grey).</div>
@@ -137,7 +193,8 @@
     <div class="row"><span class="k">Understood</span><span class="v" id="mu-info">-</span></div>
     <div class="row"><span class="k">Note writer</span><span class="v" id="mu-writer">-</span></div>
   </section>
-<section id="pane-temmo" hidden>
+<section class="demo-pane" id="pane-temmo" role="tabpanel" aria-labelledby="tab-temmo" hidden>
+  <p class="demo-note">Temmo is a prototype, not a released product. The sample game runs in this page; creating a new game with a provider requires your own API key and sends prompts to that provider.</p>
   <h2>Temmo 1.0 <small>AI that makes a complete indie game (prototype, not released yet)</small></h2>
   <p class="note">The sample game below was made by <code>terai temmo</code> with Gemma 4 E2B running locally (free, no key needed). It has a menu, 3 levels, win and lose screens, sound, music and a high score table. Press Start, then use the arrow keys, WASD or tap the screen. The game's own story and spoken lines are Thai game content.</p>
   <h3>Temmo community <small>play · remix · share, no key needed</small></h3>
@@ -156,7 +213,7 @@
     </div>
   </div>
   <details style="margin-top:12px"><summary>Make a new game with your own key (BYOK)</summary>
-    <p class="note">Your key stays in this page only. It is not saved and is sent nowhere except the provider you pick. Use it only if you meet that provider's age requirement and Terms.</p>
+    <p class="note">Your key is used in this page and sent to the provider you pick; it is not saved by TER-AI. Check that provider's age requirements and Terms before using it.</p>
     <label>Provider <select id="temmo-provider"><option value="gemini">Gemini (gemini-3.6-flash)</option><option value="openai">OpenAI</option><option value="anthropic">Claude</option><option value="deepseek">DeepSeek (may be blocked by CORS)</option></select></label>
     <label>API key <input id="temmo-key" type="password" autocomplete="off" size="28"></label><br>
     <label>Game idea <input id="temmo-idea" size="48" value="A ninja collects scrolls in an abandoned temple and dodges Krasue ghosts"></label>
@@ -164,7 +221,7 @@
     <pre id="temmo-log" style="white-space:pre-wrap;max-height:160px;overflow:auto"></pre>
   </details>
 </section>
-  <footer>Chat v0.17.0: rules, tools, session memory and Thai Wikipedia (8,192 articles, CC BY-SA 4.0). The knowledge pack (11.9 MB, about 2.5 MB compressed) downloads only when a question needs it. Router model v0.7.0, 15 intents, 1.1 MB model file. Accuracy 97.6% on the frozen test set.</footer>
+  <footer><strong>TER-AI v0.18.0-beta1.</strong> This browser demo includes the rule-based chat, Thai Wikipedia pack (8,192 articles, CC BY-SA 4.0; 11.9 MB, about 2.5 MB compressed, fetched only when needed), the 15-intent router (v0.7.0, 1.1 MB; 97.6% on its frozen test set), code-based SANKPUP, MuML 1.0 WA, and the Temmo game prototype. TERAI1 local Gemma chat/vision, TTH model voices, and MUML 1.0 HIQ remain package workflows rather than browser tabs. The optional Web-search switch sends the question to Wikipedia; Temmo community and BYOK features have their own network/provider behavior explained above.</footer>
 </main>
 <script>/* TER-AI v0.7 inference in JavaScript. Same steps and integer arithmetic as src/terai_router/*.py.
    Browser: TERAI.create(modelJson, typoJson) ; Node: require('./terai.js').create(...) */
@@ -3311,10 +3368,28 @@ EXAMPLES.forEach(([x, en]) => exampleChip('chips', x, en, t => { $('in').value =
   function show(which) {
     for (const p of PANES) {
       const on = p === which;
-      $('pane-' + p).hidden = !on; $('tab-' + p).classList.toggle('on', on); $('tab-' + p).setAttribute('aria-selected', String(on));
+      $('pane-' + p).hidden = !on;
+      $('tab-' + p).classList.toggle('on', on);
+      $('tab-' + p).setAttribute('aria-selected', String(on));
+      $('tab-' + p).tabIndex = on ? 0 : -1;
     }
   }
   for (const p of PANES) $('tab-' + p).addEventListener('click', () => { history.replaceState(null, '', '#' + p); show(p); });
+  $('demo-tabs').addEventListener('keydown', ev => {
+    const current = PANES.indexOf(document.activeElement.id.replace('tab-', ''));
+    if (current < 0) return;
+    let next = current;
+    if (ev.key === 'ArrowRight') next = (current + 1) % PANES.length;
+    else if (ev.key === 'ArrowLeft') next = (current + PANES.length - 1) % PANES.length;
+    else if (ev.key === 'Home') next = 0;
+    else if (ev.key === 'End') next = PANES.length - 1;
+    else return;
+    ev.preventDefault();
+    const pane = PANES[next];
+    $('tab-' + pane).focus();
+    history.replaceState(null, '', '#' + pane);
+    show(pane);
+  });
   show(PANES.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'chat');
 })();
 </script>

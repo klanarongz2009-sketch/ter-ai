@@ -30,7 +30,7 @@ from . import __version__
 from .knowledge import CUES, Q_ANY, qtype, residual, squash
 
 USER_AGENT = ('terai-router/' + __version__ +
-              ' (offline Thai chat, opt-in web search; https://github.com/klanarongz2009-sketch/terai-router)')
+              ' (offline Thai chat, opt-in web search; https://github.com/klanarongz2009-sketch/ter-ai)')
 WIKIS = [('th', 'Wikipedia ภาษาไทย'), ('en', 'Wikipedia ภาษาอังกฤษ')]
 WIKI_LICENSE = 'CC BY-SA 4.0'
 DEFAULT_CACHE = os.path.join('~', '.terai', 'webcache')

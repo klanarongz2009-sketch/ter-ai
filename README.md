@@ -2,13 +2,13 @@
 
 [Thai version](README.th.md)
 
-> **Limited-time trial: TERM AI, the original Terminal AI, is back until 2027-01-01 00:00:00 Asia/Bangkok (UTC+7).** Try it with `terai term` ([v0.14.0](https://github.com/klanarongz2009-sketch/terai-router/releases/tag/v0.14.0), [announcement](https://github.com/klanarongz2009-sketch/terai-router/issues/6)). At that moment it stops running and is removed from the repository. [Details](#term-ai-the-original-terminal-ai-limited-time-trial-v0140)
+> **Limited-time trial: TERM AI, the original Terminal AI, is back until 2027-01-01 00:00:00 Asia/Bangkok (UTC+7).** Try it with `terai term` ([v0.14.0](https://github.com/klanarongz2009-sketch/ter-ai/releases/tag/v0.14.0), [announcement](https://github.com/klanarongz2009-sketch/ter-ai/issues/6)). At that moment it stops running and is removed from the repository. [Details](#term-ai-the-original-terminal-ai-limited-time-trial-v0140)
 
 TER-AI is an independent, AI-assisted applied R&D project for Thai-language AI systems. Its scope includes a typo-tolerant Thai intent router, local CPU-first chat and vision, Thai speech, SVG-based graphics, and audio and music tools. It combines project-built components with existing models; it does not claim to train its own foundation model. The project includes reproducible internal evaluations, explicit model/data licensing, and a public project-continuity notice.
 
 Offline scope: the intent router, the rule chat, TERM AI and the SANKPUP offline generator run on CPU with no network connection. TTH (Wayu-Paxa-TTS-Edge, and since v0.17.0 the opt-in engine TTH-MTL on OmniVoice, about 3.3 GB), TERAI1 (beta) and SANKPUP "gemma" (Gemma 4 E2B on llama-cpp-python), MUML 1.0 HIQ (ACE-Step 1.5, YuE2-3B) and the MuML 1.0 network weights run locally on CPU after a one-time download. TTH-MTL also downloads Whisper large-v3-turbo (about 1.6 GB) if you give `--ref-audio` without `--ref-text`; once cached it needs no network (`HF_HUB_OFFLINE=1` skips the Hugging Face update check, which sends the model name only). Online paths, all optional: the TTH fallback edge-tts sends the text to Microsoft, `terai chat --web` and the demo's web switch send the question to Wikipedia, and the Temmo demo tab (prototype, not released) calls online model providers with your own API key (BYOK). Made with Sesame.
 
-What is in the latest release (v0.18.0-alpha; alpha evaluation tooling, existing components unchanged):
+What is in the latest release (v0.18.0-beta1; refreshed browser demo and accessibility; existing component behavior unchanged):
 
 | Part | What it does | Since |
 |---|---|---|
@@ -20,9 +20,9 @@ What is in the latest release (v0.18.0-alpha; alpha evaluation tooling, existing
 | MUML 1.0 HIQ | Text-to-music audio (.mp3/.wav) on CPU from a Thai or English prompt, with optional lyrics. ACE-Step 1.5 for instrumentals and English songs, YuE2-3B for Thai lyrics; weights download once with `--setup`. Slow on CPU, Thai lyrics only partly intelligible. | v0.13.0 |
 | TERM AI (limited-time trial) | The original Terminal AI that TER-AI grew from: a Thai terminal chatbot made of rules plus the first own model, TER-AI-0.5. Offline, no dependencies. **Trial: stops working at 2027-01-01 00:00:00 Asia/Bangkok (UTC+7) and will be removed from the repository then.** | v0.14.0 |
 
-TERAI1CIBETA is an unreleased v0.1 prototype (not part of v0.18.0-alpha): a local, read-only defensive mode for authorized source-code review and user-provided log/alert triage, using TERAI1’s existing Gemma base. Its name is the owner’s wordplay `CIBER + BETA → CIBETA`; it is not a separately trained foundation model. See [prototype scope and limitations](docs/TERAI1CIBETA.md). It has no cyber-specific model evaluation yet.
+TERAI1CIBETA is an unreleased v0.1 prototype (not part of v0.18.0-beta1): a local, read-only defensive mode for authorized source-code review and user-provided log/alert triage, using TERAI1’s existing Gemma base. Its name is the owner’s wordplay `CIBER + BETA → CIBETA`; it is not a separately trained foundation model. See [prototype scope and limitations](docs/TERAI1CIBETA.md). It has no cyber-specific model evaluation yet.
 
-Live demo: https://klanarongz2009-sketch.github.io/terai-router/ · Repository: https://github.com/klanarongz2009-sketch/terai-router · Wiki: https://github.com/klanarongz2009-sketch/terai-router/wiki
+Live demo: https://klanarongz2009-sketch.github.io/ter-ai/ · Repository: https://github.com/klanarongz2009-sketch/ter-ai · Wiki: https://github.com/klanarongz2009-sketch/ter-ai/wiki
 
 Licenses differ by part: the code is MIT, but some data and optional models are not. Check the [license table](#license) before commercial use.
 
@@ -37,7 +37,7 @@ status  1.00  เสร็จหรือยัง
 
 The repository version and the model versions are separate. MuML 1.0 was the first model with its own id (v0.15.0); v0.16.0 writes the scheme down for every model.
 
-- **Repository (package) version:** `0.X.Y`; the latest alpha release is v0.18.0-alpha (PEP 440 package version `0.18.0a0`). It moves with every release. The criteria for the repository's own 1.0 are unchanged (see Roadmap).
+- **Repository (package) version:** `0.X.Y`; the latest beta release is v0.18.0-beta1 (PEP 440 package version `0.18.0b1`). It moves with every release. The criteria for the repository's own 1.0 are unchanged (see Roadmap).
 - **Model id:** each model has its own name and version, written exactly as below. A package release never changes a model id, and the "1.0" in a model id is not the repository's 1.0.
 
 | Model id | What it is | Since |
@@ -48,13 +48,13 @@ The repository version and the model versions are separate. MuML 1.0 was the fir
 | Temmo 1.0 | Small indie game maker (prototype, not released) | - |
 | TER-AI-0.5 | Intent model inside TERM AI (limited-time trial) | v0.14.0 |
 
-`terai --version` prints both, for example `terai-router 0.18.0a0 / model TERAI1`, and `terai models` lists every model id. The rule lives in `src/terai_router/versions.py`; a new version of one model changes only its own row there. Model ids keep their spelling; the one exception is the v0.17.0 rename of TERAI1BETA to TERAI1 ("beta" is its status, not part of its name). `--brain terai1beta` and `--engine terai1beta` still work and print a deprecation notice.
+`terai --version` prints both, for example `terai-router 0.18.0b1 / model TERAI1`, and `terai models` lists every model id. The rule lives in `src/terai_router/versions.py`; a new version of one model changes only its own row there. Model ids keep their spelling; the one exception is the v0.17.0 rename of TERAI1BETA to TERAI1 ("beta" is its status, not part of its name). `--brain terai1beta` and `--engine terai1beta` still work and print a deprecation notice.
 
 ## Why the name
 
 TER comes from the Thai word "เธอ" (you), and it works both ways: TER-AI calls the user เธอ, and the user calls TER-AI เธอ.
 
-## Reproducible evaluation (v0.18.0-alpha)
+## Reproducible evaluation (v0.18.0-beta1; scorecard introduced in alpha)
 
 Run `python eval/router_report.py` to reproduce the intent-router scorecard on the frozen v0.7 test and held-out sets. It prints dataset hashes, total and macro accuracy, per-category/per-intent results, confidence and feature coverage; `--threshold 0.80` adds an explicitly uncalibrated selective-coverage diagnostic. This is an internal router evaluation only, not a live-model or independent benchmark. See [the evaluation guide](docs/AI_EVALUATION.md) for component-specific measures, safe comparisons, and limitations.
 
@@ -114,7 +114,7 @@ Earlier results, not rerun for v0.12.0 (they need large downloads):
 ## Install
 
 ```
-pip install git+https://github.com/klanarongz2009-sketch/terai-router.git
+pip install git+https://github.com/klanarongz2009-sketch/ter-ai.git
 ```
 
 From a local clone: `pip install .`
@@ -224,7 +224,7 @@ Before v0.16.0 every chat reply came from a fixed template, so replies sounded s
 3. A grounding check reads the reply: every number must come from a tool result, your message or the memory; the calculator's result must be in it; a knowledge reply must overlap its source and names the source ("ที่มา: Wikipedia ..."). With no source the model must say it does not know. A reply that fails gets one retry, then the rule answer is used.
 
 ```
-pip install "terai-router[llm] @ git+https://github.com/klanarongz2009-sketch/terai-router.git@v0.17.0"
+pip install "terai-router[llm] @ git+https://github.com/klanarongz2009-sketch/ter-ai.git@v0.17.0"
 terai chat --setup                       # once: about 4.3 GB (3.35 GB model + 0.99 GB vision projector), SHA-256 checked
 terai chat                               # TERAI1 when installed, else the rule chat
 terai chat --brain terai1                # always TERAI1 (--brain terai1beta: old name, still works)
@@ -315,7 +315,7 @@ The answer is only as current as the Wikipedia article at the time of the search
 
 ### In the browser demo
 
-The chat in the [live demo](https://klanarongz2009-sketch.github.io/terai-router/) has a **Web search (Wikipedia)** switch under the message box. It is **off by default**, and the choice is saved in your browser (localStorage key `terai.chat.web.v1`).
+The chat in the [live demo](https://klanarongz2009-sketch.github.io/ter-ai/) has a **Web search (Wikipedia)** switch under the message box. It is **off by default**, and the choice is saved in your browser (localStorage key `terai.chat.web.v1`).
 
 - `docs/chat.js` has its own port of the web search: the same MediaWiki API requests (with `origin=*` for CORS), Thai Wikipedia then English Wikipedia, the same trigram-coverage ranking (threshold 0.6), the same "current/latest/now" rule, a 5-second timeout, the same citation, and the same fallback to the knowledge pack when offline. SearXNG is CLI only (most instances do not allow browser requests from other sites).
 - Responses are kept in memory for the open page only (at most 200); errors are retried on the next message.
@@ -331,9 +331,9 @@ Thai-English message aloud. The core install stays dependency-free; the speech e
 
 ```bash
 # local engine Wayu + edge-tts fallback (Python 3.10+, pulls torch; weights download once, about 315 MB)
-pip install "terai-router[tth] @ git+https://github.com/klanarongz2009-sketch/terai-router.git"
+pip install "terai-router[tth] @ git+https://github.com/klanarongz2009-sketch/ter-ai.git"
 # or only the small online fallback
-pip install "terai-router[tth-edge] @ git+https://github.com/klanarongz2009-sketch/terai-router.git"
+pip install "terai-router[tth-edge] @ git+https://github.com/klanarongz2009-sketch/ter-ai.git"
 
 terai tth "สวัสดีครับ/ค่ะ นี่คือ TTH ของ TER-AI" -o hello.wav
 terai tth -f note.txt -o note.mp3 --voice m_young_clear --speed 1.1
@@ -378,7 +378,7 @@ text-to-speech model that its authors describe as covering more than 600 languag
 
 ```bash
 # Python 3.10+, pulls in torch; the OmniVoice weights (about 3.3 GB) download on first use
-pip install "terai-router[tth,tth-mtl] @ git+https://github.com/klanarongz2009-sketch/terai-router.git@v0.17.0"
+pip install "terai-router[tth,tth-mtl] @ git+https://github.com/klanarongz2009-sketch/ter-ai.git@v0.17.0"
 
 terai tth --engine mtl "สวัสดีครับ ยินดีต้อนรับสู่ TER-AI" -o th.wav          # Thai, cloned from a Wayu voice
 terai tth --engine mtl --lang en "Hello from TER-AI" -o en.wav                 # other languages
@@ -417,9 +417,9 @@ diffusion model, and everything runs locally: no cloud API, no account, no key.
 
 ```bash
 # rendering only (offline generator + PNG/JPG): resvg-py and Pillow
-pip install "terai-router[sankpup] @ git+https://github.com/klanarongz2009-sketch/terai-router.git"
+pip install "terai-router[sankpup] @ git+https://github.com/klanarongz2009-sketch/ter-ai.git"
 # plus local Gemma 4 through llama-cpp-python (CPU is fine)
-pip install "terai-router[sankpup-gemma] @ git+https://github.com/klanarongz2009-sketch/terai-router.git"
+pip install "terai-router[sankpup-gemma] @ git+https://github.com/klanarongz2009-sketch/ter-ai.git"
 
 terai sankpup "แมวสีส้มนั่งบนดวงจันทร์" -o cat.png              # auto: Gemma if downloaded, else offline
 terai sankpup "a red sailboat on the sea" --engine offline -o boat.jpg
@@ -458,7 +458,7 @@ save(art, "house.png", save_code=True)   # house.png + house.svg
 MuML 1.0 WA (MuML 1.0 Web Audio API) is the browser member of the MuML music family. Type a prompt in Thai or
 English, for example `เพลงร็อกมันส์ๆ 140 bpm คีย์ E minor 30 วินาที` or `rock reel key of D 120 bpm 30 seconds`,
 pick a style (Auto, Folk or Rock) and a seed, then play it or download `.wav` and `.mid`. Open the MuML tab of the
-[live demo](https://klanarongz2009-sketch.github.io/terai-router/).
+[live demo](https://klanarongz2009-sketch.github.io/ter-ai/).
 
 ```python
 from terai_router import muml_wa
@@ -519,7 +519,7 @@ terai muml-wa "folk jig D major" --writer markov    # the old Markov v1 writer
 MUML 1.0 HIQ is the high-quality member of the MuML music family: a Thai or English prompt (and optional lyrics) in, a real audio file out, on a CPU with 8 GB RAM, free and offline after the first download. It is built on other open models; the weights are not fine-tuned. HIQ tunes the conditioning: a prompt adapter turns Thai prompts into English music tags (genre, Thai instruments such as phin and khaen, mood) and moves BPM, length, key and meter into their own fields.
 
 ```
-pip install git+https://github.com/klanarongz2009-sketch/terai-router.git@v0.13.0
+pip install git+https://github.com/klanarongz2009-sketch/ter-ai.git@v0.13.0
 terai muml --hiq --setup        # once: downloads the GGUF weights, builds acestep.cpp and yue2.cpp (git, cmake, C++17)
 terai muml --hiq --status       # binaries and weights found?
 terai muml --hiq "เพลงลูกทุ่งสนุกๆ มีพิณกับแคน จังหวะ 130" -o song.mp3          # instrumental, ACE-Step
@@ -628,7 +628,7 @@ Ending:
 Not in the LLM sense. The intent classifier reads one message at a time and keeps no history inside the model. `Chat` (v0.8.0) is what keeps the conversation: it stores the history (last 200 turns), the facts the user told it and the context for follow-ups such as "แล้ว 5 ล่ะ", and saves them to a JSON session file, so the memory survives a restart. There is no token limit, because there is no language model. With TERAI1 (v0.16.0) the Gemma 4 model sees only the current message, the tool result, the user memory and the last 3 turns, inside a 4,096-token window; the history itself still lives in `Chat`.
 
 ### Can I download the model?
-Yes. Install with `pip install git+https://github.com/klanarongz2009-sketch/terai-router.git` or download this repository. The intent model is one 1.1 MB JSON file (`src/terai_router/data/model.json`) that runs offline on CPU, with no GPU and no internet connection. The optional TTH, SANKPUP, MUML 1.0 HIQ and TERAI1 models are downloaded separately (on first use, or with `terai muml --hiq --setup` / `terai chat --setup`) and keep their own licenses (see below).
+Yes. Install with `pip install git+https://github.com/klanarongz2009-sketch/ter-ai.git` or download this repository. The intent model is one 1.1 MB JSON file (`src/terai_router/data/model.json`) that runs offline on CPU, with no GPU and no internet connection. The optional TTH, SANKPUP, MUML 1.0 HIQ and TERAI1 models are downloaded separately (on first use, or with `terai muml --hiq --setup` / `terai chat --setup`) and keep their own licenses (see below).
 
 ### Why choose TER-AI?
 - Built for Thai, including typos and speech-to-text errors

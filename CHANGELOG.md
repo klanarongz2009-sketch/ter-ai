@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.18.0-beta1 (2026-11-01)
+
+Beta 1 refreshes the complete browser demo and updates its release identity. Existing demos and component behavior are preserved; this is a presentation, accessibility, and documentation release, not a new model or benchmark claim.
+
+### Changed
+- Reworked the demo into a responsive, accessible overview of TER-AI's browser experiments, with clear Beta 1 identity, source/release links, feature navigation, and accurate notes on which workflows are browser-only versus package/local-model workflows.
+- Added keyboard arrow/Home/End navigation and roving focus for the demo tabs; retained direct-link hashes and normal click behavior.
+- Updated repository and GitHub Pages links to the current `ter-ai` repository name.
+- Set the package version to PEP 440 `0.18.0b1`, matching the repository release tag `v0.18.0-beta1`.
+
+### Limits
+- The browser demo does not run TERAI1's local Gemma chat/vision, TTH model voices, or MUML 1.0 HIQ. Temmo remains a prototype; its BYOK path sends prompts and credentials to the selected provider.
+- The intent-router scorecard remains an internal fixed-set evaluation, not an independent benchmark. No component accuracy or security guarantee is added by this release.
+
 ## v0.18.0-alpha (2026-10-31)
 
 Alpha release: a reproducible, local-only intent-router scorecard and project-wide evaluation/safety guidance. No model weights, intents, runtime behavior, or external benchmark claims are changed by this release.

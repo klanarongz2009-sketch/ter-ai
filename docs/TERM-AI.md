@@ -33,7 +33,7 @@ here so people can try where TER-AI started.
 ## Run it
 
 ```
-pip install git+https://github.com/klanarongz2009-sketch/terai-router.git@v0.14.0
+pip install git+https://github.com/klanarongz2009-sketch/ter-ai.git@v0.14.0
 terai term                         # interactive; type ออก, exit or quit to end
 terai term "คำนวณ (12+8)*3"
 terai term --debug "ช่วยคิดเลข 3 คูณ 4"   # shows [rule] or [model: intent p= cov=]

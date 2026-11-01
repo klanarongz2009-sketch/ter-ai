@@ -6960,7 +6960,7 @@ wheels = [
 
 [[package]]
 name = "terai-router"
-version = "0.18.0a0"
+version = "0.18.0b1"
 source = { editable = "." }
 
 [package.optional-dependencies]

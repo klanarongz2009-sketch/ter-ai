@@ -30,7 +30,7 @@ These permissions are subject to the conditions in sections 4 to 6.
 If you distribute the Software or a Modified Version, you must:
 
 - keep the copyright line above and the text of this License (or a link to it) with every copy;
-- credit "TER-AI (klanarongz2009-sketch)" with a link to https://github.com/klanarongz2009-sketch/terai-router in the notices, documentation or about screen that come with your copy.
+- credit "TER-AI (klanarongz2009-sketch)" with a link to https://github.com/klanarongz2009-sketch/ter-ai in the notices, documentation or about screen that come with your copy.
 
 ## 5. Same license for changes (file-level share-alike)
 

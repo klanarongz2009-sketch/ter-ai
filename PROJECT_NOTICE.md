@@ -38,8 +38,8 @@ TER-AI has no budget. Everything it uses is free today, so a change in any free 
 
 Depending on the reason, some or all of these may happen:
 
-- **The repository is archived (read-only) or deleted.** If it is deleted, `pip install git+https://github.com/klanarongz2009-sketch/terai-router.git` stops working.
-- **The live demo goes offline:** https://klanarongz2009-sketch.github.io/terai-router/ may stop working.
+- **The repository is archived (read-only) or deleted.** If it is deleted, `pip install git+https://github.com/klanarongz2009-sketch/ter-ai.git` stops working.
+- **The live demo goes offline:** https://klanarongz2009-sketch.github.io/ter-ai/ may stop working.
 - **Releases and the wiki** may be removed or stop being updated.
 - **Issues and pull requests are closed.** Automatic replies to issues stop.
 - **No more updates or security fixes,** including for versions you already have.

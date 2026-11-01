@@ -26,8 +26,8 @@ WEIGHTS_NAME = 'muml-1.0-int8.bin'
 WEIGHTS_BYTES = 3421372
 WEIGHTS_SHA256 = 'f8a6d1030476d80757f44c3a990a3975d230b2f186820f48481429365c144fef'
 WEIGHTS_URLS = (
-    'https://klanarongz2009-sketch.github.io/terai-router/' + WEIGHTS_NAME,
-    'https://github.com/klanarongz2009-sketch/terai-router/releases/download/v0.15.0/' + WEIGHTS_NAME,
+    'https://klanarongz2009-sketch.github.io/ter-ai/' + WEIGHTS_NAME,
+    'https://github.com/klanarongz2009-sketch/ter-ai/releases/download/v0.15.0/' + WEIGHTS_NAME,
 )
 MAGIC = b'MUMLWA1\0'
 # decoding settings (same in docs/muml_wa_net.js)

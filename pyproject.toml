@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "terai-router"
-version = "0.18.0a0"
+version = "0.18.0b1"
 description = "Offline Thai intent router that tolerates typos. Small, CPU-only, no dependencies. Made with Sesame."
 readme = "README.md"
 license = "MIT"
@@ -22,9 +22,9 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/klanarongz2009-sketch/terai-router"
-Repository = "https://github.com/klanarongz2009-sketch/terai-router"
-Demo = "https://klanarongz2009-sketch.github.io/terai-router/"
+Homepage = "https://github.com/klanarongz2009-sketch/ter-ai"
+Repository = "https://github.com/klanarongz2009-sketch/ter-ai"
+Demo = "https://klanarongz2009-sketch.github.io/ter-ai/"
 
 [project.optional-dependencies]
 train = ["numpy", "scipy"]
