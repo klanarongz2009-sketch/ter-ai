@@ -64,7 +64,7 @@ bot = TermAI()                 # memory in RAM only; TermAI(memory_path=...) to 
 print(bot.reply('ผมชื่อต้น'))   # จำแล้ว: ชื่อ ต้น
 ```
 
-No network, no GPU, no dependencies, Python 3.9+.
+No network, no GPU, no dependencies, Python 3.11+.
 
 ## The time limit, exactly
 

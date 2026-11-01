@@ -8,7 +8,7 @@ TTH turns a Thai (or Thai-English) message into speech. It has two parts:
    checked for identical output by `eval/parity.py`.
 2. Pluggable speech engines, all optional:
    - `wayu`: Wayu-Paxa-TTS-Edge, an 82M open-weight Thai model by Paxa Labs / Wayu Research (Kokoro-based),
-     run locally on CPU. Install with the `tth` extra (Python 3.10+; see README). The weights
+     run locally on CPU. Install with the `tth` extra (Python 3.11+; see README). The weights
      are downloaded from Hugging Face (`wayu-ai/wayu-paxa-tts-edge`) on first use and are NOT part of this
      repository. Weights license: CC-BY-NC-4.0 (non-commercial, attribution to Paxa Labs / Wayu Research).
    - `edge`: edge-tts, an online Microsoft text-to-speech service (sends the text to Microsoft). Used as the
@@ -16,7 +16,7 @@ TTH turns a Thai (or Thai-English) message into speech. It has two parts:
    - `mtl` (TTH-MTL, "TTH หลายภาษา", released in v0.17.0): OmniVoice by k2-fsa, an open-weight zero-shot TTS
      that its authors describe as covering 600+ languages (Thai included), run locally on CPU. Opt in with
      `engine='mtl'`; it is never picked by `auto` (about 3.3 GB of weights). No speed or quality benchmark of
-     TTH-MTL is in this repository yet. Install with the `tth-mtl` extra (Python 3.10+). The weights
+     TTH-MTL is in this repository yet. Install with the `tth-mtl` extra (Python 3.11+). The weights
      (`k2-fsa/OmniVoice`) are downloaded from Hugging Face on first use and are NOT part of this repository;
      once cached it runs without a network connection (set `HF_HUB_OFFLINE=1` to skip the update check).
      Code Apache-2.0; weights CC-BY-NC (non-commercial, because of its training data such as Emilia); the
@@ -302,7 +302,7 @@ class TTHUnavailable(TTHError):
     """No speech engine is installed."""
 
 
-INSTALL_HINT = ('No TTH speech engine is installed. Local engine (Python 3.10+, downloads the Wayu weights from '
+INSTALL_HINT = ('No TTH speech engine is installed. Local engine (Python 3.11+, downloads the Wayu weights from '
                 'Hugging Face on first use): pip install "terai-router[tth] @ '
                 'git+https://github.com/klanarongz2009-sketch/ter-ai.git". Online fallback only: '
                 'pip install edge-tts')

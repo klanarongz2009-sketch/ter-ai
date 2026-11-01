@@ -10,7 +10,7 @@ readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE", "DATA_LICENSE", "NOTICE"]
 authors = [{ name = "Klanarong Tammakatuek (klanarongz2009-sketch)" }]
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 dependencies = []
 keywords = ["thai", "nlp", "intent", "intent-classification", "typo", "offline", "chatbot", "iot", "tts", "text-to-speech", "music", "text-to-music"]
 classifiers = [
@@ -31,16 +31,16 @@ train = ["numpy", "scipy"]
 dev = ["pytest"]
 # TTH speech engines (the core install stays dependency-free).
 # tth: local Wayu-Paxa-TTS-Edge (inference code Apache-2.0; weights CC-BY-NC-4.0, non-commercial, downloaded from
-#      Hugging Face on first use, never shipped here) plus the edge-tts fallback. Needs Python 3.10+ (pulls torch).
+#      Hugging Face on first use, never shipped here) plus the edge-tts fallback. Needs Python 3.11+ (pulls torch).
 # tth-edge: only the online edge-tts fallback (Microsoft service), small.
 # tth-mtl: TTH-MTL, local OmniVoice by k2-fsa (code Apache-2.0; weights CC-BY-NC, non-commercial, about 3.3 GB,
-#          downloaded from Hugging Face on first use, never shipped here). Multilingual. Needs Python 3.10+ (torch).
+#          downloaded from Hugging Face on first use, never shipped here). Multilingual. Needs Python 3.11+ (torch).
 tth = [
-    "wayu-tts @ git+https://github.com/wayu-research/wayu-tts-inference@07ab898d516649313926f0b843b809a962f993ad ; python_version >= '3.10'",
+    "wayu-tts @ git+https://github.com/wayu-research/wayu-tts-inference@07ab898d516649313926f0b843b809a962f993ad",
     "edge-tts>=6.1",
 ]
 tth-edge = ["edge-tts>=6.1"]
-tth-mtl = ["omnivoice>=0.2.1 ; python_version >= '3.10'"]
+tth-mtl = ["omnivoice>=0.2.1"]
 sankpup = ["resvg-py>=0.1.5", "Pillow>=9"]
 sankpup-gemma = ["resvg-py>=0.1.5", "Pillow>=9", "llama-cpp-python>=0.3.36"]
 # llm: model TERAI1 (beta) for terai chat / terai vision (local Gemma 4 through llama-cpp-python; weights Apache-2.0,

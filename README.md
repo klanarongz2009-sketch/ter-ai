@@ -119,7 +119,7 @@ pip install git+https://github.com/klanarongz2009-sketch/ter-ai.git
 
 From a local clone: `pip install .`
 
-Python 3.9+, no runtime dependencies for the intent router and the rule Chat. TERAI1 (extra `llm`), TTH and SANKPUP have optional extras, described in their sections. MUML 1.0 HIQ needs no Python extra, but `terai muml --hiq --setup` needs git, cmake and a C++17 compiler to build its engines, and ffmpeg for .mp3 output and the fade-out.
+Python 3.11+, no runtime dependencies for the intent router and the rule Chat. TERAI1 (extra `llm`), TTH and SANKPUP have optional extras, described in their sections. MUML 1.0 HIQ needs no Python extra, but `terai muml --hiq --setup` needs git, cmake and a C++17 compiler to build its engines, and ffmpeg for .mp3 output and the fade-out.
 
 ## Use
 
@@ -330,7 +330,7 @@ TTH is the text-to-speech part of TER-AI. The name comes from "TTS", with H for 
 Thai-English message aloud. The core install stays dependency-free; the speech engines are optional extras.
 
 ```bash
-# local engine Wayu + edge-tts fallback (Python 3.10+, pulls torch; weights download once, about 315 MB)
+# local engine Wayu + edge-tts fallback (Python 3.11+, pulls torch; weights download once, about 315 MB)
 pip install "terai-router[tth] @ git+https://github.com/klanarongz2009-sketch/ter-ai.git"
 # or only the small online fallback
 pip install "terai-router[tth-edge] @ git+https://github.com/klanarongz2009-sketch/ter-ai.git"
@@ -377,7 +377,7 @@ text-to-speech model that its authors describe as covering more than 600 languag
 `--engine auto` never picks it.
 
 ```bash
-# Python 3.10+, pulls in torch; the OmniVoice weights (about 3.3 GB) download on first use
+# Python 3.11+, pulls in torch; the OmniVoice weights (about 3.3 GB) download on first use
 pip install "terai-router[tth,tth-mtl] @ git+https://github.com/klanarongz2009-sketch/ter-ai.git@v0.17.0"
 
 terai tth --engine mtl "สวัสดีครับ ยินดีต้อนรับสู่ TER-AI" -o th.wav          # Thai, cloned from a Wayu voice

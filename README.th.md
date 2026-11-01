@@ -8,6 +8,8 @@ TER-AI เป็นโครงการวิจัยและพัฒนา 
 
 ขอบเขตของ offline: intent router, แชตแบบกฎ, TERM AI และ SANKPUP แบบ offline generator รันบน CPU โดยไม่ต่อเน็ตเลย ส่วน TTH (Wayu-Paxa-TTS-Edge และตั้งแต่ v0.17.0 มี engine เสริม TTH-MTL บน OmniVoice ขนาดราว 3.3 GB), TERAI1 (beta) และ SANKPUP "gemma" (Gemma 4 E2B บน llama-cpp-python), MUML 1.0 HIQ (ACE-Step 1.5, YuE2-3B) และ weights ของ network MuML 1.0 รันบน CPU ในเครื่องหลังโหลด weights ครั้งแรกครั้งเดียว TTH-MTL จะโหลด Whisper large-v3-turbo (ราว 1.6 GB) เพิ่มถ้าใส่ `--ref-audio` โดยไม่ใส่ `--ref-text` หลังโหลดครบแล้วไม่ต้องต่อเน็ต (`HF_HUB_OFFLINE=1` ปิดการเช็กอัปเดตกับ Hugging Face) ช่องทางที่ใช้เน็ตเป็นตัวเลือกทั้งหมด: edge-tts ที่เป็นตัวสำรองของ TTH ส่งข้อความไปที่ Microsoft, `terai chat --web` และสวิตช์ค้นเว็บในหน้า demo ส่งคำถามไปที่ Wikipedia และแท็บ Temmo ในหน้า demo (prototype ยังไม่ release) เรียกผู้ให้บริการโมเดลออนไลน์ด้วย API key ของผู้ใช้เอง (BYOK) ทำร่วมกับ Sesame
 
+แพ็กเกจและคำสั่ง Python ของ TER-AI รองรับ Python 3.11 ขึ้นไป; ฟีเจอร์เสริมบางส่วนต้องติดตั้ง dependency และ weights เพิ่มตามที่ระบุไว้ในแต่ละหัวข้อ
+
 > **ประกาศเกี่ยวกับโปรเจกต์:** TER-AI เป็นโปรเจกต์อินดี้ อาจหยุดชั่วคราวหรือปิดได้โดยแจ้งล่วงหน้าเพียงเล็กน้อย อ่าน[ประกาศเกี่ยวกับโปรเจกต์](PROJECT_NOTICE.th.md)
 
 ## ส่วนที่ release แล้ว (v0.18.0-beta1; ปรับหน้าเดโมและการเข้าถึง โดยพฤติกรรมคอมโพเนนต์เดิมไม่เปลี่ยน)
@@ -165,7 +167,7 @@ terai term --trial-info         # ดูเวลาที่หมดอาย�
 TTH-MTL ("TTH หลายภาษา") เป็น engine เสริมของ TTH ที่ต้องเลือกใช้เอง สร้างบน OmniVoice ของ k2-fsa ซึ่งเป็นโมเดล text-to-speech แบบ zero-shot ที่เปิด weights และผู้พัฒนาบอกว่ารองรับมากกว่า 600 ภาษา รันบน CPU ในเครื่อง และ `--engine auto` จะไม่เลือก engine นี้เอง
 
 ```bash
-# Python 3.10+ ต้องลง torch ด้วย weights ของ OmniVoice (ราว 3.3 GB) โหลดตอนใช้ครั้งแรก
+# Python 3.11+ ต้องลง torch ด้วย weights ของ OmniVoice (ราว 3.3 GB) โหลดตอนใช้ครั้งแรก
 pip install "terai-router[tth,tth-mtl] @ git+https://github.com/klanarongz2009-sketch/ter-ai.git@v0.17.0"
 
 terai tth --engine mtl "สวัสดีครับ ยินดีต้อนรับสู่ TER-AI" -o th.wav          # ภาษาไทย โคลนจากเสียง Wayu

@@ -2,7 +2,7 @@
 
 TERM AI is a limited-time trial. It runs before 2027-01-01 00:00:00 Asia/Bangkok (UTC+7)
 and refuses to run at or after that moment. Thailand has no daylight saving time, so a
-fixed UTC+7 offset is exact and needs no tz database (works on Python 3.9, Windows too).
+fixed UTC+7 offset is exact and needs no tz database (works on supported Python versions and Windows too).
 
 Every function takes an optional ``now`` (a timezone-aware datetime) so tests can inject
 the clock. Without it the real clock is read in UTC.
