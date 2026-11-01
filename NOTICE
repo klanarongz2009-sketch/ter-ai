@@ -162,3 +162,13 @@ TTH-MTL (TTH engine "mtl", "TTH หลายภาษา", released in v0.17.0, 
    arXiv:2604.00688 (2026).
    No audio from ElevenLabs or Gemini TTS was used to build or tune TTH-MTL: their terms forbid using output to
    train or improve other models and require users to be 18 or older.
+
+
+TERAI1SML (TER-AI text-only small chat model; optional, runs locally after a download)
+16. Qwen2.5-0.5B-Instruct Q2_K GGUF by the Qwen team (Apache License 2.0)
+   Model card: https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct
+   GGUF file: https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF
+   The model card lists Thai among its supported languages. The 415,182,688-byte Q2_K file is downloaded on first use
+   into ~/.cache/terai/models (or $TERAI_MODELS_DIR), pinned to repository revision
+   9217f5db79a29953eb74d5343926648285ec7e67, and checked against its published SHA-256. It is not included in this
+   repository. No image projector is provided; TERAI1SML is text-only. See the model card and license before use.

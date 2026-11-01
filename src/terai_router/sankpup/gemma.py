@@ -36,10 +36,11 @@ class ModelSpec:
     size: int
     sha256: str
     note: str
+    revision: str = "main"
 
     @property
     def url(self) -> str:
-        return f"https://huggingface.co/{self.repo}/resolve/main/{self.filename}"
+        return f"https://huggingface.co/{self.repo}/resolve/{self.revision}/{self.filename}"
 
     @property
     def size_gb(self) -> float:
@@ -141,7 +142,7 @@ def download(model: str | None = None, quiet: bool = False, opener=urllib.reques
     if have:
         req.add_header("Range", f"bytes={have}-")
     if not quiet:
-        print(f"Downloading Gemma 4 {spec.key} ({spec.size_gb} GB) from {spec.url}", file=sys.stderr)
+        print(f"Downloading {spec.filename} ({spec.size_gb} GB) from {spec.url}", file=sys.stderr)
     try:
         resp = opener(req, timeout=60)
     except urllib.error.HTTPError as exc:

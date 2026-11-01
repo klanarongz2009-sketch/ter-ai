@@ -6,7 +6,7 @@
 
 TER-AI เป็นโครงการวิจัยและพัฒนา AI ภาษาไทยแบบอิสระที่ใช้ AI agent ช่วยพัฒนา โดยทดลองตั้งแต่ typo-tolerant intent routing, local chat/vision บน CPU ไปจนถึง Thai TTS, SVG graphics และ music-generation tools โครงการเผยแพร่ test sets, evaluation scripts, parity/regression checks, ข้อจำกัดของแต่ละโมดูล, license แยกตามข้อมูล/โมเดล และ Project Notice เกี่ยวกับความต่อเนื่องของการดูแล
 
-ขอบเขตของ offline: intent router, แชตแบบกฎ, TERM AI และ SANKPUP แบบ offline generator รันบน CPU โดยไม่ต่อเน็ตเลย ส่วน TTH (Wayu-Paxa-TTS-Edge และตั้งแต่ v0.17.0 มี engine เสริม TTH-MTL บน OmniVoice ขนาดราว 3.3 GB), TERAI1 (beta) และ SANKPUP "gemma" (Gemma 4 E2B บน llama-cpp-python), MUML 1.0 HIQ (ACE-Step 1.5, YuE2-3B) และ weights ของ network MuML 1.0 รันบน CPU ในเครื่องหลังโหลด weights ครั้งแรกครั้งเดียว TTH-MTL จะโหลด Whisper large-v3-turbo (ราว 1.6 GB) เพิ่มถ้าใส่ `--ref-audio` โดยไม่ใส่ `--ref-text` หลังโหลดครบแล้วไม่ต้องต่อเน็ต (`HF_HUB_OFFLINE=1` ปิดการเช็กอัปเดตกับ Hugging Face) ช่องทางที่ใช้เน็ตเป็นตัวเลือกทั้งหมด: edge-tts ที่เป็นตัวสำรองของ TTH ส่งข้อความไปที่ Microsoft, `terai chat --web` และสวิตช์ค้นเว็บในหน้า demo ส่งคำถามไปที่ Wikipedia และแท็บ Temmo ในหน้า demo (prototype ยังไม่ release) เรียกผู้ให้บริการโมเดลออนไลน์ด้วย API key ของผู้ใช้เอง (BYOK) ทำร่วมกับ Sesame
+ขอบเขตของ offline: intent router, แชตแบบกฎ, TERM AI และ SANKPUP แบบ offline generator รันบน CPU โดยไม่ต่อเน็ตเลย ส่วน TTH (Wayu-Paxa-TTS-Edge และตั้งแต่ v0.17.0 มี engine เสริม TTH-MTL บน OmniVoice ขนาดราว 3.3 GB), TERAI1 (beta), TERAI1SML (Qwen2.5 0.5B แบบข้อความ) และ SANKPUP "gemma" (Gemma 4 E2B บน llama-cpp-python), MUML 1.0 HIQ (ACE-Step 1.5, YuE2-3B) และ weights ของ network MuML 1.0 รันบน CPU ในเครื่องหลังโหลด weights ครั้งแรกครั้งเดียว TTH-MTL จะโหลด Whisper large-v3-turbo (ราว 1.6 GB) เพิ่มถ้าใส่ `--ref-audio` โดยไม่ใส่ `--ref-text` หลังโหลดครบแล้วไม่ต้องต่อเน็ต (`HF_HUB_OFFLINE=1` ปิดการเช็กอัปเดตกับ Hugging Face) ช่องทางที่ใช้เน็ตเป็นตัวเลือกทั้งหมด: edge-tts ที่เป็นตัวสำรองของ TTH ส่งข้อความไปที่ Microsoft, `terai chat --web` และสวิตช์ค้นเว็บในหน้า demo ส่งคำถามไปที่ Wikipedia และแท็บ Temmo ในหน้า demo (prototype ยังไม่ release) เรียกผู้ให้บริการโมเดลออนไลน์ด้วย API key ของผู้ใช้เอง (BYOK) ทำร่วมกับ Sesame
 
 แพ็กเกจและคำสั่ง Python ของ TER-AI รองรับ Python 3.11 ขึ้นไป; ฟีเจอร์เสริมบางส่วนต้องติดตั้ง dependency และ weights เพิ่มตามที่ระบุไว้ในแต่ละหัวข้อ
 
@@ -17,7 +17,7 @@ TER-AI เป็นโครงการวิจัยและพัฒนา 
 | ส่วน | ทำอะไร | ตั้งแต่ |
 |---|---|---|
 | Intent router | อ่านข้อความภาษาไทยหรือไทยปนอังกฤษทีละข้อความ แก้คำพิมพ์ผิดที่เจอบ่อย แล้วบอกว่าเป็น intent ไหนใน 15 แบบ พร้อมคะแนนความมั่นใจ ตัวโมเดลขนาด 1.1 MB ไม่ต้องลง library เพิ่ม | v0.7.0 |
-| Chat | แชตภาษาไทยที่รันบน CPU ในเครื่อง ไม่ต่อเน็ตถ้าไม่เปิดการค้นเว็บ ตั้งแต่ v0.16.0 คำตอบเขียนโดยโมเดล **TERAI1** (beta, Gemma 4 E2B รันบน CPU ในเครื่อง ก่อน v0.17.0 ชื่อ TERAI1BETA) ส่วนกฎเดิม (เครื่องคิดเลข วันที่และเวลา แปลงหน่วย ความจำ ชุดความรู้ Wikipedia ภาษาไทย) กลายเป็น tool ของโมเดล ทุกข้อเท็จจริงบอกแหล่งที่มา ถ้าไม่มีแหล่งจะตอบว่า "ไม่รู้" อ่านภาพได้ด้วย (`terai chat --image`) ถ้าไม่ได้ลงโมเดล จะกลับไปใช้แชตแบบกฎเดิม ค้นเว็บจาก Wikipedia ได้ถ้าเปิดเอง ตั้งแต่ v0.9.0 | v0.8.0 (โมเดล v0.16.0) |
+| Chat | แชตภาษาไทยที่รันบน CPU ในเครื่อง ไม่ต่อเน็ตถ้าไม่เปิดการค้นเว็บ ตั้งแต่ v0.16.0 โมเดล **TERAI1** (beta, Gemma 4 E2B) เขียนคำตอบได้; v0.18.0-beta1 เพิ่มรุ่นเล็กแบบข้อความ **TERAI1SML** (Qwen2.5 0.5B Q2_K, weights 415 MB) ส่วนกฎเดิม (เครื่องคิดเลข วันที่และเวลา แปลงหน่วย ความจำ ชุดความรู้ Wikipedia ภาษาไทย) กลายเป็น tool ของโมเดล ทุกข้อเท็จจริงบอกแหล่งที่มา ถ้าไม่มีแหล่งจะตอบว่า "ไม่รู้" อ่านภาพได้ด้วย (`terai chat --image`) ถ้าไม่ได้ลงโมเดล จะกลับไปใช้แชตแบบกฎเดิม ค้นเว็บจาก Wikipedia ได้ถ้าเปิดเอง ตั้งแต่ v0.9.0 | v0.8.0 (โมเดล v0.16.0) |
 | TTH | อ่านภาษาไทยออกเสียงด้วยโมเดลเสียงที่รันในเครื่อง (Wayu-Paxa-TTS-Edge) มี edge-tts เป็นตัวสำรองแบบออนไลน์ ตั้งแต่ v0.17.0 มี engine เสริม TTH-MTL (OmniVoice ในเครื่อง weights ห้ามใช้เชิงพาณิชย์) ที่พูดภาษาอื่นได้และโคลนเสียงได้ ยังไม่มีผลวัด ทุกตัวเลือกลงได้ตามต้องการ | v0.10.0 (TTH-MTL v0.17.0) |
 | SANKPUP | สร้างภาพด้วยการเขียน code SVG (ใช้ Gemma 4 ในเครื่อง หรือตัวสร้างแบบออฟไลน์ที่ฝังมา) กรอง code ให้ปลอดภัย แล้วแปลงเป็น PNG หรือ JPG ไม่ใช่โมเดลสร้างภาพ | v0.11.0 |
 | MuML 1.0 WA | แต่งและเล่นเพลงในเบราว์เซอร์จากคำสั่งภาษาไทยหรืออังกฤษ ตั้งแต่ v0.15.0 โน้ตมาจากโมเดล MuML 1.0 ที่ train เอง (transformer 3.3M parameters, weights int8 ขนาด 3.4 MB รันด้วย JavaScript ในเบราว์เซอร์) ถ้าโหลด weights ไม่ได้จะใช้ Markov v1 แทน เสียงทุกเสียงสร้างด้วย Web Audio API | v0.12.0, โมเดล v0.15.0 |
@@ -44,7 +44,8 @@ status  1.00  เสร็จหรือยัง
 
 | ชื่อรุ่นโมเดล | คืออะไร | ตั้งแต่ |
 |---|---|---|
-| TERAI1 | โมเดลแชต (beta): Gemma 4 E2B ในเครื่องเขียนคำตอบ ใช้กฎของ TER-AI เป็น tool อ่านภาพได้ ใน v0.16.0 ชื่อ TERAI1BETA เปลี่ยนชื่อใน v0.17.0 ชื่อเดิมยังใช้เป็น alias ได้ | v0.16.0 |
+| TERAI1 | โมเดลแชต (beta): Gemma 4 E2B ในเครื่องเขียนคำตอบ ใช้กฎ TER-AI เป็น tool และอ่านภาพได้ ชื่อเดิม TERAI1BETA ใน v0.16.0 เปลี่ยนเป็น TERAI1 ใน v0.17.0 | v0.16.0 |
+| TERAI1SML | แชตรุ่นเล็กแบบข้อความ: Qwen2.5-0.5B-Instruct Q2_K GGUF, weights 415 MB; ใช้กฎ TER-AI เป็น tool ไม่รองรับภาพ; โมเดลเล็กและ quant ต่ำอาจตอบได้ไม่แม่นเท่ารุ่นใหญ่ | v0.18.0-beta1 |
 | MuML 1.0 | ตัวเขียนโน้ตของ MuML 1.0 WA (network ที่ train แล้ว `muml-1.0-net` ตั้งแต่ v0.15.0) | v0.12.0 |
 | MUML 1.0 HIQ | สร้างเพลงเป็นไฟล์เสียง | v0.13.0 |
 | Temmo 1.0 | AI สร้างเกม indie ขนาดเล็ก (prototype ยังไม่ release) | - |
@@ -55,6 +56,18 @@ status  1.00  เสร็จหรือยัง
 ## การประเมินที่ทำซ้ำได้ (v0.18.0-beta1)
 
 รัน `python eval/router_report.py` เพื่อประเมิน intent router บนชุดทดสอบและชุด held-out v0.7 ที่ freeze ไว้ รายงาน hash, accuracy รวมและ macro, ผลแยกหมวด/intent, confidence และ feature coverage; `--threshold 0.80` เพิ่มการวิเคราะห์ coverage ที่ระบุชัดว่า confidence ยังไม่ได้ calibrate เครื่องมือนี้วัด router ภายในเท่านั้น ไม่ได้รันโมเดลแชตหรือเป็น benchmark อิสระ ดู [คู่มือประเมิน](docs/AI_EVALUATION.md) สำหรับวิธีวัดแต่ละส่วน การเทียบอย่างปลอดภัย และข้อจำกัด
+
+## TERAI1SML: โมเดลข้อความสำหรับเครื่องพื้นที่เก็บข้อมูลจำกัด (v0.18.0-beta1)
+
+TERAI1SML เป็นรุ่นแชตแยกของ TER-AI แบบข้อความเท่านั้น สำหรับอุปกรณ์ที่เก็บไฟล์โมเดลรุ่นปกติไม่ไหว ใช้ไฟล์ Q2_K จาก [Qwen2.5-0.5B-Instruct GGUF](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF) อย่างเป็นทางการ ขนาด 415,182,688 bytes (ประมาณ 396 MiB) ซึ่งเป็น quant ที่เล็กที่สุดในรายการของโมเดลนี้ โมเดลฐานเป็น Apache-2.0 และรองรับภาษาไทย ดาวน์โหลดเฉพาะโมเดลข้อความ ไม่มี vision projector และอ่านภาพไม่ได้ โมเดลเล็กและ quant ต่ำช่วยประหยัดพื้นที่ แต่อาจตอบได้ไม่แม่นเท่า TERAI1; ยังไม่มี benchmark คุณภาพของ TERAI1SML
+
+```sh
+pip install "terai-router[llm] @ git+https://github.com/klanarongz2009-sketch/ter-ai.git"
+terai chat --brain terai1sml --setup
+terai chat --brain terai1sml
+```
+
+ครั้งแรกจะดาวน์โหลดและตรวจ SHA-256 ของ weights ไปไว้ที่ `~/.cache/terai/models` (หรือ `$TERAI_MODELS_DIR`) ส่วน `llama-cpp-python` จาก extra `llm` ต้องใช้พื้นที่เพิ่มจากไฟล์โมเดล หลัง setup แล้วใช้งาน offline ได้และยังใช้กฎ/tool ของ TER-AI เหมือนเดิม ถ้าต้องอ่านภาพหรือใช้โมเดลใหญ่กว่า ให้ใช้ `terai chat --brain terai1 --setup`
 
 ## TERAI1 (beta)
 

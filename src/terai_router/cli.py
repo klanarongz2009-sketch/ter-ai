@@ -177,22 +177,22 @@ def chat_main(argv=None):
     ap.add_argument('--player', default=None,
                     help="command that plays a WAV file (default: first of ffplay, paplay, aplay, afplay, mpv, "
                          "termux-media-player); 'none' only saves the files")
-    ap.add_argument('--brain', choices=['auto', 'terai1', 'terai1beta', 'rules'], default='auto',
-                    help='auto (default): model TERAI1 (beta; local Gemma 4 writes the replies, the rules are its tools) '
-                         'when it is installed, else the rule chat; terai1: always the model (downloads it); '
-                         'terai1beta: old name of terai1 (deprecated alias); '
-                         'rules: the rule chat only')
-    ap.add_argument('--model', default=None, help='Gemma 4 size for TERAI1: e2b (default) or e4b')
+    ap.add_argument('--brain', choices=['auto', 'terai1', 'terai1sml', 'terai1beta', 'rules'], default='auto',
+                    help='auto (default): TERAI1 (beta; local Gemma 4 writes replies, TER-AI rules are tools) when installed, '
+                         'else rule chat; terai1: always TERAI1; terai1sml: small text-only Qwen model; '
+                         'terai1beta: deprecated alias; rules: rule chat only')
+    ap.add_argument('--model', default=None, help='model variant: e2b (default), e4b, or sml (TERAI1SML, 415 MB text-only)')
     ap.add_argument('--threads', type=int, default=None, help='CPU threads for the model (default: all)')
     ap.add_argument('--image', metavar='FILE', help='ask about this image first (TERAI1 vision), then keep chatting')
-    ap.add_argument('--setup', action='store_true', help='download the TERAI1 weights (text + vision) and exit')
+    ap.add_argument('--setup', action='store_true', help='download weights; TERAI1SML needs about 415 MB and is text-only')
     ap.add_argument('--trace', action='store_true', help='print which tool answered and the grounding check')
     _voice_arg(ap)
     a = ap.parse_args(argv)
     if a.setup:
-        from .brain.local import setup as brain_setup
+        from .brain.local import normalize_model, setup as brain_setup
         try:
-            for p in brain_setup(a.model or 'e2b', vision=True):
+            setup_model = a.model or ('sml' if a.brain == 'terai1sml' else 'e2b')
+            for p in brain_setup(setup_model, vision=(normalize_model(setup_model) != 'sml')):
                 print(p)
         except Exception as e:
             print('terai chat --setup: ' + str(e), file=sys.stderr)
@@ -200,8 +200,9 @@ def chat_main(argv=None):
         return 0
     from .chat import Chat
     from .brain.cli import make_brain
+    from .brain.local import SML_MODEL, model_id as brain_model_id
     c = Chat(path=a.session, web=a.web, searx=a.searx)
-    from .versions import MODEL_ID, resolve_engine
+    from .versions import resolve_engine
     engine = 'terai1' if (a.image and a.brain == 'auto') else resolve_engine(a.brain)
     brain = make_brain(c, engine, a.model, a.threads, quiet=not sys.stdin.isatty())
     if brain is not None and a.image:
@@ -217,7 +218,7 @@ def chat_main(argv=None):
         c.forget()
     tty = sys.stdin.isatty()
     if tty:
-        print('TER-AI chat ' + __version__ + ' / model ' + (MODEL_ID if brain else 'rules') + (' (web search on)' if c.web else ' (offline)') + (' (speaking with TTH)' if tth else '') + '. Session: ' + c.path + '. Ctrl-D or /quit to exit.')
+        print('TER-AI chat ' + __version__ + ' / model ' + (brain_model_id(brain.lm.model) if brain else 'rules') + (' (web search on)' if c.web else ' (offline)') + (' (speaking with TTH)' if tth else '') + '. Session: ' + c.path + '. Ctrl-D or /quit to exit.')
     pending_image = a.image
     try:
         while True:
@@ -246,6 +247,9 @@ def chat_main(argv=None):
             if image:
                 if brain is None:
                     print('terai> reading images needs model TERAI1: terai chat --setup', flush=True)
+                    continue
+                if brain.lm.model == SML_MODEL:
+                    print('terai> TERAI1SML is text-only; use --brain terai1 for image reading', flush=True)
                     continue
                 brain.lm.vision = True
             try:

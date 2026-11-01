@@ -9,7 +9,7 @@ import time
 
 from ..versions import MODEL_ID, resolve_engine, version_line
 from . import local as L
-from .agent import BAD_IDENTITY, IDENTITY_RULE, identity_answer, spoken_name
+from .agent import BAD_IDENTITY, IDENTITY_RULE, identity_answer, identity_rule, spoken_name
 
 DEFAULT_VISION_Q = 'อธิบายภาพนี้ และอ่านข้อความทั้งหมดที่เห็นในภาพ'
 VISION_SYSTEM = ('คุณคือ TER-AI โมเดล TERAI1 ตอบเป็นภาษาไทย (ถ้าผู้ใช้ถามเป็นภาษาอังกฤษให้ตอบภาษาอังกฤษ) '
@@ -19,12 +19,11 @@ VISION_SYSTEM = ('คุณคือ TER-AI โมเดล TERAI1 ตอบเ�
 
 def vision_main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog='terai vision',
-                                 description=f'{MODEL_ID}: read an image offline (describe it, read Thai/English text '
-                                             'in it, answer a question) with local Gemma 4 on CPU')
+                                 description=f'{MODEL_ID}: read an image offline with local Gemma 4 (TERAI1); TERAI1SML is text-only')
     ap.add_argument('image', nargs='?', help='image file (PNG, JPEG, WebP, ...)')
     ap.add_argument('question', nargs='*', help='question about the image (default: describe it and read the text)')
-    ap.add_argument('--model', default=None, help='Gemma 4 size: e2b (default, about 5.5 GB RAM) or e4b')
-    ap.add_argument('--setup', action='store_true', help='download the model and the vision projector, then exit')
+    ap.add_argument('--model', default=None, help='model: e2b (Gemma 4, default), e4b, or sml (TERAI1SML, 415 MB text-only)')
+    ap.add_argument('--setup', action='store_true', help='download the model and vision projector, then exit (TERAI1SML is text-only)')
     ap.add_argument('--threads', type=int, default=None)
     ap.add_argument('--max-tokens', type=int, default=400)
     ap.add_argument('--json', action='store_true', help='print JSON with timing and memory')
@@ -32,7 +31,7 @@ def vision_main(argv=None) -> int:
     model = (a.model or L.DEFAULT_MODEL).lower()
     if a.setup:
         try:
-            for p in L.setup(model, vision=True):
+            for p in L.setup(model, vision=(L.normalize_model(model) != L.SML_MODEL)):
                 print(p)
         except Exception as e:
             print('terai vision: ' + str(e), file=sys.stderr)
@@ -47,9 +46,9 @@ def vision_main(argv=None) -> int:
         lm.load()
         load_s = time.time() - t0
         t1 = time.time()
-        out = lm.look(a.image, q, max_tokens=a.max_tokens, system=VISION_SYSTEM)
+        out = lm.look(a.image, q, max_tokens=a.max_tokens, system=VISION_SYSTEM.replace(IDENTITY_RULE, identity_rule(lm.model)))
         if BAD_IDENTITY.search(out):  # identity guard (v0.17.0): retry once, then the fixed answer
-            out = lm.look(a.image, q, max_tokens=a.max_tokens, system=VISION_SYSTEM)
+            out = lm.look(a.image, q, max_tokens=a.max_tokens, system=VISION_SYSTEM.replace(IDENTITY_RULE, identity_rule(lm.model)))
             if BAD_IDENTITY.search(out):
                 out = identity_answer(q, lm.model)
         out = spoken_name(out)
@@ -83,13 +82,14 @@ def models_main(argv=None) -> int:
 
 
 def make_brain(chat, engine: str, model: str | None, threads: int | None, quiet: bool):
-    """Return a Brain for `terai chat`, or None for the rule chat. engine: auto | terai1 | rules
-    (terai1beta, the 0.16.0 name, still works and prints a deprecation notice)."""
+    """Return a Brain for `terai chat`, or None for the rule chat."""
     engine = resolve_engine(engine)
-    if engine not in ('auto', 'terai1', 'rules'):
-        raise ValueError('engine must be auto, terai1 or rules, not ' + repr(engine))
+    if engine not in ('auto', 'terai1', 'terai1sml', 'rules'):
+        raise ValueError('engine must be auto, terai1, terai1sml or rules, not ' + repr(engine))
     if engine == 'rules':
         return None
+    if engine == 'terai1sml':
+        model = L.SML_MODEL
     if engine == 'auto' and not L.available(model or L.DEFAULT_MODEL):
         if not quiet:
             print(f'[{MODEL_ID}] local model not installed, using the rule chat. Install: terai chat --setup',

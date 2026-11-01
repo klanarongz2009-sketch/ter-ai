@@ -1,8 +1,7 @@
-"""Local Gemma 4 for TERAI1 (beta): text replies and image reading on CPU through llama-cpp-python.
+"""Local TERAI1 chat backends: Gemma 4 for text and vision, or TERAI1SML for compact text-only chat.
 
-Weights: the official Google QAT Q4_0 GGUF (same files as SANKPUP) plus the vision projector (mmproj) for images.
-Both are downloaded on first use into ``$TERAI_MODELS_DIR`` (default ``~/.cache/terai/models``) and checked against
-their SHA-256. Gemma 4 is Apache-2.0 (NOTICE item 4).
+Weights are downloaded on first use into ``$TERAI_MODELS_DIR`` (default ``~/.cache/terai/models``) and
+SHA-256 checked. Gemma 4 is Apache-2.0 (NOTICE item 4); TERAI1SML uses Qwen2.5 under Apache-2.0.
 """
 from __future__ import annotations
 
@@ -17,6 +16,54 @@ from pathlib import Path
 from ..sankpup import gemma as G
 
 DEFAULT_MODEL = "e2b"
+SML_MODEL = "sml"
+SML_MODEL_ID = "TERAI1SML"
+# Official Qwen2.5 0.5B Instruct Q2_K GGUF (Apache-2.0). This is the smallest official
+# quant in the repository: 415 MB on disk, text-only, with no image projector.
+SML_SPEC = G.ModelSpec(
+    "terai1sml", "Qwen/Qwen2.5-0.5B-Instruct-GGUF", "qwen2.5-0.5b-instruct-q2_k.gguf",
+    415182688, "9ee36184e616dfc76df4f5dd66f908dbde6979524ae36e6cefb67f532f798cb8",
+    "TERAI1SML; Qwen2.5-0.5B-Instruct Q2_K; text-only, smallest official quant",
+    "9217f5db79a29953eb74d5343926648285ec7e67",
+)
+
+
+def normalize_model(model: str | None) -> str:
+    name = (model or os.environ.get("TERAI_LLM_MODEL") or DEFAULT_MODEL).lower()
+    return SML_MODEL if name in ("terai1sml", "qwen2.5-0.5b-instruct", "qwen2.5-0.5b-instruct-q2_k") else name
+
+
+def model_id(model: str | None) -> str:
+    return SML_MODEL_ID if normalize_model(model) == SML_MODEL else "TERAI1"
+
+
+def model_base(model: str | None) -> str:
+    name = normalize_model(model)
+    return "Qwen2.5-0.5B-Instruct Q2_K" if name == SML_MODEL else "Gemma 4 " + name.upper()
+
+
+def model_spec_path(model: str | None = None):
+    name = normalize_model(model)
+    if name == SML_MODEL:
+        return SML_SPEC, G.models_dir() / SML_SPEC.filename
+    return G.resolve_model(name)
+
+
+def _sml_verified(path: Path) -> bool:
+    return path.is_file() and path.stat().st_size == SML_SPEC.size and G.sha256_file(path) == SML_SPEC.sha256
+
+
+def _download_model(model: str, quiet: bool = False) -> Path:
+    name = normalize_model(model)
+    if name != SML_MODEL:
+        return G.download(name, quiet=quiet)
+    path = G.models_dir() / SML_SPEC.filename
+    if path.exists():
+        if not _sml_verified(path):
+            raise LLMUnavailable(f"TERAI1SML file failed its size/SHA-256 check: {path}; remove the corrupt file and run terai chat --brain terai1sml --setup")
+        return path
+    return _download_spec(SML_SPEC, quiet=quiet)
+
 
 # Vision projectors that go with the Gemma 4 GGUF files (same Hugging Face repositories, Apache-2.0).
 MMPROJ = {
@@ -35,10 +82,17 @@ class LLMUnavailable(RuntimeError):
 
 
 def available(model: str = DEFAULT_MODEL, vision: bool = False) -> bool:
-    """True when llama-cpp-python is installed and the weights are already on disk (no download)."""
-    if not G.llama_cpp_available() or not G.is_downloaded(model):
+    """True when llama-cpp-python is installed and the requested weights are already on disk."""
+    name = normalize_model(model)
+    if vision and name == SML_MODEL:
         return False
-    return not vision or mmproj_path(model).is_file()
+    if not G.llama_cpp_available():
+        return False
+    if name == SML_MODEL:
+        return _sml_verified(G.models_dir() / SML_SPEC.filename)
+    if not G.is_downloaded(name):
+        return False
+    return not vision or mmproj_path(name).is_file()
 
 
 def mmproj_path(model: str = DEFAULT_MODEL) -> Path:
@@ -63,10 +117,15 @@ def _download_spec(spec, quiet=False) -> Path:
 
 
 def setup(model: str = DEFAULT_MODEL, vision: bool = True, quiet: bool = False) -> list:
-    """Download the weights TERAI1 needs. Returns the local paths."""
-    paths = [G.download(model, quiet=quiet)]
-    if vision and model in MMPROJ:
-        paths.append(_download_spec(MMPROJ[model], quiet=quiet))
+    """Download a TER-AI chat model. TERAI1SML is text-only and has no projector."""
+    name = normalize_model(model)
+    if name == SML_MODEL:
+        if vision:
+            raise LLMUnavailable("TERAI1SML is text-only and cannot read images; omit vision setup")
+        return [_download_model(name, quiet=quiet)]
+    paths = [_download_model(name, quiet=quiet)]
+    if vision and name in MMPROJ:
+        paths.append(_download_spec(MMPROJ[name], quiet=quiet))
     return paths
 
 
@@ -159,7 +218,7 @@ class LocalLM:
     def __init__(self, model: str | None = None, vision: bool = False, threads: int | None = None,
                  n_ctx: int = 4096, auto_download: bool = True, client=None, threads_batch: int | None = None,
                  flash_attn: bool | None = None, n_batch: int | None = None) -> None:
-        self.model = (model or os.environ.get("TERAI_LLM_MODEL") or DEFAULT_MODEL).lower()
+        self.model = normalize_model(model)
         self.vision = vision
         self.threads = threads or int(os.environ.get('TERAI_THREADS') or 0) or max(1, os.cpu_count() or 1)
         self.n_ctx = n_ctx
@@ -175,21 +234,30 @@ class LocalLM:
 
     @property
     def label(self) -> str:
-        return "test client" if self._client else f"gemma-4-{self.model} q4_0" + (" + mmproj" if self.vision else "")
+        if self._client:
+            return "test client"
+        if self.model == SML_MODEL:
+            return "Qwen2.5-0.5B-Instruct Q2_K (TERAI1SML)"
+        return f"gemma-4-{self.model} q4_0" + (" + mmproj" if self.vision else "")
 
     def load(self):
         if self._client is not None or self._llm is not None:
             return self._llm
+        if self.vision and self.model == SML_MODEL:
+            raise LLMUnavailable("TERAI1SML is text-only; use TERAI1 (Gemma 4) for image reading")
         try:
             from llama_cpp import Llama
         except Exception as exc:
             raise LLMUnavailable(INSTALL_HINT) from exc
-        _spec, path = G.resolve_model(self.model)
+        _spec, path = model_spec_path(self.model)
         if not path.is_file():
             if not self.auto_download:
-                raise LLMUnavailable(f"Gemma 4 weights not found at {path}; run: terai chat --setup")
-            print("TERAI1: downloading the Gemma 4 weights (first use)", file=sys.stderr)
-            path = G.download(self.model)
+                raise LLMUnavailable(f"model weights not found at {path}; run terai chat --brain terai1sml --setup")
+            label = "TERAI1SML Qwen2.5 0.5B" if self.model == SML_MODEL else "TERAI1 Gemma 4"
+            print(f"{label}: downloading model weights (first use)", file=sys.stderr)
+            path = _download_model(self.model)
+        elif self.model == SML_MODEL and not _sml_verified(path):
+            raise LLMUnavailable(f"TERAI1SML file failed its size/SHA-256 check: {path}")
         kw = {}
         if self.vision:
             mp = mmproj_path(self.model)

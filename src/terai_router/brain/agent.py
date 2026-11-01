@@ -1,4 +1,4 @@
-"""TERAI1 (beta) chat: the rules are tools, a local Gemma 4 writes the reply, a grounding check guards it.
+"""TER-AI local chat: rules are tools, a local Gemma 4 or Qwen2.5 model writes replies.
 
 One turn:
 1. The rule chat (chat.Chat) runs first. When a tool rule answers (memory, date and time, random, text tools,
@@ -11,8 +11,8 @@ One turn:
    source must say it does not know. A failed check is retried once at temperature 0, then the rule answer is
    used. The knowledge citation is added by code, never written by the model.
 5. Identity guard (v0.17.0): questions about who it is, who made it or which model it uses are answered from fixed
-   facts (TERAI1 of TER-AI, running on the open base model Gemma 4). To the user the model calls itself TERAI1;
-   "TERAI1BETA" in a reply is rewritten to "TERAI1". Any reply that says it was developed or
+   facts for the selected TER-AI variant and its open base model. TERAI1BETA remains a deprecated TERAI1 alias.
+   Any reply that says it was developed or
    made by Google, that it is Gemma, or that TER-AI trained the model is retried once, then the fixed identity
    answer is used.
 """
@@ -40,12 +40,9 @@ NUM = re.compile(r'\d+(?:[.,]\d+)*')
 URL = re.compile(r'https?://|www\.', re.I)
 CITE = re.compile(r'\s*\(ที่มา: .*\)\s*$')
 
-# Identity (v0.17.0). The model's name is TERAI1 (it was TERAI1BETA in 0.16.0; "beta" is its status, not its
-# name). It calls itself "TERAI1" when it talks to the user, may say that TERAI1 is still being improved when
-# asked about its status, and the old name "TERAI1BETA" in a reply is rewritten to "TERAI1". It runs on the open
-# model Gemma 4 as its base. It must never say it was developed or made by Google, never call itself Gemma, and
-# never claim that TER-AI trained the base model. A reply that does is retried once, then replaced by the fixed
-# answer below.
+# Identity (v0.17.0+). Each TER-AI model variant receives its own identity and base-model facts. The legacy
+# TERAI1BETA spelling is rewritten as TERAI1. Base-model ownership remains explicit; a reply that attributes
+# development to Google or claims TER-AI trained the base model is retried once, then replaced by a fixed answer.
 IDENTITY_RULE = (
     'ตัวตน: คุณคือ TERAI1 โมเดลแชทของโปรเจกต์ TER-AI เรียกตัวเองว่า TERAI1 เท่านั้น ห้ามบอกว่าถูกพัฒนาหรือสร้างโดย Google '
     'ห้ามบอกว่าตัวเองคือ Gemma และห้ามบอกว่า TER-AI ฝึกโมเดลเอง ถ้าผู้ใช้ถามว่าใช้โมเดลอะไร ให้ตอบตามจริงว่า '
@@ -61,6 +58,7 @@ IDENTITY_Q = re.compile(
     r'(?:คุณ|เธอ|TER-?AI|TERAI1?BETA)\s*(?:ถูก)?\s*(?:พัฒนา|สร้าง|เทรน|ฝึก)\s*(?:ขึ้น)?\s*(?:มา)?\s*(?:โดย|จาก)?\s*'
     r'(?:ใคร|บริษัท\s*ไหน|ที่ไหน)|'
     r'(?:ใช้|เป็น|คือ|รัน\s*บน)\s*(?:โมเดล|model|LLM)\s*(?:อะไร|ไหน|ตัวไหน)|'
+    r'\bTERAI1SML\b|'
     r'(?:คุณ|เธอ)\s*(?:คือ|เป็น|ใช่)\s*(?:gemma|เจมมา|google|กูเกิล)|'
     r'\bwho\s+(?:are|r)\s+(?:you|u)\b|\bwhat\s+are\s+you\b|\byour\s+name\b|'
     r'\bwho\s+(?:made|built|created|developed|trained|makes|owns)\s+(?:you|u)\b|'
@@ -105,8 +103,29 @@ def spoken_name(reply: str) -> str:
 
 def identity_answer(text: str = '', model: str | None = 'e2b') -> str:
     """The fixed identity answer, in Thai for a Thai (or empty) message, else English."""
-    base = 'Gemma 4 ' + str(model or 'e2b').upper()
-    return (IDENTITY_TH if THAI.search(text or '') or not text else IDENTITY_EN).format(base=base)
+    from .local import model_base, model_id
+    base = model_base(model)
+    name = model_id(model)
+    template = IDENTITY_TH if THAI.search(text or '') or not text else IDENTITY_EN
+    return template.format(base=base).replace('TERAI1', name)
+
+
+def identity_rule(model: str | None = 'e2b') -> str:
+    """Model-specific identity constraints for Gemma-backed TERAI1 and Qwen-backed TERAI1SML."""
+    from .local import model_base, model_id
+    rule = re.sub(r'TERAI1(?:BETA)?', model_id(model), IDENTITY_RULE)
+    return rule.replace('Gemma 4', model_base(model))
+
+
+def system_prompt(model: str | None = 'e2b') -> str:
+    """Use accurate model identity and capabilities for the selected local variant."""
+    from .local import SML_MODEL, model_id, normalize_model
+    name = model_id(model)
+    prompt = SYSTEM.replace('TER-AI โมเดล TERAI1', 'TER-AI โมเดล ' + name, 1)
+    prompt = prompt.replace(IDENTITY_RULE, identity_rule(model))
+    if normalize_model(model) == SML_MODEL:
+        prompt = prompt.replace('และอ่านภาพ', 'แต่ไม่อ่านภาพ')
+    return prompt
 
 
 def numbers(text: str) -> set:
@@ -262,7 +281,7 @@ class Brain:
                     'ถามความรู้ จำเรื่องของผู้ใช้ หรืออ่านภาพได้')
         user = ('บทสนทนาก่อนหน้า:\n' + self.history_text() + '\n\nความจำเกี่ยวกับผู้ใช้: ' + self.memory_text() +
                 '\n\n' + task + ('\n' + note if note else '') + '\n\nข้อความของผู้ใช้: ' + text)
-        return [{'role': 'system', 'content': SYSTEM}, {'role': 'user', 'content': user}]
+        return [{'role': 'system', 'content': system_prompt(getattr(self.lm, 'model', 'e2b'))}, {'role': 'user', 'content': user}]
 
     def reply(self, text: str, image: str | None = None) -> str:
         t0 = time.time()
