@@ -191,8 +191,8 @@ def chat_main(argv=None):
     if a.setup:
         from .brain.local import normalize_model, setup as brain_setup
         try:
-            setup_model = a.model or ('sml' if a.brain == 'terai1sml' else 'e2b')
-            for p in brain_setup(setup_model, vision=(normalize_model(setup_model) != 'sml')):
+            setup_model = normalize_model(a.model or ('sml' if a.brain == 'terai1sml' else 'e2b'))
+            for p in brain_setup(setup_model, vision=(setup_model != 'sml')):
                 print(p)
         except Exception as e:
             print('terai chat --setup: ' + str(e), file=sys.stderr)

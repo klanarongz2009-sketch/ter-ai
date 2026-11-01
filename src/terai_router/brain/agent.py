@@ -124,7 +124,7 @@ def system_prompt(model: str | None = 'e2b') -> str:
     prompt = SYSTEM.replace('TER-AI โมเดล TERAI1', 'TER-AI โมเดล ' + name, 1)
     prompt = prompt.replace(IDENTITY_RULE, identity_rule(model))
     if normalize_model(model) == SML_MODEL:
-        prompt = prompt.replace('และอ่านภาพ', 'แต่ไม่อ่านภาพ')
+        prompt = prompt.replace(' และอ่านภาพ', '')
     return prompt
 
 

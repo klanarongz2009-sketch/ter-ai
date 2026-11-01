@@ -30,7 +30,7 @@ from . import __version__
 REPO_VERSION = __version__
 MODEL_ID = "TERAI1"
 MODEL_ID_RULE = ("model ids are separate from the package version; a package release never changes a model id; "
-                 "existing ids keep their spelling (TERAI1, MuML 1.0, MUML 1.0 HIQ, Temmo 1.0, TER-AI-0.5); "
+                 "existing ids keep their spelling (TERAI1, TERAI1SML, MuML 1.0, MUML 1.0 HIQ, Temmo 1.0, TER-AI-0.5); "
                  "one exception: TERAI1BETA was renamed to TERAI1 in 0.17.0 and stays an alias")
 
 # Old names that still work (0.17.0). Model id alias -> id, and CLI engine name alias -> engine name.
@@ -66,7 +66,7 @@ MODELS = [
                 "date and time, units, memory, Thai Wikipedia pack, web search) are its tools; a grounding check "
                 "falls back to the rule answer; intent router model.json (trained here)"},
     {"id": "TERAI1SML", "part": "small text-only TER-AI chat model (terai chat --brain terai1sml)",
-     "since": REPO_VERSION, "status": "beta", "aliases": [],
+     "since": "-", "status": "prototype, not released", "aliases": [],
      "made_of": "Qwen2.5-0.5B-Instruct Q2_K GGUF (Apache-2.0; 415 MB weights, no vision projector); TER-AI rules are tools"},
     {"id": "MuML 1.0", "part": "music notes (terai muml-wa, web demo MuML tab); network writer muml-1.0-net since 0.15.0",
      "since": "0.12.0",

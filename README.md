@@ -6,14 +6,14 @@
 
 TER-AI is an independent, AI-assisted applied R&D project for Thai-language AI systems. Its scope includes a typo-tolerant Thai intent router, local CPU-first chat and vision, Thai speech, SVG-based graphics, and audio and music tools. It combines project-built components with existing models; it does not claim to train its own foundation model. The project includes reproducible internal evaluations, explicit model/data licensing, and a public project-continuity notice.
 
-Offline scope: the intent router, the rule chat, TERM AI and the SANKPUP offline generator run on CPU with no network connection. TTH (Wayu-Paxa-TTS-Edge, and since v0.17.0 the opt-in engine TTH-MTL on OmniVoice, about 3.3 GB), TERAI1 (beta), TERAI1SML (Qwen2.5 0.5B, text-only) and SANKPUP "gemma" (Gemma 4 E2B on llama-cpp-python), MUML 1.0 HIQ (ACE-Step 1.5, YuE2-3B) and the MuML 1.0 network weights run locally on CPU after a one-time download. TTH-MTL also downloads Whisper large-v3-turbo (about 1.6 GB) if you give `--ref-audio` without `--ref-text`; once cached it needs no network (`HF_HUB_OFFLINE=1` skips the Hugging Face update check, which sends the model name only). Online paths, all optional: the TTH fallback edge-tts sends the text to Microsoft, `terai chat --web` and the demo's web switch send the question to Wikipedia, and the Temmo demo tab (prototype, not released) calls online model providers with your own API key (BYOK). Made with Sesame.
+Offline scope: the intent router, the rule chat, TERM AI and the SANKPUP offline generator run on CPU with no network connection. TTH (Wayu-Paxa-TTS-Edge, and since v0.17.0 the opt-in engine TTH-MTL on OmniVoice, about 3.3 GB), TERAI1 (beta), the unreleased TERAI1SML text-only prototype on current `main`, and SANKPUP "gemma" (Gemma 4 E2B on llama-cpp-python), MUML 1.0 HIQ (ACE-Step 1.5, YuE2-3B) and the MuML 1.0 network weights run locally on CPU after a one-time download. TTH-MTL also downloads Whisper large-v3-turbo (about 1.6 GB) if you give `--ref-audio` without `--ref-text`; once cached it needs no network (`HF_HUB_OFFLINE=1` skips the Hugging Face update check, which sends the model name only). Online paths, all optional: the TTH fallback edge-tts sends the text to Microsoft, `terai chat --web` and the demo's web switch send the question to Wikipedia, and the Temmo demo tab (prototype, not released) calls online model providers with your own API key (BYOK). Made with Sesame.
 
 What is in the latest release (v0.18.0-beta1; refreshed browser demo and accessibility; existing component behavior unchanged):
 
 | Part | What it does | Since |
 |---|---|---|
 | Intent router | Reads one Thai or Thai-English message, fixes common typos and returns one of 15 intents with a confidence score. 1.1 MB model, no dependencies. | v0.7.0 |
-| Chat | Thai chat on your own CPU, with no network connection unless web search is switched on. Since v0.16.0 the replies can be written by local **TERAI1** (beta, Gemma 4 E2B); **TERAI1SML** (Qwen2.5 0.5B Q2_K, 415 MB weights) adds a smaller text-only option in v0.18.0-beta1; the old rules (calculator, date and time, unit conversion, memory, the bundled Thai Wikipedia pack) are its tools, every fact names its source, and it says "I don't know" when no source has the answer. It can also read images (`terai chat --image`). Without the model it falls back to the rule chat. Optional Wikipedia web search since v0.9.0. | v0.8.0 (model v0.16.0) |
+| Chat | Thai chat on your own CPU, with no network connection unless web search is switched on. Since v0.16.0 the replies can be written by local **TERAI1** (beta, Gemma 4 E2B); the old rules (calculator, date and time, unit conversion, memory, the bundled Thai Wikipedia pack) are its tools, every fact names its source, and it says "I don't know" when no source has the answer. It can also read images (`terai chat --image`). Without the model it falls back to the rule chat. Optional Wikipedia web search since v0.9.0. TERAI1SML is an unreleased prototype from current `main`, not part of this release. | v0.8.0 (model v0.16.0) |
 | TTH | Reads Thai aloud with a local open-weight voice model (Wayu-Paxa-TTS-Edge), with edge-tts as an online fallback. Since v0.17.0 the opt-in engine TTH-MTL (local OmniVoice, weights non-commercial) also speaks other languages and can clone a voice; not benchmarked yet. All optional. | v0.10.0 (TTH-MTL v0.17.0) |
 | SANKPUP | Makes pictures by writing SVG code (local Gemma 4 or a built-in offline generator), sanitizes it and renders PNG or JPG. Not an image model. | v0.11.0 |
 | MuML 1.0 WA | Writes and plays music in the browser from a Thai or English prompt. Since v0.15.0 the notes come from the trained MuML 1.0 network (3.3M-parameter transformer, int8 weights 3.4 MB, run in JavaScript); Markov v1 is the fallback. Every sound is made by the Web Audio API. | v0.12.0, network v0.15.0 |
@@ -43,13 +43,13 @@ The repository version and the model versions are separate. MuML 1.0 was the fir
 | Model id | What it is | Since |
 |---|---|---|
 | TERAI1 | Chat model (beta): local Gemma 4 E2B writes replies, TER-AI rules are tools, reads images. Named TERAI1BETA in v0.16.0; renamed in v0.17.0 | v0.16.0 |
-| TERAI1SML | Small text-only chat variant: Qwen2.5-0.5B-Instruct Q2_K GGUF, 415 MB weights; TER-AI rules are tools. Does not read images; lower-bit/smaller model may answer less reliably. | v0.18.0-beta1 |
+| TERAI1SML | Unreleased prototype: small text-only Qwen2.5-0.5B-Instruct Q2_K; TER-AI rules are tools; does not read images. | - |
 | MuML 1.0 | Note writer behind MuML 1.0 WA (trained network `muml-1.0-net` since v0.15.0) | v0.12.0 |
 | MUML 1.0 HIQ | Text-to-music audio | v0.13.0 |
 | Temmo 1.0 | Small indie game maker (prototype, not released) | - |
 | TER-AI-0.5 | Intent model inside TERM AI (limited-time trial) | v0.14.0 |
 
-`terai --version` prints both, for example `terai-router 0.18.0b1 / model TERAI1`, and `terai models` lists every model id. The rule lives in `src/terai_router/versions.py`; a new version of one model changes only its own row there. Model ids keep their spelling; the one exception is the v0.17.0 rename of TERAI1BETA to TERAI1 ("beta" is its status, not part of its name). `--brain terai1beta` and `--engine terai1beta` still work and print a deprecation notice. Select TERAI1SML with `terai chat --brain terai1sml`; install its text-only weights with `terai chat --brain terai1sml --setup`.
+`terai --version` prints both, for example `terai-router 0.18.0b1 / model TERAI1`, and `terai models` lists every model id. The rule lives in `src/terai_router/versions.py`; a new version of one model changes only its own row there. Model ids keep their spelling; the one exception is the v0.17.0 rename of TERAI1BETA to TERAI1 ("beta" is its status, not part of its name). `--brain terai1beta` and `--engine terai1beta` still work and print a deprecation notice. TERAI1SML is currently an unreleased prototype on `main`; it is not included in v0.18.0-beta1. After installing the current source, select it with `terai chat --brain terai1sml`; install its text-only weights with `terai chat --brain terai1sml --setup`.
 
 ## Why the name
 
@@ -216,9 +216,11 @@ terai> สิ่งที่ผมจำเกี่ยวกับคุณ: �
 
 The knowledge pack (`src/terai_router/data/knowledge_th.json`, 11.9 MB, 8,192 articles) is installed with the package. It has no live data: questions about prices, news or today's results get an honest "no data" reply.
 
-### TERAI1SML: the small-storage text model (v0.18.0-beta1)
+### TERAI1SML prototype: small-storage text model (not yet released)
 
-TERAI1SML is a distinct, text-only TER-AI chat variant for devices where the usual model files are too large. It uses the official [Qwen2.5-0.5B-Instruct GGUF](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF) Q2_K file (415,182,688 bytes, about 396 MiB), the smallest official quant listed for this model. The base model is Apache-2.0 and supports Thai. Only the text model is downloaded; there is no image projector or image-reading support. This very small, low-bit model is a storage option, not a claim of matching TERAI1's answer quality; no TERAI1SML quality benchmark is recorded.
+TERAI1SML is an unreleased, text-only TER-AI chat prototype on the current `main` branch; it is not in v0.18.0-beta1. It uses the official [Qwen2.5-0.5B-Instruct GGUF](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF) Q2_K file (415,182,688 bytes: 415.18 MB decimal, 395.95 MiB), pinned to a specific Hugging Face file revision and SHA-256 checked. Qwen's model card lists Thai among its supported languages, but TER-AI has no TERAI1SML quality benchmark, so Thai quality and parity with TERAI1 are unverified. It is text-only: no image projector is downloaded and it cannot read images.
+
+For comparison, TERAI1's default Gemma 4 E2B text weights are 3,349,516,256 bytes (3.35 GB, 3.12 GiB), about 8.07 times the SML weights. The normal `terai chat --setup` also downloads its 986,833,664-byte (986.83 MB, 941.12 MiB) vision projector: 4,336,349,920 bytes (4.34 GB, 4.04 GiB) combined. Those are model-file sizes only. TERAI1's metadata lists 8 GB RAM; TERAI1SML's RAM/runtime needs have not been measured, so the 396 MiB disk file does not establish that it can run with only that much RAM.
 
 ```sh
 pip install "terai-router[llm] @ git+https://github.com/klanarongz2009-sketch/ter-ai.git"
@@ -226,7 +228,7 @@ terai chat --brain terai1sml --setup
 terai chat --brain terai1sml
 ```
 
-The first command downloads and SHA-256 checks the model weights into `~/.cache/terai/models` (or `$TERAI_MODELS_DIR`). The optional `llm` install supplies `llama-cpp-python`; it needs additional disk space beyond the model file. TERAI1SML works offline after setup and uses the same TER-AI tools/rules. For images or a larger base model, use `terai chat --brain terai1 --setup` instead.
+TER-AI requires Python 3.11 or newer. Install the optional `llm` extra, which supplies `llama-cpp-python>=0.3.36`; that runtime needs additional disk space beyond the model file. Setup downloads the 415,182,688-byte weights from Hugging Face into `~/.cache/terai/models` (or `$TERAI_MODELS_DIR`) and verifies their SHA-256; internet is needed for the first download, then inference can run locally offline. The TERAI1SML path uses the same TER-AI rules/tools. For image reading, use TERAI1 with `terai chat --brain terai1 --setup` instead. No TERAI1SML RAM minimum or speed benchmark is currently recorded.
 
 ### TERAI1 (beta): the model writes the replies (v0.16.0)
 

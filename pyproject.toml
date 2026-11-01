@@ -43,8 +43,8 @@ tth-edge = ["edge-tts>=6.1"]
 tth-mtl = ["omnivoice>=0.2.1"]
 sankpup = ["resvg-py>=0.1.5", "Pillow>=9"]
 sankpup-gemma = ["resvg-py>=0.1.5", "Pillow>=9", "llama-cpp-python>=0.3.36"]
-# llm: model TERAI1 (beta) for terai chat / terai vision (local Gemma 4 through llama-cpp-python; weights Apache-2.0,
-#      downloaded from Hugging Face by `terai chat --setup`, never shipped here).
+# llm: TERAI1 (Gemma 4, chat and vision) and TERAI1SML (Qwen2.5, text-only) through llama-cpp-python.
+#      Model weights are Apache-2.0, downloaded from Hugging Face by `terai chat --setup`, never shipped here.
 llm = ["llama-cpp-python>=0.3.36"]
 
 [project.scripts]

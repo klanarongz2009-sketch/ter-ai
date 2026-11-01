@@ -24,7 +24,7 @@ SML_SPEC = G.ModelSpec(
     "terai1sml", "Qwen/Qwen2.5-0.5B-Instruct-GGUF", "qwen2.5-0.5b-instruct-q2_k.gguf",
     415182688, "9ee36184e616dfc76df4f5dd66f908dbde6979524ae36e6cefb67f532f798cb8",
     "TERAI1SML; Qwen2.5-0.5B-Instruct Q2_K; text-only, smallest official quant",
-    "9217f5db79a29953eb74d5343926648285ec7e67",
+    "6dd44a1fb35d11b5d1b28902876ce3cc9e882d0e",
 )
 
 
@@ -73,7 +73,7 @@ MMPROJ = {
                        "7498a37cb619e55f2fcf87eb931f56e99389ed6d432e4c5c66110694c0d65578", "vision projector for e4b"),
 }
 
-INSTALL_HINT = ("TERAI1 needs llama-cpp-python: pip install \"terai-router[llm] @ "
+INSTALL_HINT = ("TERAI1 and TERAI1SML need llama-cpp-python: pip install \"terai-router[llm] @ "
                 "git+https://github.com/klanarongz2009-sketch/ter-ai.git\" (then terai chat --setup)")
 
 
@@ -210,7 +210,7 @@ def clean_reply(text: str) -> str:
 
 
 class LocalLM:
-    """One loaded Gemma 4 model. ``vision=True`` also loads the image projector (about 1 GB more RAM).
+    """One loaded TERAI1 backend. Gemma vision also loads the image projector (about 1 GB more RAM).
 
     ``client`` is a test hook: callable(messages, max_tokens=, temperature=, seed=) -> str.
     """

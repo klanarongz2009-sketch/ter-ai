@@ -169,6 +169,6 @@ TERAI1SML (TER-AI text-only small chat model; optional, runs locally after a dow
    Model card: https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct
    GGUF file: https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF
    The model card lists Thai among its supported languages. The 415,182,688-byte Q2_K file is downloaded on first use
-   into ~/.cache/terai/models (or $TERAI_MODELS_DIR), pinned to repository revision
-   9217f5db79a29953eb74d5343926648285ec7e67, and checked against its published SHA-256. It is not included in this
+   into ~/.cache/terai/models (or $TERAI_MODELS_DIR), pinned to file revision
+   6dd44a1fb35d11b5d1b28902876ce3cc9e882d0e, and checked against its published SHA-256. It is not included in this
    repository. No image projector is provided; TERAI1SML is text-only. See the model card and license before use.
