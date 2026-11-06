@@ -46,6 +46,8 @@ TG_LIMIT = 4000          # Telegram allows 4096 characters per message; keep a m
 OWNER_PRIORITY, PUBLIC_PRIORITY = 0, 10
 PUBLIC_DEFAULTS = {'open': True, 'msgs_per_hour': 6, 'adds_per_hour': 10, 'max_public_queue': 2}
 TOKEN_ENV = 'TAGENTIC_TG_TOKEN'
+ADD_WAIT_S = 300        # a bare /add waits this long for the information in the next message
+ADD_PROMPT_MARKUP = {'force_reply': True, 'selective': True, 'input_field_placeholder': 'One fact'}
 
 EXAMPLE_CONFIG = {
     'token_file': '~/.config/tagentic/telegram_token',
@@ -70,8 +72,9 @@ def welcome_public(community: str = COMMUNITY_URL, docs: str = DOCS_URL) -> str:
         'It runs on one small machine: it answers one message at a time, a reply can take 1 to 3 minutes, '
         'and you may wait in a queue. Answers can be wrong.\n\n'
         'Type a message to chat. In a group, mention me or reply to my message.\n'
-        '/add <information> - send a fact to the shared knowledge inbox. A fact checker verifies it against a '
-        'real source before Tagentic1 uses it. Do not send passwords, phone numbers or anyone\'s personal data.\n'
+        '/add <information> - send a fact to the shared knowledge inbox. You can also tap /add and send the '
+        'information in your next message (within 5 minutes; /cancel to stop). A fact checker verifies it against '
+        'a real source before Tagentic1 uses it. Do not send passwords, phone numbers or anyone\'s personal data.\n'
         '/reset - start a new conversation (deletes this chat\'s history on the server).\n'
         '/help - show this message.\n\n'
         'Each chat has its own history. In a public chat Tagentic1 cannot read or write files or run code.\n\n'
@@ -85,7 +88,9 @@ def welcome_owner(community: str = COMMUNITY_URL, docs: str = DOCS_URL) -> str:
         'wait for your Allow or Deny.\n'
         'One message at a time; a reply can take from tens of seconds to a few minutes. '
         'Owner chats go to the front of the queue.\n'
-        '/add <information> - send a fact to the knowledge inbox (checked before use)\n'
+        '/add <information> - send a fact to the knowledge inbox (checked before use), or tap /add and send the '
+        'information in your next message\n'
+        '/cancel - stop a waiting /add\n'
         '/reset - start a new session\n/approve /deny - answer a permission request\n/help - this message\n\n'
         f'Community: {community}\nDocs: {docs}')
 
@@ -310,6 +315,7 @@ class Bridge:
         self.lock = threading.Lock()
         self.queued = {}          # chat_id -> items waiting or running
         self.hits = {}            # (chat_id, kind) -> [timestamps]
+        self.add_wait = {}        # chat_id -> (user_id, deadline): a bare /add waits for the next message
         self.state = load_json(cfg.state_file, {'offset': 0})
         self.me = None
 
@@ -474,6 +480,37 @@ class Bridge:
             self.send(chat_id, sys_msg(f"Thanks. Saved as {j['id']}. A fact checker will verify it against a real "
                                        'source before Tagentic1 uses it.'))
 
+    def start_add_wait(self, chat: dict, frm: dict, m: dict, public: bool) -> None:
+        """Bare /add: store nothing, ask for the information with a ForceReply and wait for one message."""
+        chat_id = chat['id']
+        self.add_wait[chat_id] = (frm.get('id'), self.clock() + ADD_WAIT_S)
+        log(f"add wait chat={chat_id} mode={'public' if public else 'owner'}")
+        self.send(chat_id, sys_msg('Send the information in your next message. /cancel to stop.'),
+                  markup=ADD_PROMPT_MARKUP,
+                  reply_to=m.get('message_id') if chat.get('type') != 'private' else None)
+
+    def take_add_wait(self, chat: dict, frm: dict) -> bool:
+        """True when this message is the information for a waiting /add (the wait is then cleared)."""
+        w = self.add_wait.get(chat['id'])
+        if not w:
+            return False
+        user_id, deadline = w
+        if chat.get('type') != 'private' and frm.get('id') != user_id:
+            return False                       # someone else in the group: handled as usual
+        del self.add_wait[chat['id']]
+        if self.clock() > deadline:
+            log(f"add wait expired chat={chat['id']}")
+            return False                       # too late: a normal message
+        return True
+
+    def clear_add_wait(self, chat: dict, frm: dict) -> bool:
+        """Drop a waiting /add of this sender. True when there was one."""
+        w = self.add_wait.get(chat['id'])
+        if not w or (chat.get('type') != 'private' and frm.get('id') != w[0]):
+            return False
+        del self.add_wait[chat['id']]
+        return True
+
     # ---- updates ------------------------------------------------------
     def addressed_text(self, m: dict, chat: dict):
         """Text meant for the bot, or None. Private chats: everything. Groups: commands, mentions, replies."""
@@ -516,6 +553,18 @@ class Bridge:
             return
         sender = self.sender_of(frm, chat)
         cmd = text.split()[0].split('@')[0].lower() if text.startswith('/') else ''
+        if cmd == '/cancel':
+            if self.clear_add_wait(chat, frm):
+                log(f"add cancelled chat={chat_id}")
+                self.send(chat_id, sys_msg('Cancelled.'))
+            else:
+                self.send(chat_id, sys_msg('Nothing to cancel.'))
+            return
+        if cmd:
+            self.clear_add_wait(chat, frm)     # any other command ends a waiting /add
+        elif self.take_add_wait(chat, frm):
+            self.handle_add(chat_id, sender, text, public)
+            return
         if cmd in ('/start', '/help'):
             log(f"start chat={chat_id} mode={'public' if public else 'owner'} type={chat.get('type')}")
             self.send(chat_id, welcome_public(self.cfg.community_url, self.cfg.docs_url) if public
@@ -523,7 +572,11 @@ class Bridge:
             return
         if cmd == '/add':
             rest = text.split(None, 1)
-            self.handle_add(chat_id, sender, rest[1] if len(rest) > 1 else '', public)
+            info = rest[1] if len(rest) > 1 else ''
+            if info.strip():
+                self.handle_add(chat_id, sender, info, public)
+            else:
+                self.start_add_wait(chat, frm, m, public)
             return
         if cmd == '/reset':
             self.enqueue(chat_id, 'reset', public=public, sender=sender)
@@ -566,11 +619,13 @@ class Bridge:
         self.tg.call('setMyCommands', commands=[
             {'command': 'help', 'description': 'How to use this bot'},
             {'command': 'add', 'description': 'Send a fact to the knowledge inbox (checked before use)'},
+            {'command': 'cancel', 'description': 'Stop a waiting /add'},
             {'command': 'reset', 'description': 'Start a new conversation'}])
         for oid in self.cfg.owners:
             self.tg.call('setMyCommands', scope={'type': 'chat', 'chat_id': oid}, commands=[
                 {'command': 'help', 'description': 'How to use this bot'},
                 {'command': 'add', 'description': 'Send a fact to the knowledge inbox'},
+                {'command': 'cancel', 'description': 'Stop a waiting /add'},
                 {'command': 'reset', 'description': 'Start a new Tagentic1 session'},
                 {'command': 'approve', 'description': 'Allow the action the model asked for'},
                 {'command': 'deny', 'description': 'Refuse the action the model asked for'}])

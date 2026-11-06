@@ -2,9 +2,21 @@
 
 ## Unreleased
 
+## v0.18.0-rc2 (2026-11-07)
+
+Release candidate. Fixes `/add` in the Tagentic1 Telegram bot when it is tapped in the command menu. Everything else is unchanged since v0.18.0-rc1.
+
+### Fixed
+- Tapping `/add` in Telegram's command menu sends `/add` at once with no text. The bot used to answer with a usage line and forget it, so the fact typed next went to the model as a normal chat message and never reached `Knowledge-inbox.md`. Now a bare `/add` (also `/add@<botname>`) stores nothing, answers `[System] Send the information in your next message. /cancel to stop.` with a ForceReply, and waits 5 minutes for that chat's next message. That message goes to the knowledge inbox through the same filters and the same `/add` per-hour limit, does not reach the model and does not count against the message limit. In groups only the sender of `/add` can answer it.
+
 ### Added
 - The Tagentic telegram bot community on GitHub Discussions is now a section with four categories: [Tagentic telegram bot community](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-telegram-bot-community) (general, unchanged link), [Tagentic bot Q&A](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-bot-q-a) (answers enabled), [Tagentic bot bug reports](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-bot-bug-reports) and [Tagentic bot ideas](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-bot-ideas).
 - Discussion forms in `.github/DISCUSSION_TEMPLATE/` for the Q&A, bug reports and ideas categories, each with a check that no bot token or personal data was posted (`LicenseRef-TER-AI-1.0`).
+- `/cancel` stops a waiting `/add`; it is in the command menu for everyone and for the owner. Any other command also ends the wait.
+
+### Changed
+- `/start` and `/help` say both ways work: `/add <information>`, or tap `/add` and send the information in your next message.
+- Package version `0.18.0rc2` (PEP 440), matching the tag `v0.18.0-rc2`.
 
 ## v0.18.0-rc1 (2026-11-07)
 

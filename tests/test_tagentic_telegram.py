@@ -9,6 +9,7 @@ from terai_router.tagentic import telegram as tg
 OWNER = 111
 OTHER = 222
 BOT = {'id': 999, 'username': 'example_tagentic_bot', 'is_bot': True}
+ADD_PROMPT = '[System] Send the information in your next message. /cancel to stop.'
 
 
 class FakeTG:
@@ -187,8 +188,9 @@ def test_add_knowledge_messages(cfg):
         '[System] Thanks. Saved as K0001. A fact checker will verify it against a real source before Tagentic1 uses it.',
         '[System] Already in the knowledge inbox as K0001.',
         '[System] Not stored: looks like a phone number',
-        '[System] Usage: /add <information>, one fact per message.']
-    assert seen[0] == (f'telegram:{OTHER}', 'The sky is blue')
+        ADD_PROMPT]
+    assert b.tg.sent(OTHER)[-1]['reply_markup'] == tg.ADD_PROMPT_MARKUP
+    assert seen[0] == (f'telegram:{OTHER}', 'The sky is blue') and len(seen) == 3   # bare /add stores nothing
 
 
 def test_add_knowledge_real_inbox_refuses_phone(cfg):
@@ -280,3 +282,138 @@ def test_cli_dispatch_and_example_config(capsys):
     assert main(['telegram', '--example-config']) == 0
     ex = json.loads(capsys.readouterr().out)
     assert ex['owners'] == [123456789] and ':' not in ex['token_file']
+
+
+def inbox(cfg):
+    p = cfg.memory_dir / 'Knowledge-inbox.md'
+    return p.read_text() if p.exists() else ''
+
+
+def test_bare_add_then_next_message_goes_to_inbox(cfg):
+    r = FakeRunner()
+    b = make(cfg, r)
+    b.handle_message(msg(OTHER, '/add'))
+    assert b.tg.texts(OTHER) == [ADD_PROMPT]
+    assert b.tg.sent(OTHER)[0]['reply_markup'] == {'force_reply': True, 'selective': True,
+                                                   'input_field_placeholder': 'One fact'}
+    assert inbox(cfg).count('status=') == 0                       # nothing stored for the bare /add
+    b.handle_message(msg(OTHER, 'Python was first released in 1991', from_id=OTHER))
+    drain(b)
+    assert r.calls == []                                          # the model never sees it
+    assert b.tg.texts(OTHER)[-1].startswith('[System] Thanks. Saved as K0001.')
+    text = inbox(cfg)
+    assert 'Python was first released in 1991' in text and f'telegram:{OTHER}' in text and 'status=pending' in text
+    b.handle_message(msg(OTHER, 'and now a normal chat'))          # the wait is over after one message
+    drain(b)
+    assert [c['text'] for c in r.calls] == ['and now a normal chat']
+
+
+def test_add_with_bot_name_is_a_bare_add(cfg):
+    b = make(cfg)
+    b.handle_message(msg(OTHER, '/add@example_tagentic_bot'))
+    assert b.tg.texts(OTHER) == [ADD_PROMPT]
+    b.handle_message(msg(OTHER, 'Bangkok is the capital of Thailand'))
+    assert 'Bangkok is the capital of Thailand' in inbox(cfg)
+
+
+def test_waiting_add_keeps_the_filters(cfg):
+    b = make(cfg)
+    for bad in ('mail me at someone@example.com', 'call me at 0812345678'):
+        b.handle_message(msg(OTHER, '/add'))
+        b.handle_message(msg(OTHER, bad))
+        assert b.tg.texts(OTHER)[-1].startswith('[System] Not stored:')
+    assert inbox(cfg).count('status=') == 0
+    b.handle_message(msg(OTHER, 'a normal message after a refusal'))   # refused also ends the wait
+    assert b.tg.texts(OTHER)[-1] != ADD_PROMPT and inbox(cfg).count('status=') == 0
+
+
+def test_waiting_add_counts_against_adds_not_messages(cfg):
+    added = []
+    r = FakeRunner()
+    b = make(cfg, r, adder=lambda s, i: (added.append(i), {'ok': True, 'id': f'K{len(added):04d}',
+                                                             'duplicate': False})[1])
+    for i in range(10):
+        b.handle_message(msg(OTHER, '/add'))
+        b.handle_message(msg(OTHER, f'fact {i}'))
+    assert len(added) == 10 and r.calls == []
+    b.handle_message(msg(OTHER, '/add'))
+    b.handle_message(msg(OTHER, 'fact 10'))
+    assert len(added) == 10
+    assert b.tg.texts(OTHER)[-1] == '[System] Too many /add messages this hour. Try again later.'
+    for i in range(6):                                            # messages per hour are untouched
+        b.handle_message(msg(OTHER, f'q{i}'))
+        drain(b)
+    assert len(r.calls) == 6
+
+
+def test_waiting_add_times_out(cfg):
+    t = [1000.0]
+    r = FakeRunner()
+    b = make(cfg, r, now=lambda: t[0])
+    b.handle_message(msg(OTHER, '/add'))
+    t[0] += tg.ADD_WAIT_S + 1
+    b.handle_message(msg(OTHER, 'too late for the inbox'))
+    drain(b)
+    assert [c['text'] for c in r.calls] == ['too late for the inbox']
+    assert inbox(cfg).count('status=') == 0
+
+
+def test_cancel(cfg):
+    r = FakeRunner()
+    b = make(cfg, r)
+    b.handle_message(msg(OTHER, '/cancel'))
+    b.handle_message(msg(OWNER, '/add'))
+    b.handle_message(msg(OWNER, '/cancel'))
+    b.handle_message(msg(OWNER, 'just chat'))
+    drain(b)
+    assert b.tg.texts(OTHER) == ['[System] Nothing to cancel.']
+    assert b.tg.texts(OWNER)[:2] == [ADD_PROMPT, '[System] Cancelled.']
+    assert [c['text'] for c in r.calls] == ['just chat'] and inbox(cfg).count('status=') == 0
+
+
+def test_other_command_ends_waiting_add(cfg):
+    b = make(cfg)
+    b.handle_message(msg(OTHER, '/add'))
+    b.handle_message(msg(OTHER, '/add The sky is blue'))           # stored directly, as before
+    b.handle_message(msg(OTHER, 'not for the inbox'))
+    drain(b)
+    text = inbox(cfg)
+    assert 'The sky is blue' in text and 'not for the inbox' not in text
+    b.handle_message(msg(OTHER, '/add'))
+    b.handle_message(msg(OTHER, '/help'))
+    b.handle_message(msg(OTHER, '/cancel'))
+    assert b.tg.texts(OTHER)[-1] == '[System] Nothing to cancel.'
+
+
+def test_group_waiting_add_only_from_the_same_user(cfg):
+    A, B = 301, 302
+    r = FakeRunner()
+    b = make(cfg, r)
+    b.handle_message(msg(-7, '/add@example_tagentic_bot', ctype='group', from_id=A, message_id=40))
+    prompt = b.tg.sent(-7)[0]
+    assert prompt['text'] == ADD_PROMPT and prompt['reply_to_message_id'] == 40
+    assert prompt['reply_markup']['selective'] is True
+    reply_to_bot = {'from': dict(BOT), 'message_id': 41}
+    b.handle_message(msg(-7, 'B wants this stored', ctype='group', from_id=B, reply_to_message=reply_to_bot))
+    drain(b)
+    assert 'B wants this stored' not in inbox(cfg)
+    assert [c['text'] for c in r.calls] == ['B wants this stored']   # handled as a normal public message
+    b.handle_message(msg(-7, '/cancel', ctype='group', from_id=B))
+    assert b.tg.texts(-7)[-1] == '[System] Nothing to cancel.'
+    b.handle_message(msg(-7, 'Water boils at 100 C at sea level', ctype='group', from_id=A,
+                         reply_to_message=reply_to_bot))
+    text = inbox(cfg)
+    assert 'Water boils at 100 C at sea level' in text and f'telegram:{A}' in text and 'in chat -7' in text
+    assert len(r.calls) == 1
+
+
+def test_help_mentions_both_ways_and_cancel_in_menu(cfg):
+    b = make(cfg)
+    b.handle_message(msg(OTHER, '/help'))
+    b.handle_message(msg(OWNER, '/start'))
+    for t in (b.tg.texts(OTHER)[0], b.tg.texts(OWNER)[0]):
+        assert '/add <information>' in t and 'tap /add' in t and '/cancel' in t
+        assert all(ord(ch) < 0x0E00 or ord(ch) > 0x0E7F for ch in t)
+    b.set_commands()
+    menus = [p['commands'] for m, p in b.tg.calls if m == 'setMyCommands']
+    assert len(menus) == 2 and all('cancel' in [c['command'] for c in cmds] for cmds in menus)

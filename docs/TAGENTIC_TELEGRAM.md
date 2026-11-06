@@ -101,6 +101,8 @@ The `public` block is read again on every message, so you can change limits with
 
 - `/start`, `/help`: how to use the bot, with links to this page and the community.
 - `/add <information>`: send one fact to the knowledge inbox (`Knowledge-inbox.md`). Secrets, phone numbers, card numbers, email addresses and texts over 1000 characters are refused. Tagentic1 uses a fact only after someone checks it against a real source and moves it to `Knowledge.md` (`python -m terai_router.tagentic.knowledge --verify` / `--reject`).
+  You can also tap `/add` in the command menu (Telegram sends it at once): the bot answers `[System] Send the information in your next message. /cancel to stop.` and stores your next message, with the same checks and the same per-hour limit. The wait lasts 5 minutes; after that the next message is a normal chat message. In a group only the person who sent `/add` can answer it; a bare `/add` never stores an empty entry.
+- `/cancel`: stop a waiting `/add`.
 - `/reset`: delete this chat's session and start again.
 - `/approve`, `/deny` (owner only): answer a permission request; the buttons under the message do the same.
 
