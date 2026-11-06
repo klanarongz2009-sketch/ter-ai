@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- The Tagentic telegram bot community on GitHub Discussions is now a section with four categories: [Tagentic telegram bot community](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-telegram-bot-community) (general, unchanged link), [Tagentic bot Q&A](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-bot-q-a) (answers enabled), [Tagentic bot bug reports](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-bot-bug-reports) and [Tagentic bot ideas](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-bot-ideas).
+- Discussion forms in `.github/DISCUSSION_TEMPLATE/` for the Q&A, bug reports and ideas categories, each with a check that no bot token or personal data was posted (`LicenseRef-TER-AI-1.0`).
+
 ## v0.18.0-rc1 (2026-11-07)
 
 Release candidate. Tagentic1, the TER-AI thinking + agentic model, is released for the first time, as a **beta**, together with a Telegram bot that anyone can run with their own bot token. The other parts are unchanged since v0.18.0-beta1. The browser demo is unchanged.

@@ -2,7 +2,14 @@
 
 Tagentic1 is a **beta** (release candidate in v0.18.0-rc1). `terai tagentic telegram` runs it as a Telegram bot with a bot token that you create. Everything runs on your own machine; there is no hosted service and nothing to pay.
 
-Community (questions, bug reports, ideas): [Tagentic telegram bot community](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-telegram-bot-community) on GitHub Discussions. Replies there may come from Teemate, an automated support bot; it is not the maintainer (see [PROJECT_NOTICE](../PROJECT_NOTICE.md)).
+Community: the **Tagentic telegram bot community** section on GitHub Discussions, with four categories:
+
+- [Tagentic telegram bot community](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-telegram-bot-community): general talk and show and tell; start here if unsure.
+- [Tagentic bot Q&A](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-bot-q-a): how to install, set up and use the bot. Mark the reply that solved it as the answer.
+- [Tagentic bot bug reports](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-bot-bug-reports): errors and problems. The form asks for the version, OS, command and error.
+- [Tagentic bot ideas](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-bot-ideas): features and improvements.
+
+Never post your bot token or chat IDs there. Replies may come from Teemate, an automated support bot; it is not the maintainer (see [PROJECT_NOTICE](../PROJECT_NOTICE.md)).
 
 ## What you need
 
@@ -114,6 +121,7 @@ Every text the bot writes itself is English and starts with `[System]`, for exam
 - `FROZEN_METHOD_INVALID`: Telegram has frozen the bot. The bridge cannot fix this; appeal to Telegram or create a new bot.
 - `getUpdates: 409 Conflict`: another program is polling the same bot. Stop it, or remove its webhook.
 - Very slow first reply: the model is loading. Later turns reuse the loaded model through the local server.
+- Something else: ask in [Tagentic bot Q&A](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-bot-q-a) or report it in [Tagentic bot bug reports](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-bot-bug-reports), without your token or chat IDs.
 
 ## License
 
