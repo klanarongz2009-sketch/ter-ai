@@ -6,7 +6,7 @@ Community (questions, bug reports, ideas): [Tagentic telegram bot community](htt
 
 ## What you need
 
-- TER-AI installed with the Tagentic1 extras and the Gemma 4 E2B weights (`terai tagentic --setup`). Check that `terai tagentic "hello"` answers before you connect Telegram.
+- TER-AI installed with the `llm` extra (`pip install "terai-router[llm] @ git+https://github.com/klanarongz2009-sketch/ter-ai.git@v0.18.0-rc1"`) and the Gemma 4 E2B weights (`terai tagentic --setup`). Check that `terai tagentic "hello"` answers before you connect Telegram.
 - A Telegram account to create the bot.
 - A machine that stays on. On an 8-vCPU machine without a GPU, the first reply after a model load takes about 1 to 3 minutes; later replies are faster.
 
