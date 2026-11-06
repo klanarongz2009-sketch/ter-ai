@@ -18,15 +18,16 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-MEMORY_ORDER = ('User.md', 'Systemprompt.md', 'Memory.md', 'Systemskill.md')
+MEMORY_ORDER = ('User.md', 'Systemprompt.md', 'Memory.md', 'Knowledge.md', 'Systemskill.md')
 PERSONAL = ('User.md', 'Memory.md')
+SHARED = ('Knowledge.md',)   # verified shared knowledge in the memory folder (see knowledge.py); public chats load it too
 SHIPPED = ('Systemprompt.md', 'Systemskill.md')
 DATA_DIR = Path(__file__).resolve().parent / 'data'
 SKILLS_DIR = DATA_DIR / 'skills'
 INCLUDE = re.compile(r'^<!--\s*include\s+(skills/[A-Za-z0-9_.\-/]+)\s*-->\s*$', re.M)
 
 # Characters kept from each file in the prompt (the rest is cut and marked). Memory.md keeps its newest lines.
-LIMITS = {'User.md': 3000, 'Systemprompt.md': 8000, 'Memory.md': 4000, 'Systemskill.md': 9000}
+LIMITS = {'User.md': 3000, 'Systemprompt.md': 8000, 'Memory.md': 4000, 'Knowledge.md': 4000, 'Systemskill.md': 9000}
 
 USER_STARTER = (
     '# User.md\n\n'
@@ -86,20 +87,25 @@ def _cut(name: str, text: str) -> str:
     limit = LIMITS.get(name, 4000)
     if len(text) <= limit:
         return text
-    if name == 'Memory.md':  # keep the newest facts
+    if name in ('Memory.md', 'Knowledge.md'):  # keep the newest facts
         return '(older lines cut)\n' + text[-limit:]
     return text[:limit] + '\n(cut)'
 
 
-def load_memory(home: str | os.PathLike | None = None, create: bool = True) -> list:
-    """Read the four files in MEMORY_ORDER. Returns a list of MemoryFile."""
+def load_memory(home: str | os.PathLike | None = None, create: bool = True, public: bool = False) -> list:
+    """Read the files in MEMORY_ORDER. Returns a list of MemoryFile.
+
+    public=True (a Telegram chat that is not the owner): User.md and Memory.md are never read, so the owner's
+    personal memory cannot reach the prompt; only Systemprompt.md, Knowledge.md and Systemskill.md load."""
     h = Path(home).expanduser() if home else default_home()
-    if create:
+    if create and not public:
         init_home(h)
     out = []
     for name in MEMORY_ORDER:
-        if name in PERSONAL:
-            p, source = h / name, 'user'
+        if name in PERSONAL and public:
+            continue
+        if name in PERSONAL or name in SHARED:
+            p, source = h / name, ('shared' if name in SHARED else 'user')
             text = p.read_text(encoding='utf-8') if p.is_file() else ''
         else:
             p, source = h / name, 'override'

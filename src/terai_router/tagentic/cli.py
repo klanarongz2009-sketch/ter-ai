@@ -118,9 +118,11 @@ SESSION_NAME = re.compile(r'^[A-Za-z0-9_.-]{1,64}$')
 ARG_MAX = 200   # characters of a string argument kept in the relay JSON
 
 
-def session_path(home, name: str) -> Path:
+def session_path(home, name: str, sessions_dir=None) -> Path:
     if not SESSION_NAME.match(name or '') or name in ('.', '..'):
         raise ValueError(f'bad session name: {name!r} (letters, digits, _ . - only)')
+    if sessions_dir:   # public chats keep their sessions outside the owner's memory folder
+        return Path(sessions_dir).expanduser() / f'{name}.json'
     return Path(home).expanduser() / 'sessions' / f'{name}.json'
 
 
@@ -167,7 +169,7 @@ def run_relay(args, home, factory, out) -> int:
         return rc
 
     try:
-        path = session_path(home, args.session)
+        path = session_path(home, args.session, getattr(args, 'sessions_dir', None))
     except ValueError as e:
         return emit({'session': args.session, 'error': str(e)}, 2)
     if args.reset:
@@ -175,6 +177,8 @@ def run_relay(args, home, factory, out) -> int:
         if existed:
             path.unlink()
         return emit({'session': args.session, 'reset': True, 'existed': existed})
+    if getattr(args, 'public', False) and (args.approve or args.deny):
+        return emit({'session': args.session, 'error': 'public chat: nothing can wait for approval'}, 2)
     data = load_session(path)
     if args.start:
         data = {'history': [], 'pending': None}
@@ -243,6 +247,10 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument('--init-context', action='store_true', help='create workspace context files/folders without overwriting, then exit')
     ap.add_argument('--show-memory', action='store_true', help='print the four memory files in load order, then exit')
     ap.add_argument('--setup', action='store_true', help='download the Gemma 4 weights, then exit')
+    ap.add_argument('--public', action='store_true',
+                    help='public chat: no User.md/Memory.md, read-only tools (calculator, datetime, units, add_knowledge)')
+    ap.add_argument('--sender', default='', help='who is talking (telegram:<chat id> ...), stored with add_knowledge')
+    ap.add_argument('--sessions-dir', default=None, help='relay mode: folder for session files (required with --public)')
     ap.add_argument('--session', default=None, help='relay mode: session name (stored under <memory folder>/sessions)')
     rel = ap.add_mutually_exclusive_group()
     rel.add_argument('--start', action='store_true', help='relay mode: new session, the model greets first')
@@ -255,6 +263,11 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv=None, lm=None, stdin=None, stdout=None) -> int:
     """``lm`` is a test hook (a LocalLM with a client)."""
+    if argv is None:
+        argv = sys.argv[1:]
+    if argv and argv[0] == 'telegram':
+        from .telegram import main as telegram_main
+        return telegram_main(list(argv[1:]))
     args = build_parser().parse_args(argv)
     out = stdout or sys.stdout
     sin = stdin or sys.stdin
@@ -265,7 +278,7 @@ def main(argv=None, lm=None, stdin=None, stdout=None) -> int:
         print('\n'.join(f'created {p}' for p in made) or f'already there: {home}', file=out)
         return 0
     if args.show_memory:
-        for f in M.load_memory(home):
+        for f in M.load_memory(home, public=args.public):
             print(f'===== {f.name} ({f.source}: {f.path}, {len(f.text)} characters) =====\n{f.text}\n', file=out)
         return 0
     if args.setup:
@@ -301,10 +314,14 @@ def main(argv=None, lm=None, stdin=None, stdout=None) -> int:
 
     def factory():
         model = lm if lm is not None else make_lm(args)
-        box = Toolbox(ws, home=home, confirm=make_confirm(args.yes, sin), yes=args.yes,
-                      tool_timeout=args.tool_timeout)
+        box = Toolbox(ws, home=home, confirm=make_confirm(args.yes and not args.public, sin),
+                      yes=args.yes and not args.public, tool_timeout=args.tool_timeout,
+                      public=args.public, sender=args.sender)
         return Tagentic(model, box, home=home, max_steps=args.max_steps, timeout=args.timeout, on_step=on_step)
 
+    if args.public and not args.sessions_dir:
+        print(f'{MODEL_NAME}: --public needs --sessions-dir (public sessions stay out of the memory folder)', file=sys.stderr)
+        return 2
     M.init_home(home)
     relay = args.start or args.message is not None or args.approve or args.deny or args.reset
     if relay or args.session:

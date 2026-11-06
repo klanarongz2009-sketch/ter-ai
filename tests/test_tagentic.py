@@ -68,13 +68,13 @@ def make(env, lm, yes=True, confirm=None, **kw):
 def test_system_prompt_carries_the_greeting_and_profile_instructions(env):
     sp = make(env, FakeLM()).system_prompt()
     for must in ('[session_start]', 'ภาษาอังกฤษ', 'สวัสดี', 'ภาษาไทย', 'TAGENTIC', 'Klanarongz2009', 'GitHub', 'ชื่อ', 'อาชีพ',
-                 'file="User.md"', 'ไม่ต้องถาม', 'ไม่ต้องตอบตรงคำ', 'ประวัติ'):
+                 'file="User.md"', 'คุณรู้จักผู้ใช้แล้ว', 'ห้ามแนะนำตัว', 'ประวัติ'):
         assert must in sp, must
 
 
 def test_history_facts_are_in_a_file_the_model_reads(env):
     sp = make(env, FakeLM()).system_prompt()
-    for fact in ('ส่วนหนึ่งของ TER-AI', 'thinking + agentic', 'Gemma 4', 'open model', 'beta', 'memory 4 ไฟล์', 'ไม่ได้ฝึก'):
+    for fact in ('ส่วนหนึ่งของ TER-AI', 'thinking + agentic', 'Gemma 4', 'open model', 'beta', 'memory 5 ไฟล์', 'Knowledge.md', 'ไม่ได้ฝึก'):
         assert fact in sp, fact
 
 

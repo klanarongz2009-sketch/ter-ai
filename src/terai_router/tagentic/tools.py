@@ -97,16 +97,25 @@ TOOL_SPECS = {
     'calculator':   (False, 'expression', 'arithmetic, from TERAI1'),
     'datetime':     (False, 'query', 'current date and time or date arithmetic, from TERAI1'),
     'units':        (False, 'query', 'unit conversion, from TERAI1'),
+    'add_knowledge': (False, 'text', 'send one piece of information to Knowledge-inbox.md; the Fact checker verifies it before it reaches Knowledge.md (no secrets, phone numbers or personal data)'),
     'remember':     (True, 'fact, file="Memory.md"', 'save one durable fact: file="Memory.md" (permanent memory) or file="User.md" (who the user is, e.g. "ชื่อ: ..."); never secrets or transcripts (asks the user)'),
 }
+
+
+# A public chat (Telegram, not the owner) gets these tools only: no file, code, shell or memory tools.
+PUBLIC_TOOLS = ('calculator', 'datetime', 'units', 'add_knowledge')
 
 
 class Toolbox:
     def __init__(self, workspace: Workspace | str | None = None, home: str | os.PathLike | None = None,
                  confirm: Optional[Callable[[str, str], bool]] = None, yes: bool = False,
-                 tool_timeout: float = 60.0, now=None) -> None:
+                 tool_timeout: float = 60.0, now=None, public: bool = False, sender: str = '') -> None:
         self.ws = workspace if isinstance(workspace, Workspace) else Workspace(workspace)
         self.home = home
+        self.public = bool(public)
+        self.sender = sender or ('public chat' if self.public else 'Tagentic1 session')
+        if self.public:
+            yes = False   # nothing is ever auto-allowed in a public chat
         self.confirm = confirm
         self.yes = yes
         self.tool_timeout = tool_timeout
@@ -116,17 +125,20 @@ class Toolbox:
 
     @property
     def names(self) -> list:
-        return list(TOOL_SPECS)
+        return [n for n in TOOL_SPECS if not self.public or n in PUBLIC_TOOLS]
 
     def describe(self) -> str:
-        return '\n'.join(f'- {n}({a}): {d}' for n, (_, a, d) in TOOL_SPECS.items())
+        return '\n'.join(f'- {n}({a}): {d}' for n, (_, a, d) in TOOL_SPECS.items() if n in self.names)
 
     # ------------------------------------------------------------------------------------------- dispatch
     def call(self, name: str, args: dict | None, allow: Optional[bool] = None) -> ToolResult:
         """``allow`` is the user's decision on a resumed pending call (relay mode): True runs it, False denies it."""
         args = args if isinstance(args, dict) else {}
         if name not in TOOL_SPECS:
-            return ToolResult(False, f'unknown tool: {name}. Tools: {", ".join(TOOL_SPECS)}', f'ไม่มี tool "{name}"')
+            return ToolResult(False, f'unknown tool: {name}. Tools: {", ".join(self.names)}', f'ไม่มี tool "{name}"')
+        if name not in self.names:   # public chat: blocked in code, whatever the prompt says
+            return ToolResult(False, f'{name} is off in this public chat. Tools: {", ".join(self.names)}',
+                              f'{name} ปิดในแชตสาธารณะ')
         gated = TOOL_SPECS[name][0]
         if gated and not (allow if allow is not None else self._allowed(name, args)):
             return ToolResult(False, f'the user did not allow {name}. Do not retry the same call; '
@@ -148,15 +160,15 @@ class Toolbox:
 
     def summary(self, name: str, args: dict) -> str:
         if name == 'write_file':
-            return f'เขียนไฟล์ {args.get("path")} ({len(str(args.get("content", "")).encode("utf-8"))} bytes)'
+            return f'write file {args.get("path")} ({len(str(args.get("content", "")).encode("utf-8"))} bytes)'
         if name == 'edit_file':
-            return f'แก้ไฟล์ {args.get("path")}'
+            return f'edit file {args.get("path")}'
         if name == 'run_python':
             return 'run Python:\n' + str(args.get('code', ''))
         if name == 'run_shell':
             return f'run shell: {args.get("command", "")}'
         if name == 'remember':
-            return f'บันทึกลง {args.get("file") or "Memory.md"}: {args.get("fact", "")}'
+            return f'save to {args.get("file") or "Memory.md"}: {args.get("fact", "")}'
         return name
 
     def _allowed(self, name: str, args: dict) -> bool:
@@ -208,6 +220,14 @@ class Toolbox:
         return ToolResult(True, '\n'.join(lines) or '(empty)', f'พบ {nfiles} ไฟล์ {ndirs} โฟลเดอร์')
 
     def _t_read_file(self, path: str, start: int = 1, lines: int = 200) -> ToolResult:
+        base = os.path.basename(str(path or ''))
+        if base in ('User.md', 'Memory.md', 'Knowledge.md') and not (self.ws.root / str(path)).exists():
+            # the small model sometimes looks for its memory files in the workspace; they live in the memory folder
+            from . import memory as M
+            mp = (Path(self.home).expanduser() if self.home else M.default_home()) / base
+            text = mp.read_text(encoding='utf-8') if mp.is_file() else '(empty)'
+            return ToolResult(True, f'{base} (memory file, already in your system prompt):\n{text[:4000]}',
+                              f'{base} อยู่ใน memory แล้ว')
         p = self.ws.resolve(path)
         if p.is_dir():
             raise IsADirectoryError(21, 'is a folder', str(path))
@@ -334,6 +354,17 @@ class Toolbox:
         return self._chat_tool('_units', query)
 
     # ------------------------------------------------------------------------------------------- memory
+    def _t_add_knowledge(self, text: str) -> ToolResult:
+        from . import knowledge as K
+        try:
+            e = K.add(self.home, self.sender, text)
+        except K.Refused as ex:
+            return ToolResult(False, f'not stored: {ex}', 'ไม่รับ: ' + str(ex)[:60])
+        if e['duplicate']:
+            return ToolResult(True, f"already in the inbox as {e['id']} ({e['status']})", f"มีอยู่แล้ว {e['id']}")
+        return ToolResult(True, f"stored in Knowledge-inbox.md as {e['id']} (pending fact check; not used until verified)",
+                          f"ส่งเข้า inbox แล้ว {e['id']} รอตรวจ")
+
     def _t_remember(self, fact: str, file: str = 'Memory.md') -> ToolResult:
         target = 'User.md' if str(file or '').strip().lower() in ('user.md', 'user') else (
             'Memory.md' if str(file or '').strip().lower() in ('memory.md', 'memory', '') else str(file))

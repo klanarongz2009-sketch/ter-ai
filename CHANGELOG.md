@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.18.0-rc1 (2026-11-07)
+
+Release candidate. Tagentic1, the TER-AI thinking + agentic model, is released for the first time, as a **beta**, together with a Telegram bot that anyone can run with their own bot token. The other parts are unchanged since v0.18.0-beta1. The browser demo is unchanged.
+
+### Added
+- `terai tagentic telegram`: Tagentic1 as a Telegram bot (`src/terai_router/tagentic/telegram.py`). Token from `TAGENTIC_TG_TOKEN` or a file you name, never logged. Owner chats get the full model with Allow / Deny buttons for writes and runs; every other chat and every group gets a public mode with per-chat limits (6 messages and 10 `/add` per hour by default, one message at a time, public queue of 2), editable without a restart and closable with `"open": false`. Groups only get answers to commands, mentions and replies. Commands: `/start`, `/help`, `/add`, `/reset`, `/approve`, `/deny`. The log keeps chat ids, sizes and timings, not message text. Setup guide: [docs/TAGENTIC_TELEGRAM.md](docs/TAGENTIC_TELEGRAM.md).
+- Every text the bot writes itself is English and starts with `[System]`; the model's replies are sent as written, with no header and no timing line.
+- `Knowledge.md` and `Knowledge-inbox.md` (`terai_router.tagentic.knowledge`): shared knowledge that anyone can propose with the `add_knowledge` tool or `/add`; entries are used only after a fact check against a real source. Secrets, phone numbers, card numbers, email addresses and texts over 1000 characters are refused.
+- `--public` mode for Tagentic1, restricted in code: no `User.md` or `Memory.md`, only the calculator, datetime, units and add_knowledge tools, separate sessions folder.
+- [Tagentic telegram bot community](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-telegram-bot-community) on GitHub Discussions for questions, bug reports and ideas. The automated support bot Teemate may answer first; it is not the maintainer.
+
+### Changed
+- Tagentic1 greets with a short line and treats `User.md` as the user's own file.
+- Permission summaries for writes, edits and memory saves are English.
+- Package version `0.18.0rc1` (PEP 440), matching the tag `v0.18.0-rc1`.
+
+### Notes
+- Tagentic1 is a beta: it runs on Gemma 4 E2B (not trained by TER-AI), answers can be wrong, and on an 8-vCPU machine without GPU the first reply after a model load takes about 1 to 3 minutes.
+- New files (`telegram.py`, `knowledge.py` and their tests) are under the TER-AI License 1.0 (`LicenseRef-TER-AI-1.0`). Files released up to v0.17.0 stay MIT.
+
 ## v0.18.0-beta1 (2026-11-01)
 
 Beta 1 refreshes the complete browser demo and updates its release identity. Existing demos and component behavior are preserved; this is a presentation, accessibility, and documentation release, not a new model or benchmark claim.

@@ -102,7 +102,16 @@ class Tagentic:
         self.last: Optional[RunResult] = None
 
     def system_prompt(self) -> str:
-        files = self.files if self.files is not None else M.load_memory(self.home)
+        public = bool(getattr(self.tools, 'public', False))
+        files = self.files if self.files is not None else M.load_memory(self.home, public=public)
+        if public:   # drop owner annotations such as "(Bogus 2026-11-06)" from the shared prompt files
+            return (re.sub(r'\s*\(Bogus \d{4}-\d{2}-\d{2}\)', '', M.system_text(files))
+                    + '\n\n===== public chat =====\n'
+                    + 'This chat is a member of the public on Telegram, not the owner. You have no User.md, no Memory.md '
+                    + 'and no workspace here: file, code, shell and remember tools are off. Do not guess who the user is. '
+                    + 'Answer general questions from Knowledge.md first, then from your own knowledge. '
+                    + 'If the user gives you information to add, call add_knowledge (it waits for a fact check).\n'
+                    + 'tools (exact names and arguments):\n' + self.tools.describe())
         return (M.system_text(files)
                 + '\n\n' + workspace_context(self.tools.ws)
                 + f'\n\n===== workspace =====\nroot: {self.tools.ws.root}\n'
