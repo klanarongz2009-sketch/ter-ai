@@ -2,37 +2,26 @@
 
 [Thai version](README.th.md)
 
-> **Limited-time trial: TERM AI, the original Terminal AI, is back until 2027-01-01 00:00:00 Asia/Bangkok (UTC+7).** Try it with `terai term` ([v0.14.0](https://github.com/klanarongz2009-sketch/ter-ai/releases/tag/v0.14.0), [announcement](https://github.com/klanarongz2009-sketch/ter-ai/issues/6)). At that moment it stops running and is removed from the repository. [Details](#term-ai-the-original-terminal-ai-limited-time-trial-v0140)
+An offline-first Thai AI toolkit. Start with the typo-tolerant intent router: give it one Thai or Thai-English message and it returns one of 15 intents.
 
-TER-AI is an independent, AI-assisted applied R&D project for Thai-language AI systems. Its scope includes a typo-tolerant Thai intent router, local CPU-first chat and vision, Thai speech, SVG-based graphics, and audio and music tools. It combines project-built components with existing models; it does not claim to train its own foundation model. The project includes reproducible internal evaluations, explicit model/data licensing, and a public project-continuity notice.
+**Router:** 1.1 MB · CPU · no runtime dependencies · works offline
 
-Offline scope: the intent router, the rule chat, TERM AI and the SANKPUP offline generator run on CPU with no network connection. TTH (Wayu-Paxa-TTS-Edge, and since v0.17.0 the opt-in engine TTH-MTL on OmniVoice, about 3.3 GB), TERAI1 (beta), the unreleased TERAI1SML text-only prototype on current `main`, and SANKPUP "gemma" (Gemma 4 E2B on llama-cpp-python), MUML 1.0 HIQ (ACE-Step 1.5, YuE2-3B) and the MuML 1.0 network weights run locally on CPU after a one-time download. TTH-MTL also downloads Whisper large-v3-turbo (about 1.6 GB) if you give `--ref-audio` without `--ref-text`; once cached it needs no network (`HF_HUB_OFFLINE=1` skips the Hugging Face update check, which sends the model name only). Online paths, all optional: the TTH fallback edge-tts sends the text to Microsoft, `terai chat --web` and the demo's web switch send the question to Wikipedia, and the Temmo demo tab (prototype, not released) calls online model providers with your own API key (BYOK). Made with Sesame.
+[Try the web demo](https://klanarongz2009-sketch.github.io/ter-ai/) · [Browse the repository](https://github.com/klanarongz2009-sketch/ter-ai)
 
-What is in the latest release (v0.18.0-rc2, release candidate: Tagentic1 beta with its Telegram bot; rc2 fixes `/add` from the command menu; the parts below are unchanged since v0.18.0-beta1):
+```console
+$ python examples/basic.py
+เส็ดหรือยัง               -> status    1.00  normalized: เสร็จหรือยัง
+```
 
-| Part | What it does | Since |
-|---|---|---|
-| Intent router | Reads one Thai or Thai-English message, fixes common typos and returns one of 15 intents with a confidence score. 1.1 MB model, no dependencies. | v0.7.0 |
-| Chat | Thai chat on your own CPU, with no network connection unless web search is switched on. Since v0.16.0 the replies can be written by local **TERAI1** (beta, Gemma 4 E2B); the old rules (calculator, date and time, unit conversion, memory, the bundled Thai Wikipedia pack) are its tools, every fact names its source, and it says "I don't know" when no source has the answer. It can also read images (`terai chat --image`). Without the model it falls back to the rule chat. Optional Wikipedia web search since v0.9.0. TERAI1SML is an unreleased prototype in the source tree, not a released part of v0.18.0-rc2. | v0.8.0 (model v0.16.0) |
-| TTH | Reads Thai aloud with a local open-weight voice model (Wayu-Paxa-TTS-Edge), with edge-tts as an online fallback. Since v0.17.0 the opt-in engine TTH-MTL (local OmniVoice, weights non-commercial) also speaks other languages and can clone a voice; not benchmarked yet. All optional. | v0.10.0 (TTH-MTL v0.17.0) |
-| SANKPUP | Makes pictures by writing SVG code (local Gemma 4 or a built-in offline generator), sanitizes it and renders PNG or JPG. Not an image model. | v0.11.0 |
-| MuML 1.0 WA | Writes and plays music in the browser from a Thai or English prompt. Since v0.15.0 the notes come from the trained MuML 1.0 network (3.3M-parameter transformer, int8 weights 3.4 MB, run in JavaScript); Markov v1 is the fallback. Every sound is made by the Web Audio API. | v0.12.0, network v0.15.0 |
-| MUML 1.0 HIQ | Text-to-music audio (.mp3/.wav) on CPU from a Thai or English prompt, with optional lyrics. ACE-Step 1.5 for instrumentals and English songs, YuE2-3B for Thai lyrics; weights download once with `--setup`. Slow on CPU, Thai lyrics only partly intelligible. | v0.13.0 |
-| Tagentic1 (beta, release candidate) | Local thinking + agentic model on Gemma 4 E2B: thinks in short lines, uses tools, reads and edits files in a workspace, asks before writes and runs. Runs as a Telegram bot with your own bot token (`terai tagentic telegram`): owner chats get the full model, everyone else gets a public mode limited in code. Shared `Knowledge.md` that anyone can add to with `/add`, used only after a fact check. Beta: answers can be wrong; slow on CPU. [Telegram setup](docs/TAGENTIC_TELEGRAM.md) · [Community](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-telegram-bot-community) ([Q&A](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-bot-q-a), [bug reports](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-bot-bug-reports), [ideas](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-bot-ideas)) | v0.18.0-rc1 |
-| TERM AI (limited-time trial) | The original Terminal AI that TER-AI grew from: a Thai terminal chatbot made of rules plus the first own model, TER-AI-0.5. Offline, no dependencies. **Trial: stops working at 2027-01-01 00:00:00 Asia/Bangkok (UTC+7) and will be removed from the repository then.** | v0.14.0 |
+This example was run against the current source. To install the package and try the CLI, use Python 3.11 or newer:
 
-TERAI1CIBETA is an unreleased v0.1 prototype (in the source tree, not a released part of v0.18.0-rc2): a local, read-only defensive mode for authorized source-code review and user-provided log/alert triage, using TERAI1’s existing Gemma base. Its name is the owner’s wordplay `CIBER + BETA → CIBETA`; it is not a separately trained foundation model. See [prototype scope and limitations](docs/TERAI1CIBETA.md). It has no cyber-specific model evaluation yet.
+```bash
+pip install git+https://github.com/klanarongz2009-sketch/ter-ai.git
+```
 
-Live demo: https://klanarongz2009-sketch.github.io/ter-ai/ · Repository: https://github.com/klanarongz2009-sketch/ter-ai · Wiki: https://github.com/klanarongz2009-sketch/ter-ai/wiki
-
-Licenses differ by part: the code is MIT, but some data and optional models are not. Check the [license table](#license) before commercial use.
+The wider project also includes local chat, Thai speech, SVG graphics and music tools; some optional components download models or use online services. See the sections below for exact offline scope, current release status, model/data licenses and limitations. Code and optional model/data licenses differ; check the [license table](#license) before commercial use.
 
 > **Project notice:** TER-AI is an indie project and may pause or close with little warning. Read the [project notice](PROJECT_NOTICE.md).
-
-```
-$ terai "เส็ดหรือยัง"
-status  1.00  เสร็จหรือยัง
-```
 
 ## Versions: repository and models
 
