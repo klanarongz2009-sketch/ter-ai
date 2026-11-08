@@ -37,7 +37,7 @@ ME = '(?:ผม|ฉัน|หนู|เรา|ดิฉัน|กู|เค้�
 Q = re.compile('อะไร|ไหน|เท่าไร|เท่าไหร่|กี่|ไหม|มั้ย|หรือเปล่า|รึเปล่า|ยังไง|อย่างไร|ทำไม|ใคร|เมื่อไร|เมื่อไหร่|\\?|'
                '(?:^| )(?:what|who|where|when|how|which)(?: |$)|^(?:is|are|do|does|can) ')
 END = re.compile('(?: *(?:ครับ|คับ|ค่ะ|คะ|ค่า|จ้า|จ้ะ|จ๊ะ|นะ|น่ะ|ล่ะ|หล่ะ|เลย|แหละ|ด้วย|มากๆ|มาก ๆ|มาก|ที่สุด))+$')
-NAME_END = re.compile('(?: *(?:ครับ|คับ|ค่ะ|คะ|ค่า|จ้า|จ้ะ|จ๊ะ|นะครับ|นะคะ|นะค่ะ| นะ))+$')
+NAME_ENDINGS = ('นะครับ', 'นะคะ', 'นะค่ะ', 'ครับ', 'คับ', 'ค่ะ', 'คะ', 'ค่า', 'จ้า', 'จ้ะ', 'จ๊ะ')
 DAY_WORDS = [('มะรืนนี้', 2), ('มะรืน', 2), ('พรุ่งนี้', 1), ('วันนี้', 0), ('คืนนี้', 0), ('เย็นนี้', 0),
              ('เช้านี้', 0), ('บ่ายนี้', 0), ('เมื่อวานซืน', -2), ('เมื่อวาน', -1)]
 WEEKDAY_RE = re.compile('วัน(จันทร์|อังคาร|พุธ|พฤหัสบดี|พฤหัส|ศุกร์|เสาร์|อาทิตย์)')
@@ -60,8 +60,21 @@ def _clean(v):
 
 
 def _clean_name(v):
-    v = NAME_END.sub('', v.strip()).strip()
-    return v.strip(' "\'“”.,!')
+    v = v.strip()
+    end = len(v)
+    while end:
+        for ending in NAME_ENDINGS:
+            if end >= len(ending) and v.endswith(ending, 0, end):
+                end -= len(ending)
+                break
+        else:
+            if end >= 3 and v[end - 2:end] == 'นะ' and v[end - 3] == ' ':
+                end -= 2
+            else:
+                break
+        while end and v[end - 1] == ' ':
+            end -= 1
+    return v[:end].strip().strip(' "\'“”.,!')
 
 
 def _parse_now(now):

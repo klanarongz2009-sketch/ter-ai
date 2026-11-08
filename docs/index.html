@@ -1018,7 +1018,7 @@ EXAMPLES.forEach(([x, en]) => exampleChip('chips', x, en, t => { $('in').value =
   const Q = R('อะไร|ไหน|เท่าไร|เท่าไหร่|กี่|ไหม|มั้ย|หรือเปล่า|รึเปล่า|ยังไง|อย่างไร|ทำไม|ใคร|เมื่อไร|เมื่อไหร่|\\?|' +
     '(?:^| )(?:what|who|where|when|how|which)(?: |$)|^(?:is|are|do|does|can) ');
   const END = R('(?: *(?:ครับ|คับ|ค่ะ|คะ|ค่า|จ้า|จ้ะ|จ๊ะ|นะ|น่ะ|ล่ะ|หล่ะ|เลย|แหละ|ด้วย|มากๆ|มาก ๆ|มาก|ที่สุด))+$');
-  const NAME_END = R('(?: *(?:ครับ|คับ|ค่ะ|คะ|ค่า|จ้า|จ้ะ|จ๊ะ|นะครับ|นะคะ|นะค่ะ| นะ))+$');
+  const NAME_ENDINGS = ['นะครับ', 'นะคะ', 'นะค่ะ', 'ครับ', 'คับ', 'ค่ะ', 'คะ', 'ค่า', 'จ้า', 'จ้ะ', 'จ๊ะ'];
   const DAY_WORDS = [['มะรืนนี้', 2], ['มะรืน', 2], ['พรุ่งนี้', 1], ['วันนี้', 0], ['คืนนี้', 0], ['เย็นนี้', 0],
     ['เช้านี้', 0], ['บ่ายนี้', 0], ['เมื่อวานซืน', -2], ['เมื่อวาน', -1]];
   const WEEKDAY_RE = R('วัน(จันทร์|อังคาร|พุธ|พฤหัสบดี|พฤหัส|ศุกร์|เสาร์|อาทิตย์)');
@@ -1032,7 +1032,18 @@ EXAMPLES.forEach(([x, en]) => exampleChip('chips', x, en, t => { $('in').value =
 
   const call = name => 'คุณ' + (/^[\u0E00-\u0E7F]/.test(name) ? '' : ' ') + name;
   const clean = v => strip(v.trim().replace(END, '').trim(), ' "\'“”.,!');
-  const cleanName = v => strip(v.trim().replace(NAME_END, '').trim(), ' "\'“”.,!');
+  function cleanName(v) {
+    v = v.trim();
+    let end = v.length;
+    while (end) {
+      const ending = NAME_ENDINGS.find(x => end >= x.length && v.startsWith(x, end - x.length));
+      if (ending) end -= ending.length;
+      else if (end >= 3 && v.slice(end - 2, end) === 'นะ' && v[end - 3] === ' ') end -= 2;
+      else break;
+      while (end && v[end - 1] === ' ') end--;
+    }
+    return strip(v.slice(0, end).trim(), ' "\'“”.,!');
+  }
 
   function parseNow(now) {
     if (now == null) {

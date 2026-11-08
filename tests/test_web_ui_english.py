@@ -9,3 +9,11 @@ def test_web_ui_is_english_only():
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     assert mod.check() == []
+
+
+def test_thai_literal_handles_escaped_quotes():
+    path = Path(__file__).resolve().parent.parent / 'eval' / 'check_web_ui_english.py'
+    spec = importlib.util.spec_from_file_location('check_web_ui_english', path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    assert mod.THAI_LITERAL.search(r'"English \" quote ไทย"')
