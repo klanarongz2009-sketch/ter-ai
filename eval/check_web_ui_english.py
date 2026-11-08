@@ -40,7 +40,7 @@ ALLOWED_TEMPLATE = [
 
 # JS that builds UI: any Thai literal on a line that writes to the page is UI text.
 UI_CALL = re.compile(r"(\blog\(|innerHTML|textContent|\bbtn\(|\btext\(|placeholder|\.title\s*=|alert\(|confirm\(|prompt\()")
-THAI_LITERAL = re.compile(r"(['\"`])((?:\\.|(?!\1).)*?[\u0e00-\u0e7f](?:\\.|(?!\1).)*?)\1")
+THAI_LITERAL = re.compile(r"(['\"`])((?:\\.|(?!\1)[^\\])*?[\u0e00-\u0e7f](?:\\.|(?!\1)[^\\])*?)\1")
 UI_JS = ['temmo/temmo.js', 'temmo/community.js', 'temmo/engine.js', 'chat.js', 'tth.js',
          'sankpup.js', 'muml_wa.js', 'terai.js']
 

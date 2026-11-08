@@ -4,7 +4,7 @@ import re
 import pytest
 
 from terai_router import Chat
-from terai_router.chat import GREETINGS, NO_PENDING
+from terai_router.chat import GREETINGS, NO_PENDING, _clean_name
 from terai_router.cli import main
 
 NOW = '2026-10-16T16:40:00'
@@ -75,6 +75,11 @@ def test_memory_facts_and_recall():
     assert '19' in c.reply('ผมอายุเท่าไร')
     f = c.facts
     assert f['name'] == 'บอส' and f['likes'] == ['แมว'] and f['age'] == '19'
+
+
+def test_clean_name_strips_repeated_polite_endings():
+    assert _clean_name('บอส ครับค่ะ นะ คะ') == 'บอส'
+    assert _clean_name('บอส ' + 'นะคะ ' * 1000) == 'บอส'
 
 
 def test_grade_fact_bug_c():
