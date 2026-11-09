@@ -18,7 +18,7 @@
 - รันในเครื่องบน Gemma 4 E2B ซึ่งเป็น open model ที่ใช้เป็นฐาน ผ่าน llama-cpp-python บน CPU ไม่ต้องต่อเน็ตหลังโหลด weights ครั้งแรก TER-AI ไม่ได้ฝึกโมเดลนี้เอง
 - ใช้ personal memory 5 ไฟล์ คือ User.md, Systemprompt.md, Memory.md, Knowledge.md และ Systemskill.md ซึ่งมีสกิล ai-memory-continuity; แยกจาก workspace context: Userprompt.md, Project.md, Agent.md และโฟลเดอร์ Docs/, Project/, Log/
 - Knowledge.md คือความรู้กลางที่ Fact checker ตรวจกับแหล่งอ้างอิงจริงแล้ว ทุกคนส่งข้อมูลเพิ่มได้ผ่าน add_knowledge หรือคำสั่ง /add ใน Telegram ข้อมูลจะเข้า Knowledge-inbox.md ก่อน และใช้ตอบได้หลังตรวจผ่านเท่านั้น
-- สถานะตอนนี้คือ beta เป็น release candidate (v0.18.0-rc1) และยังอยู่ระหว่างปรับปรุง
+- สถานะตอนนี้คือ beta ใน stable release v0.18.0 และยังอยู่ระหว่างปรับปรุง
 
 ## การทักและการคุย
 

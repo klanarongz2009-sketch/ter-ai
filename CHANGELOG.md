@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+## v0.18.0 (2026-11-09)
+
+Stable release, promoting v0.18.0-rc2. Tagentic1 and its Telegram bot remain beta; this release makes no new benchmark or model-quality claims.
+
+### Added
+- Tagentic1 as a beta local agent and Telegram bot, with owner-only approval for writes, a restricted public mode, and a fact-checked shared knowledge inbox.
+- GitHub Discussions categories for Tagentic bot questions, bug reports and ideas, with posting templates.
+
+### Fixed
+- Telegram `/add` now accepts a follow-up message when chosen from the command menu; `/cancel` ends the pending entry.
+- Avoid pathological regex backtracking when stripping repeated Thai name suffixes.
+
+### Changed
+- Package version `0.18.0`, matching the `v0.18.0` release tag.
+- Refresh the dependency lock; optional Pillow is now 13.0.0.
+
 ## v0.18.0-rc2 (2026-11-07)
 
 Release candidate. Fixes `/add` in the Tagentic1 Telegram bot when it is tapped in the command menu. Everything else is unchanged since v0.18.0-rc1.
