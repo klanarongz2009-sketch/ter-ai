@@ -1,3 +1,5 @@
+import pytest
+
 from terai_router.normalizer import fold, normalize, skeleton
 
 
@@ -27,3 +29,31 @@ def test_fold_digits_and_space():
 def test_skeleton_merges_same_sound():
     assert skeleton('หน่อย') == skeleton('น้อย')
     assert skeleton('ได้') == skeleton('ใด้')
+
+
+SAFE_PAIR_CASES = [
+    # (typo, correct, sentence containing the correct word)
+    ("คุน", "คุณ", "ขอบคุณมาก"),
+    ("พาษา", "ภาษา", "ฉันเรียนภาษาไทย"),
+    ("ฟาย", "ไฟล์", "ส่งไฟล์ให้หน่อย"),
+    ("เพ่อม", "เพิ่ม", "เพิ่มข้อมูลใหม่"),
+    ("ระว่าง", "ระหว่าง", "ระหว่างทางมีร้านอาหาร"),
+    ("บกว่า", "บอกว่า", "เขาบอกว่าไม่มา"),
+    ("จิง", "จริง", "เรื่องนี้จริงหรือเปล่า"),
+    ("รับสราบ", "รับทราบ", "รับทราบครับ"),
+    ("มนุด", "มนุษย์", "มนุษย์ทุกคนเท่าเทียมกัน"),
+    ("ขอโทด", "ขอโทษ", "ขอโทษที่มาช้า"),
+    ("อังกฤศ", "อังกฤษ", "เขาอยู่ประเทศอังกฤษ"),
+    ("ใหน", "ไหน", "ไปไหนมา"),
+]
+
+
+@pytest.mark.parametrize("typo, correct, sentence", SAFE_PAIR_CASES)
+def test_safe_pair_is_fixed(typo, correct, sentence):
+    assert normalize(typo) == correct
+
+
+@pytest.mark.parametrize("typo, correct, sentence", SAFE_PAIR_CASES)
+def test_safe_pair_correct_word_left_unchanged(typo, correct, sentence):
+    assert correct in sentence
+    assert normalize(sentence) == sentence
