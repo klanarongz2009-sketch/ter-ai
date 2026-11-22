@@ -1,6 +1,6 @@
 # Tagentic1 on Telegram: set up your own bot
 
-Tagentic1 remains a **beta** in the stable v0.18.3 package. `terai tagentic telegram` runs it as a Telegram bot with a bot token that you create. Everything runs on your own machine; there is no hosted service and nothing to pay.
+Tagentic1 remains a **beta** in the stable v0.18.3 package. [PROJECT_NOTICE.md](../PROJECT_NOTICE.md) lists a maintainer-hosted public bot, [@Terai_F0_bot](https://t.me/Terai_F0_bot), that users can try; the project does not guarantee its availability. This guide covers running your own separate bot on a machine you control, using a bot token you create.
 
 Community: the **Tagentic telegram bot community** section on GitHub Discussions, with four categories:
 
@@ -127,4 +127,4 @@ Every text the bot writes itself is English and starts with `[System]`, for exam
 
 ## License
 
-`src/terai_router/tagentic/telegram.py`, `knowledge.py`, `verbatim.py`, their tests, and the three Tagentic discussion-form YAML files are under the TER-AI License 1.0 (`SPDX-License-Identifier: LicenseRef-TER-AI-1.0`; see the archived [TER-AI License 1.0](../LICENSE-TER-AI-1.0.md)). Their existing markers remain version 1.0; the current [TER-AI License 2.0](../LICENSE-TER-AI.md) does not replace them. These files may be used commercially and for AI training, with credit to "TER-AI (klanarongz2009-sketch)".
+`src/terai_router/tagentic/telegram.py`, `knowledge.py`, `verbatim.py`, their tests, and the three Tagentic discussion-form YAML files are under the TER-AI License 1.0 (`SPDX-License-Identifier: LicenseRef-TER-AI-1.0`; see [LICENSE-TER-AI.md](../LICENSE-TER-AI.md)). These files may be used commercially and for AI training, with credit to "TER-AI (klanarongz2009-sketch)".

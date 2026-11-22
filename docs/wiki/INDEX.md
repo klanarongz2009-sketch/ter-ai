@@ -1,6 +1,6 @@
 # TER-AI Wiki migration index
 
-This directory accounts for all 20 pages from the former GitHub Wiki and adds a current license guide. Unique historical or standalone content is preserved here; pages already covered by maintained project documentation are concise pointers to that canonical source. The live Wiki is also being changed to link to these files.
+This directory accounts for all 20 pages from the former GitHub Wiki. Unique historical or standalone content is preserved here; pages already covered by maintained project documentation are concise pointers to that canonical source. The live Wiki is also being changed to link to these files.
 
 Current project state: [README](../../README.md) · [Changelog](../../CHANGELOG.md) · [TER-AI 2.9 proposal](../TERAI2.9_ROADMAP.md). Historical pages are labeled as such; do not treat old version, workflow, or roadmap statements as current.
 
@@ -21,12 +21,11 @@ Current project state: [README](../../README.md) · [Changelog](../../CHANGELOG.
 | [`Knowledge-Pack.md`](https://github.com/klanarongz2009-sketch/ter-ai/wiki/Knowledge-Pack) | [KNOWLEDGE_PACK.md](KNOWLEDGE_PACK.md) | historical knowledge-pack metadata |
 | [`MuML.md`](https://github.com/klanarongz2009-sketch/ter-ai/wiki/MuML) | [MUML.md](MUML.md) | README + MUML docs |
 | [`SANKPUP.md`](https://github.com/klanarongz2009-sketch/ter-ai/wiki/SANKPUP) | [SANKPUP.md](SANKPUP.md) | README SANKPUP |
-| [`TERM-AI.md`](https://github.com/klanarongz2009-sketch/ter-ai/wiki/TERM-AI) | [TERM_AI.md](TERM_AI.md) | TERM-AI.md |
+| [`TERM-AI.md`](https://github.com/klanarongz2009-sketch/ter-ai/wiki/TERM-AI) | [TERM_AI.md](TERM_AI.md) | [current trial guide](../TERM-AI.md); stable sunset link plan in [TERM_AI.md](TERM_AI.md#sunset-sequence) |
 | [`TTH.md`](https://github.com/klanarongz2009-sketch/ter-ai/wiki/TTH) | [TTH.md](TTH.md) | README TTH |
 | [`Tagentic1.md`](https://github.com/klanarongz2009-sketch/ter-ai/wiki/Tagentic1) | [TAGENTIC1.md](TAGENTIC1.md) | Tagentic docs |
 | `_Sidebar.md` | [INDEX.md](INDEX.md) | navigation mapped here |
 | `_Footer.md` | [INDEX.md](INDEX.md) | footer mapped here |
-| `License.md` (new) | [LICENSE.md](LICENSE.md) | current TER-AI License 2.0 and archived 1.0 text |
 
 ## How to use this index
 

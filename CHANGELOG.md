@@ -2,9 +2,6 @@
 
 ## Unreleased
 
-### Changed
-- `LICENSE-TER-AI.md` now contains TER-AI License 2.0 (`LicenseRef-TER-AI-2.0`); the original 1.0 text is preserved verbatim as `LICENSE-TER-AI-1.0.md`. The nine existing 1.0-marked files retain their 1.0 markers and terms; no file is automatically relicensed, and no v2.0 markers are present in this revision.
-
 ## v0.18.3 (2026-11-21)
 
 Patch release on top of v0.18.2. Tagentic1 is still a beta. Fixes issue #18.

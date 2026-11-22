@@ -59,7 +59,7 @@ Typo fixes live in `src/terai_router/data/typo_pairs.json`.
 
 1. Fork the repository and create a branch from `main`.
 2. Keep one change per pull request, with a test when you change behaviour.
-3. Write public text (code comments, docs, commit messages) in English. Thai examples are welcome in tests.
+3. Write public text (code comments, docs, commit messages) in English by default. Translated versions of project documentation (for example, `README.th.md`) may use their target language; the English version remains canonical unless the project says otherwise. Thai examples are welcome in tests.
 4. Open the pull request against `main` and say what you changed and how you tested it.
 5. Releases and version numbers are handled by the maintainer.
 
