@@ -34,7 +34,7 @@ _noticed: set[str] = set()
 def message(component: str) -> str:
     name = COMPONENTS[component]
     date = EOS_DATES[component]
-    extra = (" Other repositories may continue or fine-tune it (code MIT; model weights keep their own licenses)."
+    extra = (" Anyone's repositories, individuals or companies, may continue or fine-tune it (code MIT; model weights keep their own licenses)."
              if component == "tth" else "")
     return (f"{name} is deprecated and reaches end of service on {date}: {REASON}.{extra} "
             f"It may be removed from main on or after that date; pin a TER-AI release tagged before "

@@ -105,5 +105,5 @@ def test_terai_tth_cli_prints_notice(monkeypatch, capsys):
 
 
 def test_tth_message_allows_forks_and_others_do_not():
-    assert "Other repositories may continue or fine-tune it" in deprecations.message("tth")
+    assert "may continue or fine-tune it" in deprecations.message("tth")
     assert "fine-tune" not in deprecations.message("muml")
