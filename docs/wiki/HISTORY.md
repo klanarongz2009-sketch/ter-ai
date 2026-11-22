@@ -56,7 +56,7 @@ TER-AI is maintained by klanarongz2009 ([klanarongz2009-sketch](https://github.c
 | 2026-10-22 04:53 | v0.14.0 | TERM AI, the original Terminal AI, back as a limited-time trial until 2027-01-01 00:00:00 (UTC+7) | tag `v0.14.0` -> `0e2a5e5`, [release](https://github.com/klanarongz2009-sketch/ter-ai/releases/tag/v0.14.0), pinned [issue #6](https://github.com/klanarongz2009-sketch/ter-ai/issues/6) |
 | 2026-10-22 05:57 | v0.15.0 | MuML 1.0 WA writes notes with the trained MuML 1.0 network (Markov v1 only as fallback); model id separate from the repository version | tag `v0.15.0` -> `c416ad2`, [release](https://github.com/klanarongz2009-sketch/ter-ai/releases/tag/v0.15.0) |
 | 2026-10-22 06:26 | v0.16.0 | Model TERAI1BETA: local Gemma 4 writes chat replies with the rules as tools, grounding check, image reading; model ids separate from the repository version, written down in `versions.py` | tag `v0.16.0` -> `36ff01d`, [release](https://github.com/klanarongz2009-sketch/ter-ai/releases/tag/v0.16.0) |
-| 2027-01-01 00:00 (UTC+7) | TERM AI removal (planned) | The trial ends; `terai term` stops running and TERM AI is removed from `main` | [TERM AI](TERM_AI.md) (Removal) |
+| 2027-01-01 00:00 (UTC+7) | TERM AI removal (planned in `trial.py`) | Planned trial end; the implementation plan also names repository removal. Preserve a stable sunset notice at existing guide/index/history entry points before carrying it out. | [TERM AI sunset sequence](TERM_AI.md#sunset-sequence) |
 
 22 milestones in total: 4 before the public repository, 18 from the first public commit on (v0.16.0 included), plus the planned TERM AI removal on 2027-01-01.
 
@@ -234,7 +234,7 @@ Commits [`59239cf`](https://github.com/klanarongz2009-sketch/ter-ai/commit/59239
 - **Time limit.** Fixed end `2027-01-01 00:00:00` at UTC+7. Before it a one-line notice; at and after it a clear message and exit code 3, nothing written; the Python API raises `TrialEnded`. Not added to the web demo (Thai-only replies, English-only demo UI). See [TERM AI](TERM_AI.md).
 - **Validation.** 54 new tests with an injected clock (one microsecond before, exactly at, after, the same instants in UTC and UTC-5, a session crossing midnight). pytest 347 passed, 4 skipped; parity unchanged; frozen 121/124, held-out 111/112. Installed from the tag in a fresh venv: version 0.14.0, `terai term "คำนวณ (12+8)*3"` answered `(12+8)*3 = 60`.
 - **Release.** v0.14.0 on 2026-10-22 04:53 (UTC+7), tag -> `0e2a5e5`; README banner and pinned announcement [issue #6](https://github.com/klanarongz2009-sketch/ter-ai/issues/6) in `147a410` on `main`.
-- **Planned removal.** 2027-01-01 00:00:00 (UTC+7): delete `src/terai_router/term_ai/`, `tests/test_term_ai.py`, `docs/TERM-AI.md` and the mentions listed on [TERM AI](TERM_AI.md); unpin and close issue #6. Old tags stay.
+- **Planned removal.** `trial.py` sets 2027-01-01 00:00:00 (UTC+7) and lists the feature paths and mentions for removal. Before carrying that plan out, follow the [sunset sequence](TERM_AI.md#sunset-sequence): publish the notice first and preserve stable guide, Wiki, index and history links to it. Old tags stay.
 
 ### v0.15.0: MuML 1.0 WA writes with the trained MuML 1.0 network (05:57)
 

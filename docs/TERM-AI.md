@@ -101,25 +101,21 @@ only. There is no web limit to keep in sync.
 Code MIT. `data/model.json` and `data/train_data.json` were written or trained for this
 project: MIT ([DATA_LICENSE](../DATA_LICENSE)). No third-party code, data or weights.
 
-## Removal
+## Removal and sunset sequence
 
-On 2027-01-01 00:00:00 (UTC+7) TERM AI is removed in one commit. Delete:
+The source plan in `src/terai_router/term_ai/trial.py` sets the planned trial end/removal at
+2027-01-01 00:00:00 Asia/Bangkok (UTC+7). Before carrying out the plan, publish a clear
+end-of-trial notice in the README and changelog and update announcement issue #6 before
+unpinning or closing it.
 
-- `src/terai_router/term_ai/` (the whole folder: code and `data/`)
-- `tests/test_term_ai.py`
-- `docs/TERM-AI.md` (this file)
+Keep stable landing content at the old guide and navigation entry points. Replace this detailed
+guide with a short sunset notice at the same path, stating that `terai term` has ended and
+pointing users to `terai chat`. Retain the migrated Wiki page, its Home/sidebar/index links,
+and the History entry as pointers or historical records linked to that notice. GitHub does not
+provide automatic redirects for these Markdown paths, so preserve the landing pages and links.
 
-and take TERM AI out of:
-
-- `src/terai_router/cli.py`: the `if argv and argv[0] == 'term':` branch in `main()` and the
-  `terai term` line in the module docstring
-- `pyproject.toml`: `"term_ai/data/*.json"` in `[tool.setuptools.package-data]`
-- `README.md` and `README.th.md`: the TERM AI row of the release table, the TERM AI section,
-  the top banner, the Development line, the Roadmap line and the license-table mention
-- `CHANGELOG.md`: keep the v0.14.0 entry as history and add a removal entry
-- the wiki: page `TERM-AI`, its `_Sidebar` link, the Home row; keep the History entry
-- GitHub: unpin and close the announcement issue #6
-
-The same lists are in `REMOVAL_PATHS` and `REMOVAL_EDITS` in `trial.py`, and a test checks
-that they exist and that nothing outside `cli.py` imports `term_ai`, so the removal cannot
-break another part. After removing, `pytest` and `python eval/parity.py` must still pass.
+The current `trial.py` removal lists still name this guide and Wiki/navigation pages for deletion.
+Revise those documentation-removal steps before implementation so they preserve the stable notice;
+this guide records the necessary sequence, not a completed removal. The feature code and tests
+remain the paths listed in `trial.py`. After the code removal, run `pytest` and
+`python eval/parity.py` as the source plan specifies.
