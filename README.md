@@ -4,7 +4,7 @@
 
 **An offline Thai intent router in 1.1 MB: it reads one Thai or Thai-English message, fixes common typos, and returns one of 15 intents with a confidence score. CPU only, no runtime dependencies, no network.**
 
-[Try it in the browser](https://klanarongz2009-sketch.github.io/ter-ai/) · [Contributing](CONTRIBUTING.md) · [Good first issues](https://github.com/klanarongz2009-sketch/ter-ai/labels/good%20first%20issue) · [Project wiki on Wikova](https://wikova.com/wiki/EBGZvnu1)
+[Try it in the browser](https://klanarongz2009-sketch.github.io/ter-ai/) · [Documentation index](docs/wiki/INDEX.md) · [Contributing](CONTRIBUTING.md) · [Good first issues](https://github.com/klanarongz2009-sketch/ter-ai/labels/good%20first%20issue) · [Project wiki on Wikova](https://wikova.com/wiki/EBGZvnu1)
 
 <p align="center"><img src="https://raw.githubusercontent.com/klanarongz2009-sketch/ter-ai/main/docs/assets/router-demo.svg" width="760" alt="Terminal: four Thai messages with typos, each classified with intent, confidence and normalized text"></p>
 
