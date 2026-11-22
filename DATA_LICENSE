@@ -1,7 +1,7 @@
 TER-AI data licenses
 ====================
 
-Code in ter-ai is MIT licensed (see LICENSE), except the nine files listed in the README license table and marked `SPDX-License-Identifier: LicenseRef-TER-AI-1.0`, which remain under TER-AI License 1.0 (see the archived LICENSE-TER-AI-1.0.md), and any files explicitly marked or listed under TER-AI License 2.0 (see LICENSE-TER-AI.md). One bundled data file is not:
+Code in ter-ai is MIT licensed (see LICENSE), except the nine files listed in the README license table and marked `SPDX-License-Identifier: LicenseRef-TER-AI-1.0`, which remain under TER-AI License 1.0 (see the archived LICENSE-TER-AI-1.0.md), and any files explicitly marked or listed under TER-AI License 2.0 (see LICENSE-TER-AI.md). The bundled data files below are not:
 
 src/terai_router/data/knowledge_th.json  (TER-AI Thai knowledge pack, v0.8.0)
 docs/knowledge_th.json                   (byte copy of the same pack for the web demo)
@@ -21,6 +21,24 @@ docs/knowledge_th.json                   (byte copy of the same pack for the web
   If you share it or a modified version, keep this attribution and the same license.
   Every answer the Chat class gives from this file ends with the article title and
   "CC BY-SA 4.0" so the source stays visible to the person reading it.
+
+src/terai_router/data/proverbs_th.json  (TERAI1.1 Thai proverb and idiom pack)
+eval/terai11_heldout_v1.json, eval/terai11_dev_v1.json, eval/results/terai11_v1.jsonl
+                                       (TERAI1.1 eval items and results that quote the pack)
+
+  Source:    Thai Wiktionary (https://th.wiktionary.org), pages in the categories
+             หมวดหมู่:สำนวนภาษาไทย and หมวดหมู่:สุภาษิตภาษาไทย, retrieved 2026-11-22.
+  Authors:   Wiktionary contributors. The authors of each entry are listed in its page
+             history: https://th.wiktionary.org/?curid=<pageid> (pageid and revid of every
+             entry are stored in the file).
+  License:   Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+             https://creativecommons.org/licenses/by-sa/4.0/
+  Changes:   Only the Thai-language section kept; wiki markup, templates and references
+             removed; up to four definitions and two examples per entry. Built by
+             training/build_proverbs.py. Eval files reuse the definitions as answer options.
+
+  These files, as adaptations of Wiktionary text, are distributed under CC BY-SA 4.0.
+  TERAI1.1 answers taken from the pack end with the entry title, a link and "CC BY-SA 4.0".
 
 docs/muml-1.0-int8.bin                     (MuML 1.0 network weights for MuML 1.0 WA, since v0.15.0)
 

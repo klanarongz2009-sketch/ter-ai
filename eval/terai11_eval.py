@@ -1,0 +1,127 @@
+# SPDX-License-Identifier: LicenseRef-TER-AI-2.0
+"""Evaluate TERAI1 (baseline) vs TERAI1.1 on the frozen set eval/terai11_heldout_v1.json.
+
+Both arms use the same local Gemma 4 E2B GGUF through ``LocalLM`` (temperature 0 for questions, seed 0).
+Results are appended to a JSONL file so an interrupted run resumes. Summary: ``--summary``.
+
+  python eval/terai11_eval.py --arm terai1 --part proverbs --out eval/results/terai11_v1.jsonl
+  python eval/terai11_eval.py --arm terai11 --part essays --limit 10 --out ...
+  python eval/terai11_eval.py --summary eval/results/terai11_v1.jsonl
+"""
+from __future__ import annotations
+
+import argparse
+import collections
+import hashlib
+import json
+import sys
+import time
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+from terai_router.terai11 import Terai11, check_essay, mcq_prompt, parse_choice, rubric  # noqa: E402
+
+SET = ROOT / "eval" / "terai11_heldout_v1.json"
+
+
+def real_fake_prompt(phrase: str) -> str:
+    return f"วลี «{phrase}» เป็นสำนวนหรือสุภาษิตไทยที่มีอยู่จริงหรือไม่ ตอบคำเดียว: จริง หรือ ไม่จริง"
+
+
+def essay_prompt(item: dict) -> str:
+    return (f"เขียนเรียงความภาษาไทยหัวข้อ «{item['topic']}» {item['instruction']} "
+            "ความยาวประมาณ 200-300 คำ")
+
+
+def run(args) -> int:
+    from terai_router.brain.local import LocalLM
+
+    data = json.loads(SET.read_text(encoding="utf-8"))
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    done = set()
+    if out.exists():
+        for line in out.read_text(encoding="utf-8").splitlines():
+            r = json.loads(line)
+            done.add((r["arm"], r["part"], r["idx"]))
+    lm = LocalLM(model="e2b", auto_download=False)
+    t11 = Terai11(lm)
+    sha = hashlib.sha256(SET.read_bytes()).hexdigest()
+    items = data["proverb_items"] if args.part == "proverbs" else data["essays"]
+    if args.limit:
+        items = items[:args.limit]
+    for idx, it in enumerate(items):
+        if (args.arm, args.part, idx) in done:
+            continue
+        t0 = time.time()
+        rec = {"arm": args.arm, "part": args.part, "idx": idx, "set_sha256": sha}
+        if args.part == "proverbs":
+            rec["kind"] = it["kind"]
+            if it["kind"] == "real_or_fake":
+                if args.arm == "terai11":
+                    pred = "real" if t11.is_known(it["phrase"]) else "fake"
+                    rec["reply"] = "(pack lookup)"
+                else:
+                    reply = lm.chat([{"role": "user", "content": real_fake_prompt(it["phrase"])}], max_tokens=6,
+                                    temperature=0.0, seed=0)
+                    pred = "fake" if "ไม่" in reply else ("real" if "จริง" in reply else None)
+                    rec["reply"] = reply
+                rec["pred"], rec["correct"] = pred, pred == it["answer"]
+            else:
+                if args.arm == "terai11":
+                    pred = t11.answer_choice(it["question"], it["options"])
+                else:
+                    reply = lm.chat([{"role": "user", "content": mcq_prompt(it["question"], it["options"])}],
+                                    max_tokens=8, temperature=0.0, seed=0)
+                    pred = parse_choice(reply, len(it["options"]))
+                    rec["reply"] = reply
+                rec["pred"], rec["correct"] = pred, pred == it["answer"]
+        else:
+            if args.arm == "terai11":
+                res = t11.essay(it["topic"])
+                text, rec["proverb"], rec["revised"] = res["text"], res["proverb"], res["revised"]
+            else:
+                text = lm.chat([{"role": "user", "content": essay_prompt(it)}], max_tokens=650, temperature=0.3,
+                               seed=0)
+            rec["text"] = text
+            rec["rubric"] = rubric(text, None)
+            rec["score"] = sum(rec["rubric"].values())
+        rec["seconds"] = round(time.time() - t0, 1)
+        with out.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+        print(args.arm, args.part, idx, rec.get("correct", rec.get("score")), rec["seconds"], flush=True)
+    return 0
+
+
+def summary(path: str) -> int:
+    rows = [json.loads(x) for x in Path(path).read_text(encoding="utf-8").splitlines()]
+    agg = collections.defaultdict(lambda: [0, 0])
+    crit = collections.defaultdict(lambda: [0, 0])
+    for r in rows:
+        if r["part"] == "proverbs":
+            for key in ((r["arm"], "proverbs_all"), (r["arm"], r["kind"])):
+                agg[key][0] += int(bool(r["correct"]))
+                agg[key][1] += 1
+        else:
+            agg[(r["arm"], "essay_points")][0] += r["score"]
+            agg[(r["arm"], "essay_points")][1] += len(r["rubric"])
+            for k, v in r["rubric"].items():
+                crit[(r["arm"], k)][0] += int(v)
+                crit[(r["arm"], k)][1] += 1
+    for (arm, k), (a, n) in sorted(agg.items(), key=lambda x: (x[0][1], x[0][0])):
+        print(f"{k:22s} {arm:8s} {a}/{n}")
+    for (arm, k), (a, n) in sorted(crit.items(), key=lambda x: (x[0][1], x[0][0])):
+        print(f"  essay:{k:28s} {arm:8s} {a}/{n}")
+    return 0
+
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--arm", choices=["terai1", "terai11"])
+    ap.add_argument("--part", choices=["proverbs", "essays"])
+    ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--out", default=str(ROOT / "eval" / "results" / "terai11_v1.jsonl"))
+    ap.add_argument("--summary")
+    a = ap.parse_args()
+    sys.exit(summary(a.summary) if a.summary else run(a))
