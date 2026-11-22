@@ -139,9 +139,13 @@ LETTERS = ["ก", "ข", "ค", "ง"]
 def parse_choice(reply: str, n: int) -> Optional[int]:
     """Option index from a reply such as "คำตอบ: ข", "คำตอบคือ ข", "ตอบ ข" or a bare "ข"."""
     text = reply or ""
-    m = re.search(r"(?:คำตอบ|ตอบ)\s*(?:คือ|ได้แก่)?\s*[:：]?\s*([กขคง])(?![\u0e01-\u0e2e])", text)
+    # A letter counts only when it is not part of a Thai word: an optional
+    # "ข้อ" prefix and a trailing polite particle (ครับ/ค่ะ/คะ/จ้ะ/จ้า/นะ) are
+    # allowed, so "ข้อ ค" is ค (not the ข of ข้อ) and "ขครับ" is ข.
+    letter = r"(?:ข้อ\s*)?([กขคง])(?:ครับ|ค่ะ|คะ|จ้ะ|จ้า|นะ)?(?![\u0e00-\u0e7f])"
+    m = re.search(r"(?:คำตอบ|ตอบ)\s*(?:คือ|ได้แก่)?\s*[:：]?\s*" + letter, text)
     if not m:
-        m = re.search(r"(?<![\u0e00-\u0e7f])([กขคง])(?![\u0e00-\u0e7f])", text)
+        m = re.search(r"(?<![\u0e00-\u0e7f])" + letter, text)
     if not m:
         return None
     i = LETTERS.index(m.group(1))

@@ -46,6 +46,14 @@ def test_parse_choice():
     assert t11.parse_choice("ไม่ทราบ", 4) is None
     assert t11.parse_choice("คำตอบคือ ก", 4) == 0
     assert t11.parse_choice("คำตอบคือ ข.", 4) == 1
+    # Devin findings on 16cb1bf: "ข้อ" prefix and polite particles
+    assert t11.parse_choice("คำตอบคือ ข้อ ค", 4) == 2
+    assert t11.parse_choice("ข้อ ง", 4) == 3
+    assert t11.parse_choice("คำตอบ: ขครับ", 4) == 1
+    assert t11.parse_choice("ขครับ", 4) == 1
+    assert t11.parse_choice("คำตอบ: กค่ะ", 4) == 0
+    assert t11.parse_choice("คะแนนดี", 4) is None
+    assert t11.parse_choice("ขอโทษ ไม่ทราบ", 4) is None
 
 
 def test_answer_choice_puts_pack_in_prompt():
