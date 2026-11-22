@@ -104,18 +104,16 @@ project: MIT ([DATA_LICENSE](../DATA_LICENSE)). No third-party code, data or wei
 ## Removal and sunset sequence
 
 The source plan in `src/terai_router/term_ai/trial.py` sets the planned trial end/removal at
-2027-01-01 00:00:00 Asia/Bangkok (UTC+7). Before carrying out the plan, publish a clear
-end-of-trial notice in the README and changelog and update announcement issue #6 before
-unpinning or closing it.
+2027-01-01 00:00:00 Asia/Bangkok (UTC+7). It lists `src/terai_router/term_ai/`,
+`tests/test_term_ai.py`, and this main guide for removal; its mention edits name `cli.py`,
+`pyproject.toml`, both READMEs, and `CHANGELOG.md`. It does not specify changes to Wiki pages,
+navigation, the history page, or issue #6.
 
-Keep stable landing content at the old guide and navigation entry points. Replace this detailed
-guide with a short sunset notice at the same path, stating that `terai term` has ended and
-pointing users to `terai chat`. Retain the migrated Wiki page, its Home/sidebar/index links,
-and the History entry as pointers or historical records linked to that notice. GitHub does not
-provide automatic redirects for these Markdown paths, so preserve the landing pages and links.
-
-The current `trial.py` removal lists still name this guide and Wiki/navigation pages for deletion.
-Revise those documentation-removal steps before implementation so they preserve the stable notice;
-this guide records the necessary sequence, not a completed removal. The feature code and tests
-remain the paths listed in `trial.py`. After the code removal, run `pytest` and
-`python eval/parity.py` as the source plan specifies.
+As separate maintainer follow-up—not as steps already specified in `trial.py`—publish an
+end-of-trial notice before removal, review the current body and comments on [announcement issue #6](https://github.com/klanarongz2009-sketch/ter-ai/issues/6), then decide whether to update, unpin, or close it. Keep the old guide, Wiki page, navigation links, and History entry useful. Replace this detailed guide with a short sunset notice at the same path, stating
+that `terai term` has ended and pointing users to `terai chat`; retain Wiki and History entries
+as stable pointers or historical records linked to that notice. GitHub does not provide
+automatic redirects for these Markdown paths. If the removal plan is implemented, revise its
+listed documentation paths so it does not delete those landing pages. This is a recommendation,
+not a completed removal or issue update. The source plan does not specify `pytest` or
+`python eval/parity.py`; these may be used as validation, not attributed to that plan.
