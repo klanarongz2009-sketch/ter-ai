@@ -101,7 +101,11 @@ def make_voice(g: dict, work: Path, report: dict) -> dict:
     src = str(HERE.parents[1])
     lines = {k: v for k, v in g["voice"].items()}
     jobs = [(k, v, str(work / f"voice_{k}.mp3")) for k, v in lines.items()]
-    code = ("import sys,json; sys.path.insert(0,%r); from terai_router import tth; "
+    # The TTH deprecation notice must not abort voice synthesis when the
+    # parent runs with -W error / PYTHONWARNINGS=error (the child inherits it).
+    code = ("import sys,json,warnings; sys.path.insert(0,%r); "
+            "warnings.filterwarnings('ignore', message='.*reaches end of service on 20', category=DeprecationWarning); "
+            "from terai_router import tth; "
             "r=[]\nfor k,t,o in json.load(sys.stdin):\n    tth.speak(t,o,voice='f_young_clear')\n    r.append(k)\nprint(json.dumps(r))") % src
     try:
         p = subprocess.run([py, "-c", code], input=json.dumps(jobs), capture_output=True, text=True, timeout=900)

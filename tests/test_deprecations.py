@@ -153,3 +153,41 @@ def test_edge_engine_warns(monkeypatch):
     monkeypatch.setattr(deprecations, "_warned", set())
     with pytest.warns(DeprecationWarning, match="TTH .*2026-11-30"):
         tth.EdgeEngine()
+
+
+def test_cli_restores_warning_filters(monkeypatch, capsys):
+    """Codex P2: the EOS ignore-filter must not outlive main() in-process."""
+    import warnings
+    from terai_router import cli
+    monkeypatch.setattr(deprecations, "_warned", set())
+    with warnings.catch_warnings():
+        warnings.simplefilter("default")
+        before = list(warnings.filters)
+        try:
+            cli.main(["tth", "--dry-run", "สวัสดี"])
+        except SystemExit:
+            pass
+        assert list(warnings.filters) == before
+
+
+def test_temmo_voice_survives_warnings_as_errors(monkeypatch, tmp_path):
+    """Codex P2: PYTHONWARNINGS=error in the parent must not drop Temmo voice."""
+    import warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        from terai_router.temmo import pipeline
+    real_run = subprocess.run
+    stub = ("from terai_router import tth as _t\n"
+            "_t.TTH.synthesize = lambda self, text, out: open(out, 'wb').write(b'ID3')\n")
+
+    def fake_run(cmd, **kw):
+        py, flag, code = cmd
+        head, tail = code.split("from terai_router import tth; ", 1)
+        return real_run([py, flag, head + "from terai_router import tth\n" + stub + tail], **kw)
+
+    monkeypatch.setattr(pipeline.subprocess, "run", fake_run)
+    monkeypatch.setenv("PYTHONWARNINGS", "error")
+    report = {"warnings": [], "assets": []}
+    out = pipeline.make_voice({"voice": {"intro": "สวัสดี"}}, tmp_path, report)
+    assert list(out) == ["intro"], report["warnings"]
+    assert not report["warnings"]

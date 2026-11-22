@@ -19,6 +19,7 @@ import argparse
 import json
 import os
 import sys
+import warnings
 
 from . import __version__, route
 
@@ -280,6 +281,14 @@ def chat_main(argv=None):
 
 
 def main(argv=None):
+    # Subcommands install a DeprecationWarning filter for end-of-service
+    # components; scope it to this dispatch so callers that invoke main()
+    # in-process get their warning filters back afterwards.
+    with warnings.catch_warnings():
+        return _dispatch(argv)
+
+
+def _dispatch(argv=None):
     if argv is None:
         argv = sys.argv[1:]
     if argv and argv[0] == 'chat':
