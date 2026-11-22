@@ -101,6 +101,7 @@ def test_bad_mtl_arguments(tmp_path):
 
 
 def test_thai_clones_a_cached_wayu_reference(tmp_path, fake_omnivoice):
+    pytest.importorskip('numpy')
     wayu = FakeWayu()
     t, eng = mtl_tth(tmp_path, wayu=wayu, voice='m_young_clear')
     r = t.synthesize('สวัสดีครับ/ค่ะ ราคา 1,250 บาท', str(tmp_path / 'a.wav'))
@@ -119,6 +120,7 @@ def test_thai_clones_a_cached_wayu_reference(tmp_path, fake_omnivoice):
 
 
 def test_english_designs_a_voice_and_keeps_text(tmp_path, fake_omnivoice):
+    pytest.importorskip('numpy')
     wayu = FakeWayu()
     t, eng = mtl_tth(tmp_path, wayu=wayu, lang='en', speed=1.2)
     r = t.synthesize('Hello from TER-AI 0.12.', str(tmp_path / 'en.wav'))
@@ -129,6 +131,7 @@ def test_english_designs_a_voice_and_keeps_text(tmp_path, fake_omnivoice):
 
 
 def test_own_reference_clip_and_thai_without_wayu(tmp_path, fake_omnivoice):
+    pytest.importorskip('numpy')
     clip = tmp_path / 'me.wav'
     T.write_wav(str(clip), [0.0] * 2400, 24000)
     t, eng = mtl_tth(tmp_path, ref_audio=str(clip), ref_text='สวัสดี')

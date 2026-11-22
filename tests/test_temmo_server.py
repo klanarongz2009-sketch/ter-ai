@@ -204,6 +204,8 @@ def test_missing_sections_and_merge():
     assert t["title_th"] == "x"  # good values are never overwritten
 
 
+@pytest.mark.skipif(not __import__('terai_router.sankpup.render', fromlist=['available_renderers']).available_renderers(),
+                    reason='no SVG renderer installed')
 def test_pipeline_fills_missing_sections_with_scripted_model(tmp_path):
     from terai_router.temmo import pipeline, providers as P
     replies = {"design": '{"tagline": "เก็บปลาทูหนีหมา", "title": "title for a game about cats"}',

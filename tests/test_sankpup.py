@@ -116,6 +116,7 @@ def test_render_png_and_jpg_are_real_non_blank_images():
         assert hi - lo > 20  # not a single flat colour
 
 
+@needs_renderer
 def test_render_rejects_bad_format_and_size():
     svg = offline.generate_svg('cat')
     assert render(svg, 'svg') == svg.encode('utf-8')

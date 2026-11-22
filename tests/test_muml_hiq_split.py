@@ -153,6 +153,7 @@ def test_make_vocal_retune_styles(style):
 
 
 def test_bad_style():
+    pytest.importorskip("numpy")
     with pytest.raises(SplitError):
         split.make_vocal(["ก"], 90, 10.0, "C major", "opera", tts=FakeTTS())
 
