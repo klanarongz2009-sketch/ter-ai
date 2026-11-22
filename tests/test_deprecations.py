@@ -107,3 +107,30 @@ def test_terai_tth_cli_prints_notice(monkeypatch, capsys):
 def test_tth_message_allows_forks_and_others_do_not():
     assert "may continue or fine-tune it" in deprecations.message("tth")
     assert "fine-tune" not in deprecations.message("muml")
+
+
+def _run_terai(args, tmp_path):
+    env = dict(os.environ, PYTHONPATH=SRC + os.pathsep + os.environ.get("PYTHONPATH", ""))
+    return subprocess.run([sys.executable, "-W", "error::DeprecationWarning", "-m", "terai_router", *args],
+                          capture_output=True, text=True, env=env, timeout=120, cwd=tmp_path)
+
+
+def test_entry_point_notice_first_and_survives_warnings_as_errors(tmp_path):
+    out = _run_terai(["sankpup", "a red boat", "--engine", "offline", "-o", "boat.svg"], tmp_path)
+    assert out.returncode == 0, out.stderr
+    assert out.stderr.count("end of service on 2027-01-10") == 1
+    assert out.stderr.startswith("note: SANKPUP")
+
+
+def test_entry_point_temmo_and_muml_print_notice_once(tmp_path):
+    for args, name in ((["temmo", "--help"], "Temmo 1.0"), (["muml-wa", "--help"], "MuML")):
+        out = _run_terai(args, tmp_path)
+        assert out.returncode == 0, out.stderr
+        assert out.stderr.count("end of service") == 1 and name in out.stderr
+
+
+def test_edge_engine_warns(monkeypatch):
+    from terai_router import tth
+    monkeypatch.setattr(deprecations, "_warned", set())
+    with pytest.warns(DeprecationWarning, match="TTH .*2026-11-30"):
+        tth.EdgeEngine()

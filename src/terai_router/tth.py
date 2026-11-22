@@ -441,6 +441,9 @@ class EdgeEngine:
     online = True
     output = '.mp3'
 
+    def __init__(self):
+        _eos_warn("tth")
+
     @staticmethod
     def available():
         return importlib.util.find_spec('edge_tts') is not None
