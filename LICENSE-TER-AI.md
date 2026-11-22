@@ -32,6 +32,8 @@ If you distribute the Software or a Modified Version, you must:
 - keep the copyright line above and the text of this License (or a link to it) with every copy;
 - credit "TER-AI (klanarongz2009-sketch)" with a link to https://github.com/klanarongz2009-sketch/ter-ai in the notices, documentation or about screen that come with your copy.
 
+If a distributed copy also contains files that remain under TER-AI License 1.0, provide the separate 1.0 terms for those files; this 2.0 text is not a substitute. The archived text is [LICENSE-TER-AI-1.0.md](https://github.com/klanarongz2009-sketch/ter-ai/blob/main/LICENSE-TER-AI-1.0.md).
+
 ## 5. Same license for changes (file-level share-alike)
 
 A "Modified Version" is a Licensed File with changes, or a new file that copies a substantial part of a Licensed File.

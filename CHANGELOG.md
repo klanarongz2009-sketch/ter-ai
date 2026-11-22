@@ -3,7 +3,7 @@
 ## Unreleased
 
 ### Changed
-- `LICENSE-TER-AI.md` contains the proposed TER-AI License 2.0 (`LicenseRef-TER-AI-2.0`); the original 1.0 text is preserved verbatim as `LICENSE-TER-AI-1.0.md`. The nine existing 1.0-marked files retain their 1.0 markers and terms; no file is automatically relicensed, and no v2.0 markers are present in this revision.
+- `LICENSE-TER-AI.md` contains the proposed TER-AI License 2.0 (`LicenseRef-TER-AI-2.0`) and links directly to the archived 1.0 text for files that remain under those terms. Sdist/wheel metadata now uses the aggregate SPDX expression `MIT AND CC-BY-SA-4.0 AND GPL-3.0-only AND LicenseRef-TER-AI-1.0` for the licenses applying to distributed components, and lists the nested GPL and bundled-skill license texts. The nine existing 1.0-marked files keep their markers and terms; no v2.0 markers are present in this revision.
 
 ## v0.18.3 (2026-11-21)
 

@@ -7,8 +7,17 @@ name = "terai-router"
 version = "0.18.3"
 description = "Offline Thai intent router that tolerates typos. Small, CPU-only, no dependencies. Made with Sesame."
 readme = "README.md"
-license = "MIT"
-license-files = ["LICENSE", "DATA_LICENSE", "NOTICE", "LICENSE-TER-AI.md", "LICENSE-TER-AI-1.0.md"]
+# Aggregate license expression for files included in the distribution; per-file scope is documented in README.md and DATA_LICENSE.
+license = "MIT AND CC-BY-SA-4.0 AND GPL-3.0-only AND LicenseRef-TER-AI-1.0"
+license-files = [
+    "LICENSE",
+    "DATA_LICENSE",
+    "NOTICE",
+    "LICENSE-TER-AI.md",
+    "LICENSE-TER-AI-1.0.md",
+    "src/terai_router/muml_wa/data/LICENSE-GPL-3.0.txt",
+    "src/terai_router/tagentic/data/skills/ai-memory-continuity/LICENSE",
+]
 authors = [{ name = "Klanarong Tammakatuek (klanarongz2009-sketch)" }]
 requires-python = ">=3.11"
 dependencies = []
