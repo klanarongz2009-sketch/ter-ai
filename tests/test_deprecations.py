@@ -109,10 +109,15 @@ def test_tth_message_allows_forks_and_others_do_not():
     assert "fine-tune" not in deprecations.message("muml")
 
 
+def _utf8_env():
+    # Child output includes Thai text; force UTF-8 so the result does not depend on the console code page.
+    return dict(os.environ, PYTHONIOENCODING="utf-8",
+                PYTHONPATH=SRC + os.pathsep + os.environ.get("PYTHONPATH", ""))
+
+
 def _run_terai(args, tmp_path):
-    env = dict(os.environ, PYTHONPATH=SRC + os.pathsep + os.environ.get("PYTHONPATH", ""))
     return subprocess.run([sys.executable, "-W", "error::DeprecationWarning", "-m", "terai_router", *args],
-                          capture_output=True, text=True, env=env, timeout=120, cwd=tmp_path)
+                          capture_output=True, text=True, encoding="utf-8", env=_utf8_env(), timeout=120, cwd=tmp_path)
 
 
 def test_entry_point_notice_first_and_survives_warnings_as_errors(tmp_path):
@@ -134,11 +139,11 @@ def test_entry_point_tth_and_chat_speak_survive_warnings_as_errors(tmp_path):
     assert out.returncode == 0, out.stderr
     assert out.stderr.count("end of service on 2026-11-30") == 1
     assert out.stderr.startswith("note: TTH")
-    env = dict(os.environ, PYTHONPATH=SRC + os.pathsep + os.environ.get("PYTHONPATH", ""))
     chat = subprocess.run([sys.executable, "-W", "error::DeprecationWarning", "-m", "terai_router", "chat", "--speak",
                            "--brain", "rules", "--session", str(tmp_path / "s.jsonl"),
                            "--speak-dir", str(tmp_path / "tth")],
-                          input="/quit\n", capture_output=True, text=True, env=env, timeout=120, cwd=tmp_path)
+                          input="/quit\n", capture_output=True, text=True, encoding="utf-8", env=_utf8_env(),
+                          timeout=120, cwd=tmp_path)
     assert chat.returncode == 0, chat.stderr
     assert chat.stderr.count("end of service on 2026-11-30") == 1
 
