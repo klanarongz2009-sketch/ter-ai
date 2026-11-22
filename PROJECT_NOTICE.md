@@ -4,7 +4,7 @@
 
 This is an advance notice. TER-AI is an indie project run by one person, so it can stop with little or no warning.
 
-Last updated: 2026-11-21 (latest release v0.18.3).
+Last updated: 2026-11-23 (latest release v0.19.0).
 
 ## Current state
 

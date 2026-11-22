@@ -1,6 +1,6 @@
 # Tagentic1 on Telegram: set up your own bot
 
-Tagentic1 remains a **beta** in the stable v0.18.3 package. [PROJECT_NOTICE.md](../PROJECT_NOTICE.md) lists a maintainer-hosted public bot, [@Terai_F0_bot](https://t.me/Terai_F0_bot), that users can try; the project does not guarantee its availability. This guide covers running your own separate bot on a machine you control, using a bot token you create.
+Tagentic1 remains a **beta** in the stable v0.19.0 package. [PROJECT_NOTICE.md](../PROJECT_NOTICE.md) lists a maintainer-hosted public bot, [@Terai_F0_bot](https://t.me/Terai_F0_bot), that users can try; the project does not guarantee its availability. This guide covers running your own separate bot on a machine you control, using a bot token you create.
 
 Community: the **Tagentic telegram bot community** section on GitHub Discussions, with four categories:
 
@@ -13,7 +13,7 @@ Never post your bot token or chat IDs there. Replies may come from Teemate, an a
 
 ## What you need
 
-- TER-AI installed with the `llm` extra (`pip install "terai-router[llm] @ git+https://github.com/klanarongz2009-sketch/ter-ai.git@v0.18.3"`) and the Gemma 4 E2B weights (`terai tagentic --setup`). Check that `terai tagentic "hello"` answers before you connect Telegram.
+- TER-AI installed with the `llm` extra (`pip install "terai-router[llm] @ git+https://github.com/klanarongz2009-sketch/ter-ai.git@v0.19.0"`) and the Gemma 4 E2B weights (`terai tagentic --setup`). Check that `terai tagentic "hello"` answers before you connect Telegram.
 - A Telegram account to create the bot.
 - A machine that stays on. On an 8-vCPU machine without a GPU, the first reply after a model load takes about 1 to 3 minutes; later replies are faster.
 

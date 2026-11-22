@@ -24,7 +24,7 @@ python -c "from terai_router import route; print(route('ช้วยบวก 15
 | `พิมพิด แก้ใหม่` | `fix` | 1.00 | `พิมพ์ผิด แก้ใหม่` |
 | `ไม่เอาแล้ว` | `refuse` | 1.00 | `ไม่เอาแล้ว` |
 
-These rows are real output of `terai "<text>"` on v0.18.3. The 15 intents are `calc`, `fix`, `forget`, `get_name`, `go_on`, `greet`, `help`, `random`, `refuse`, `set_name`, `stats`, `status`, `thanks`, `time` and `who`.
+These rows are real output of `terai "<text>"` on v0.19.0. The 15 intents are `calc`, `fix`, `forget`, `get_name`, `go_on`, `greet`, `help`, `random`, `refuse`, `set_name`, `stats`, `status`, `thanks`, `time` and `who`.
 
 **Measured:** 97.6% (121/124) on the frozen 124-sentence test set and 99.1% (111/112) on the held-out set, about 0.2 ms per message on one CPU thread (`python training/evaluate.py`). The three test-set misses are English name/number questions. This is an internal evaluation, not an independent benchmark; details in [Results](#results-v0160-measured-2026-10-22).
 
@@ -52,7 +52,7 @@ The wider project also includes local chat, Thai speech (TTH, deprecated), SVG g
 
 The repository version and the model versions are separate. MuML 1.0 was the first model with its own id (v0.15.0); v0.16.0 writes the scheme down for every model.
 
-- **Repository (package) version:** `0.X.Y`; the latest release is v0.18.3 (PEP 440 package version `0.18.3`; a patch release on top of v0.18.2). It moves with every release. The criteria for the repository's own 1.0 are unchanged (see Roadmap).
+- **Repository (package) version:** `0.X.Y`; the latest release is v0.19.0 (PEP 440 package version `0.19.0`; a minor release: opt-in TERAI1.1 and the end-of-service notices). It moves with every release. The criteria for the repository's own 1.0 are unchanged (see Roadmap).
 - **Model id:** each model has its own name and version, written exactly as below. A package release never changes a model id, and the "1.0" in a model id is not the repository's 1.0.
 
 | Model id | What it is | Since |
@@ -64,7 +64,7 @@ The repository version and the model versions are separate. MuML 1.0 was the fir
 | Temmo 1.0 | Small indie game maker (prototype, not released). **Deprecated, end of service 2027-01-10.** | - |
 | TER-AI-0.5 | Intent model inside TERM AI (limited-time trial) | v0.14.0 |
 
-`terai --version` prints both, for example `terai-router 0.18.3 / model TERAI1`, and `terai models` lists every model id. The rule lives in `src/terai_router/versions.py`; a new version of one model changes only its own row there. Model ids keep their spelling; the one exception is the v0.17.0 rename of TERAI1BETA to TERAI1 ("beta" is its status, not part of its name). `--brain terai1beta` and `--engine terai1beta` still work and print a deprecation notice. TERAI1SML is currently an unreleased prototype on `main`; it is not included in v0.18.0. After installing the current source, select it with `terai chat --brain terai1sml`; install its text-only weights with `terai chat --brain terai1sml --setup`.
+`terai --version` prints both, for example `terai-router 0.19.0 / model TERAI1`, and `terai models` lists every model id. The rule lives in `src/terai_router/versions.py`; a new version of one model changes only its own row there. Model ids keep their spelling; the one exception is the v0.17.0 rename of TERAI1BETA to TERAI1 ("beta" is its status, not part of its name). `--brain terai1beta` and `--engine terai1beta` still work and print a deprecation notice. TERAI1SML is currently an unreleased prototype on `main`; it is not included in v0.18.0. After installing the current source, select it with `terai chat --brain terai1sml`; install its text-only weights with `terai chat --brain terai1sml --setup`.
 
 ## Why the name
 
@@ -306,7 +306,7 @@ Text reading: mean CER 0.150 (Thai 0.165), 4 of 8 images exact. Questions: 5/6 c
 
 **Identity (v0.17.0).** TERAI1 is the model's name; "beta" is its status (still being improved), and the old name TERAI1BETA was dropped from code, CLI and docs in v0.17.0 except as an alias. The model calls itself "TERAI1", and "TERAI1BETA" in any reply is rewritten to "TERAI1". Asked who it is, who made it or which model it uses, it answers from fixed facts: TERAI1 of the TER-AI project, running locally on Gemma 4 E2B as an open base model, which TER-AI did not train; asked about its status, it says TERAI1 is still being improved. A reply that says it was developed or made by Google, that it is Gemma, or that TER-AI trained the model ("พัฒนาโดย Google", "developed by Google", "I am Gemma", ...) is retried once, then replaced by the fixed answer. The same guard covers image replies. Tested with mock model output in `tests/test_brain_identity.py`; the v0.16.0 TERAI1 eval above was not rerun with the real model for v0.17.0 (none of its 52 cases is an identity question).
 
-### TERAI1.1: Thai essays and idioms (opt-in, unreleased)
+### TERAI1.1: Thai essays and idioms (opt-in, v0.19.0)
 
 TERAI1.1 runs on the same local Gemma 4 E2B base as TERAI1 (open weights, not trained by TER-AI, no
 fine-tuning) and adds a cited Thai idiom/proverb pack from Thai Wiktionary (1,052 entries,

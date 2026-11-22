@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## v0.19.0 (2026-11-23)
+
+Minor release: opt-in TERAI1.1 (Thai essays and idioms) and end-of-service notices for TTH (2026-11-30) and MuML, Temmo and SANKPUP (2027-01-10). TERAI1 stays the default model. v0.19.0 still contains TTH (with a deprecation warning).
 
 ### Added
 - **TERAI1.1 (opt-in, `terai terai11`)**: Thai essay and idiom/proverb mode on the same local Gemma 4 E2B base as TERAI1 (not trained by TER-AI, no fine-tuning). Adds a cited Thai idiom pack from Thai Wiktionary (CC BY-SA 4.0, `src/terai_router/data/proverbs_th.json`, 1,000+ entries with page and revision ids, built by `training/build_proverbs.py`), pack retrieval that says "not in the pack" instead of guessing, and an outline -> draft -> self-check essay pipeline. TERAI1 stays the default and is unchanged. Frozen held-out eval (`eval/terai11_heldout_v1.json`, SHA-256 in `eval/SHA256SUMS`, raw outputs in `eval/results/terai11_v1.jsonl`): proverb items 57/100 -> 88/100 (items come from the pack: in-pack knowledge), automatic essay rubric 180/280 -> 269/280 (form and idiom-use proxy, no human grading). Limits in [docs/TERAI1.1.md](docs/TERAI1.1.md).
