@@ -127,4 +127,4 @@ Every text the bot writes itself is English and starts with `[System]`, for exam
 
 ## License
 
-`src/terai_router/tagentic/telegram.py`, `knowledge.py`, `verbatim.py`, their tests, and the three Tagentic discussion-form YAML files are under the TER-AI License 1.0 (`SPDX-License-Identifier: LicenseRef-TER-AI-1.0`; see the archived [TER-AI License 1.0](../LICENSE-TER-AI-1.0.md)). Their existing markers remain version 1.0; the current [TER-AI License 2.0](../LICENSE-TER-AI.md) does not replace them. These files may be used commercially and for AI training, with credit to "TER-AI (klanarongz2009-sketch)".
+`src/terai_router/tagentic/telegram.py`, `knowledge.py`, `verbatim.py`, their tests, and the three Tagentic discussion-form YAML files are under the TER-AI License 1.0 (`SPDX-License-Identifier: LicenseRef-TER-AI-1.0`; see [LICENSE-TER-AI.md](../LICENSE-TER-AI.md)). These files may be used commercially and for AI training, with credit to "TER-AI (klanarongz2009-sketch)".
