@@ -199,7 +199,7 @@ def test_standalone_sankpup_cli_survives_warnings_as_errors(tmp_path):
     out = tmp_path / "cat.svg"
     p = subprocess.run([sys.executable, "-W", "error::DeprecationWarning", "-m", "terai_router.sankpup.cli",
                         "cat", "--engine", "offline", "-o", str(out)],
-                       capture_output=True, text=True, encoding="utf-8", timeout=120)
+                       capture_output=True, text=True, encoding="utf-8", env=_utf8_env(), timeout=120)
     assert p.returncode == 0, p.stderr
     assert out.exists()
     assert "end of service on 2027-01-10" in p.stderr
