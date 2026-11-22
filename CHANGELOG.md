@@ -3,6 +3,7 @@
 ## Unreleased
 
 ### Changed
+- Point both TERM AI Wiki source references to the preserved v0.14.0 `trial.py` tag and retain the sunset-sequence anchor.
 - Clarify the TERM AI sunset source-plan scope and separate Wiki/navigation and issue #6 follow-up.
 - `LICENSE-TER-AI.md` contains the proposed TER-AI License 2.0 (`LicenseRef-TER-AI-2.0`) and links directly to the archived 1.0 text for files that remain under those terms. Sdist/wheel metadata now uses the aggregate SPDX expression `MIT AND CC-BY-SA-4.0 AND GPL-3.0-only AND LicenseRef-TER-AI-1.0` for the licenses applying to distributed components, and lists the nested GPL and bundled-skill license texts. The nine existing 1.0-marked files keep their markers and terms; no v2.0 markers are present in this revision.
 
