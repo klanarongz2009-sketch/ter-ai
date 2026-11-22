@@ -1,10 +1,10 @@
-# TER-AI License 1.0
+# TER-AI License 2.0
 
 Copyright (c) 2026-2027 Klanarong Tammakatuek (klanarongz2009-sketch)
 
 ## 1. What this License covers
 
-This License applies only to files that say they are under the TER-AI License 1.0, for example with the line `SPDX-License-Identifier: LicenseRef-TER-AI-1.0` at the top, or that are listed as under it in the project's license table ("the Licensed Files"). "The Software" means the Licensed Files and any copy or part of them.
+This License applies only to files that say they are under the TER-AI License 2.0, for example with the line `SPDX-License-Identifier: LicenseRef-TER-AI-2.0` at the top, or that are listed as under it in the project's license table ("the Licensed Files"). "The Software" means the Licensed Files and any copy or part of them. Files marked or listed under the TER-AI License 1.0 remain under version 1.0; this version 2.0 text does not replace or relicense them.
 
 It does not cover:
 
@@ -62,9 +62,9 @@ In no event shall the licensor or contributors be liable for any claim, damages 
 
 ## How this License is applied in ter-ai
 
-- It applies only to new code. Every file released under the MIT License up to and including v0.17.0 stays under the MIT License.
-- A file is under this License only if it carries this line at the top, in the comment style of its language:
+- It applies only to files specifically marked or listed under the TER-AI License 2.0. It does not change the license of files under version 1.0, MIT, or any third-party license.
+- A file is under this License only if it carries this line at the top, in the comment style of its language, or is explicitly listed as version 2.0 in the project license table:
 
-  `SPDX-License-Identifier: LicenseRef-TER-AI-1.0`
+  `SPDX-License-Identifier: LicenseRef-TER-AI-2.0`
 
 - Files without that line follow the license table in README.md and the files LICENSE, DATA_LICENSE and NOTICE.
