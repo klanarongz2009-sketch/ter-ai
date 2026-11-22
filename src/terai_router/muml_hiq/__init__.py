@@ -11,6 +11,10 @@ yue2.cpp (MIT): it sings the Thai script more clearly (see yue2.py).
 No weights live in this repository: they are downloaded on first use.
 """
 
+from ..deprecations import warn as _eos_warn
+
+_eos_warn("muml")
+
 NAME = "MUML 1.0 HIQ"
 VERSION = "1.0.0-prototype"
 

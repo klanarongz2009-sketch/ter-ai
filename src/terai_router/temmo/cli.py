@@ -34,6 +34,8 @@ def build_parser(prog="terai temmo") -> argparse.ArgumentParser:
 
 
 def main(argv=None) -> int:
+    from ..deprecations import cli_notice
+    cli_notice("temmo")
     import sys
     args = list(sys.argv[1:] if argv is None else argv)
     if args[:1] == ["serve"]:  # terai temmo serve [--root DIR] [--host H] [--port N]

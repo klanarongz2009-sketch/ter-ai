@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import warnings
 
 from . import ENGINES, RenderError, SvgError, gemma, generate, save
 from .render import MAX_SIZE, MIN_SIZE, available_renderers
@@ -53,6 +54,17 @@ def _list_models() -> None:
 
 
 def main(argv=None) -> int:
+    from ..deprecations import cli_notice
+    cli_notice("sankpup")
+    # The notice above replaces the generate() DeprecationWarning on the
+    # command line, so -W error::DeprecationWarning does not abort the
+    # standalone entry point (python -m terai_router.sankpup.cli).
+    with warnings.catch_warnings():
+        warnings.filterwarnings('ignore', message='.*reaches end of service on 20', category=DeprecationWarning)
+        return _main(argv)
+
+
+def _main(argv=None) -> int:
     a = build_parser().parse_args(argv)
     if a.list_models:
         _list_models()
