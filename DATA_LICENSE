@@ -1,7 +1,7 @@
 TER-AI data licenses
 ====================
 
-Code in ter-ai is MIT licensed (see LICENSE), except files explicitly marked under TER-AI License 1.0 or 2.0 (see LICENSE-TER-AI-1.0.md and LICENSE-TER-AI.md). One bundled data file is not:
+Code in ter-ai is MIT licensed (see LICENSE), except the nine files listed in the README license table and marked `SPDX-License-Identifier: LicenseRef-TER-AI-1.0`, which remain under TER-AI License 1.0 (see the archived LICENSE-TER-AI-1.0.md), and any files explicitly marked or listed under TER-AI License 2.0 (see LICENSE-TER-AI.md). One bundled data file is not:
 
 src/terai_router/data/knowledge_th.json  (TER-AI Thai knowledge pack, v0.8.0)
 docs/knowledge_th.json                   (byte copy of the same pack for the web demo)
