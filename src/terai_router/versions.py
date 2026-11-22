@@ -65,6 +65,10 @@ MODELS = [
      "made_of": "local Gemma 4 E2B (Apache-2.0) writes the replies and reads images; the TER-AI rules (calculator, "
                 "date and time, units, memory, Thai Wikipedia pack, web search) are its tools; a grounding check "
                 "falls back to the rule answer; intent router model.json (trained here)"},
+    {"id": "TERAI1.1", "part": "opt-in Thai essay and proverb mode (terai terai11)", "since": "-",
+     "status": "opt-in, unreleased (TERAI1 stays the default)", "aliases": [],
+     "made_of": "same local Gemma 4 E2B base as TERAI1 (Apache-2.0, not trained here) + cited Thai proverb pack "
+                "from Thai Wiktionary (CC BY-SA 4.0) + outline/draft/self-check essay pipeline; no fine-tuning"},
     {"id": "TERAI1SML", "part": "small text-only TER-AI chat model (terai chat --brain terai1sml)",
      "since": "-", "status": "prototype, not released", "aliases": [],
      "made_of": "Qwen2.5-0.5B-Instruct Q2_K GGUF (Apache-2.0; 415 MB weights, no vision projector); TER-AI rules are tools"},

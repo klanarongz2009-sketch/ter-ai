@@ -8,7 +8,7 @@ version = "0.18.3"
 description = "Offline Thai intent router that tolerates typos. Small, CPU-only, no dependencies. Made with Sesame."
 readme = "README.md"
 # Aggregate license expression for files included in the distribution; per-file scope is documented in README.md and DATA_LICENSE.
-license = "MIT AND CC-BY-SA-4.0 AND GPL-3.0-only AND LicenseRef-TER-AI-1.0"
+license = "MIT AND CC-BY-SA-4.0 AND GPL-3.0-only AND LicenseRef-TER-AI-1.0 AND LicenseRef-TER-AI-2.0"
 license-files = [
     "LICENSE",
     "DATA_LICENSE",

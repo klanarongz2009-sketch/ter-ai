@@ -306,6 +306,23 @@ Text reading: mean CER 0.150 (Thai 0.165), 4 of 8 images exact. Questions: 5/6 c
 
 **Identity (v0.17.0).** TERAI1 is the model's name; "beta" is its status (still being improved), and the old name TERAI1BETA was dropped from code, CLI and docs in v0.17.0 except as an alias. The model calls itself "TERAI1", and "TERAI1BETA" in any reply is rewritten to "TERAI1". Asked who it is, who made it or which model it uses, it answers from fixed facts: TERAI1 of the TER-AI project, running locally on Gemma 4 E2B as an open base model, which TER-AI did not train; asked about its status, it says TERAI1 is still being improved. A reply that says it was developed or made by Google, that it is Gemma, or that TER-AI trained the model ("พัฒนาโดย Google", "developed by Google", "I am Gemma", ...) is retried once, then replaced by the fixed answer. The same guard covers image replies. Tested with mock model output in `tests/test_brain_identity.py`; the v0.16.0 TERAI1 eval above was not rerun with the real model for v0.17.0 (none of its 52 cases is an identity question).
 
+### TERAI1.1: Thai essays and idioms (opt-in, unreleased)
+
+TERAI1.1 runs on the same local Gemma 4 E2B base as TERAI1 (open weights, not trained by TER-AI, no
+fine-tuning) and adds a cited Thai idiom/proverb pack from Thai Wiktionary (1,052 entries,
+CC BY-SA 4.0), pack retrieval that says "not in the pack" instead of guessing, and an
+outline -> draft -> self-check essay pipeline. TERAI1 stays the default.
+
+```bash
+terai terai11 proverb "กบในกะลา"            # from the pack, with source link; no model needed
+terai terai11 essay "ความสำคัญของการอ่านหนังสือ"   # needs the local Gemma 4 GGUF, like TERAI1
+```
+
+Frozen held-out set, same base model and settings for both: proverb items 57/100 (TERAI1) -> 88/100
+(TERAI1.1); automatic essay rubric 180/280 -> 269/280. The proverb items come from the pack, and the
+essay rubric is an automatic proxy without human grading. Details, limits and licenses:
+[docs/TERAI1.1.md](docs/TERAI1.1.md).
+
 ## Web search (opt-in, v0.9.0)
 
 Chat is offline by default. With `--web` it can look up questions that the bundled knowledge pack cannot answer:
@@ -686,8 +703,9 @@ Copyright (c) 2026-2027 Klanarong Tammakatuek (klanarongz2009-sketch). Each part
 |---|---|---|---|---|
 | Code (Python, JavaScript, web demo, scripts) | everything not listed below | MIT ([LICENSE](LICENSE)) | Yes | Yes |
 | Existing files under the TER-AI License 1.0 | 9 files with `SPDX-License-Identifier: LicenseRef-TER-AI-1.0`: `src/terai_router/tagentic/telegram.py`, `knowledge.py`, `verbatim.py`; the matching three `tests/test_tagentic_*.py` files; and the three `.github/DISCUSSION_TEMPLATE/tagentic-bot-*.yml` forms | TER-AI License 1.0 ([archived text](LICENSE-TER-AI-1.0.md)); their markers remain unchanged. AI training allowed; credit "TER-AI (klanarongz2009-sketch)" required; a modified file must stay under the same license with its source available | Yes | Yes |
-| Files explicitly under the TER-AI License 2.0 | only files carrying `SPDX-License-Identifier: LicenseRef-TER-AI-2.0` or explicitly listed as v2.0; no existing file carries the v2.0 marker at this revision | Proposed TER-AI License 2.0 ([LICENSE-TER-AI.md](LICENSE-TER-AI.md)); substantive permissions and conditions carried forward from v1.0. It does not change v1.0 files, MIT code, GPL-3.0 data, the CC BY-SA 4.0 knowledge pack or third-party model licenses | Yes | Yes |
+| Files explicitly under the TER-AI License 2.0 | only files carrying `SPDX-License-Identifier: LicenseRef-TER-AI-2.0` or explicitly listed as v2.0; at this revision: the TERAI1.1 code `src/terai_router/terai11/__init__.py`, `cli.py`, `tests/test_terai11.py`, `training/build_proverbs.py`, `eval/terai11_build.py`, `eval/terai11_eval.py` | Proposed TER-AI License 2.0 ([LICENSE-TER-AI.md](LICENSE-TER-AI.md)); substantive permissions and conditions carried forward from v1.0. It does not change v1.0 files, MIT code, GPL-3.0 data, the CC BY-SA 4.0 knowledge pack or third-party model licenses | Yes | Yes |
 | Intent model and other project data | `src/terai_router/data/model.json`, `typo_pairs.json`, `chitchat_th.json`; TERM AI trial: `src/terai_router/term_ai/data/model.json`, `train_data.json` | MIT (written or trained for this project, [DATA_LICENSE](DATA_LICENSE)) | Yes | Yes |
+| TERAI1.1 Thai proverb and idiom pack (from Thai Wiktionary) and the TERAI1.1 eval files that quote it | `src/terai_router/data/proverbs_th.json`, `eval/terai11_heldout_v1.json`, `eval/terai11_dev_v1.json`, `eval/results/terai11_v1.jsonl` | CC BY-SA 4.0 ([DATA_LICENSE](DATA_LICENSE)) | Yes | Yes, with attribution to Wiktionary contributors and the same license on shared copies |
 | Thai knowledge pack (from Thai Wikipedia) | `src/terai_router/data/knowledge_th.json` and its web copy `docs/knowledge_th.json` | CC BY-SA 4.0 ([DATA_LICENSE](DATA_LICENSE)) | Yes | Yes, with attribution to Wikipedia contributors and the same license on shared copies |
 | MuML 1.0 WA note table and MuML 1.0 network weights (from the Nottingham Music Database via [jukedeck/nottingham-dataset](https://github.com/jukedeck/nottingham-dataset)) | `src/terai_router/muml_wa/data/markov.json`, its web copy `docs/muml_wa_table.js`, and `docs/muml-1.0-int8.bin` | GPL-3.0 (full text in `LICENSE-GPL-3.0.txt` next to each file; [DATA_LICENSE](DATA_LICENSE), [NOTICE](NOTICE) item 7) | Yes | Yes, under GPL-3.0: shared copies of these files must stay GPL-3.0 with their source named |
 | Wayu-Paxa-TTS-Edge weights (TTH engine "wayu", by Paxa Labs / Wayu Research) | downloaded from Hugging Face on first use | CC-BY-NC-4.0 plus the Wayu Research Acceptable Use terms ([NOTICE](NOTICE) item 1) | No | **No.** Non-commercial only; credit Paxa Labs / Wayu Research. Audio made with this engine is non-commercial too |
