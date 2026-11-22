@@ -19,6 +19,10 @@ import re
 import struct
 from pathlib import Path
 
+from ..deprecations import warn as _eos_warn
+
+_eos_warn("muml")
+
 VERSION = '1.0'
 NOTE_WRITER = 'markov-v1'
 M32 = 0xFFFFFFFF

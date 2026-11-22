@@ -143,7 +143,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--arm", choices=["terai1", "terai11"])
     ap.add_argument("--part", choices=["proverbs", "essays"])
-    ap.add_argument("--set", default=str(SET), help="evaluation set (default: frozen terai11_heldout_v1.json)")
+    ap.add_argument("--set", default=str(SET), help="evaluation set (default: frozen terai11_heldout_v1.json). TERAI1 gets each essay item's instruction; TERAI1.1 gets only the topic (its pipeline sets the structure), so a set with non-standard instructions is not a like-for-like comparison")
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--out", default=str(ROOT / "eval" / "results" / "terai11_run.jsonl"),
                     help="new results file (eval/results/terai11_v1.jsonl is the committed reference run)")

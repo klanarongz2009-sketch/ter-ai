@@ -130,7 +130,7 @@ def main() -> int:
     dev = {"version": f"terai11_dev_{version}", "seed": 1101, "proverb_items": items(8, 4, 4, 2),
            "essays": essays(["ความสุขในชีวิตประจำวัน", "การเดินทาง", "อาหารไทยในสายตาโลก", "กีฬาสี", "ห้องสมุด"])}
     for name, obj in ((f"terai11_heldout_{version}.json", held), (f"terai11_dev_{version}.json", dev)):
-        (ROOT / "eval" / name).write_text(json.dumps(obj, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        (ROOT / "eval" / name).write_text(json.dumps(obj, ensure_ascii=False, indent=1) + "\n", encoding="utf-8", newline="\n")
     print(len(held["proverb_items"]), "held-out proverb items,", len(held["essays"]), "essays;",
           len(dev["proverb_items"]), "dev items")
     return 0

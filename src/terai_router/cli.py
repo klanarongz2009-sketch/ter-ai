@@ -19,6 +19,7 @@ import argparse
 import json
 import os
 import sys
+import warnings
 
 from . import __version__, route
 
@@ -78,6 +79,10 @@ def _make_tth(a):
 
 
 def tth_main(argv=None):
+    import warnings
+    from .deprecations import cli_notice
+    cli_notice("tth")
+    warnings.filterwarnings('ignore', message='.*reaches end of service on 20', category=DeprecationWarning)
     from . import tth as T
     ap = argparse.ArgumentParser(prog='terai tth',
                                  description='TTH: Thai text-to-speech for TER-AI. Local engine Wayu-Paxa-TTS-Edge '
@@ -209,6 +214,10 @@ def chat_main(argv=None):
         brain.lm.vision = True
     tth = None
     if a.speak:
+        import warnings
+        from .deprecations import cli_notice
+        cli_notice("tth")
+        warnings.filterwarnings('ignore', message='.*reaches end of service on 20', category=DeprecationWarning)
         try:
             tth = _make_tth(a)
         except ValueError as e:
@@ -272,6 +281,14 @@ def chat_main(argv=None):
 
 
 def main(argv=None):
+    # Subcommands install a DeprecationWarning filter for end-of-service
+    # components; scope it to this dispatch so callers that invoke main()
+    # in-process get their warning filters back afterwards.
+    with warnings.catch_warnings():
+        return _dispatch(argv)
+
+
+def _dispatch(argv=None):
     if argv is None:
         argv = sys.argv[1:]
     if argv and argv[0] == 'chat':
@@ -298,6 +315,13 @@ def main(argv=None):
         # TERM AI limited-time trial: remove this branch on 2027-01-01 00:00:00 UTC+7 (docs/TERM-AI.md)
         from .term_ai.cli import main as term_main
         return term_main(argv[1:])
+    if argv and argv[0] in ('temmo', 'sankpup', 'muml-wa', 'muml', 'muml-hiq'):
+        # Deprecated components (end of service 2027-01-10): print the CLI notice first, and keep the
+        # import-time DeprecationWarning out of the command line so `-W error` cannot stop the command.
+        import warnings
+        from .deprecations import cli_notice
+        cli_notice({'temmo': 'temmo', 'sankpup': 'sankpup'}.get(argv[0], 'muml'))
+        warnings.filterwarnings('ignore', message='.*reaches end of service on 20', category=DeprecationWarning)
     if argv and argv[0] == 'temmo':
         from .temmo.cli import main as temmo_main
         return temmo_main(argv[1:])

@@ -8,6 +8,8 @@ import time
 
 
 def main(argv=None) -> int:
+    from ..deprecations import cli_notice
+    cli_notice("muml")
     from . import generate, to_midi, writer_available
     from . import net
     ap = argparse.ArgumentParser(prog='terai muml-wa', description='MuML 1.0 WA: notes from the MuML 1.0 network '
