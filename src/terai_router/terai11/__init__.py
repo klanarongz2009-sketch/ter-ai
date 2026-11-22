@@ -137,9 +137,11 @@ LETTERS = ["ก", "ข", "ค", "ง"]
 
 
 def parse_choice(reply: str, n: int) -> Optional[int]:
-    m = re.search(r"(?:คำตอบ|ตอบ)\s*[:：]?\s*([กขคง])", reply or "") or re.search(r"(?<![\u0e00-\u0e7f])([กขคง])(?![\u0e00-\u0e7f])", reply or "")
+    """Option index from a reply such as "คำตอบ: ข", "คำตอบคือ ข", "ตอบ ข" or a bare "ข"."""
+    text = reply or ""
+    m = re.search(r"(?:คำตอบ|ตอบ)\s*(?:คือ|ได้แก่)?\s*[:：]?\s*([กขคง])(?![\u0e01-\u0e2e])", text)
     if not m:
-        m = re.search(r"^\s*([กขคง])", reply or "")
+        m = re.search(r"(?<![\u0e00-\u0e7f])([กขคง])(?![\u0e00-\u0e7f])", text)
     if not m:
         return None
     i = LETTERS.index(m.group(1))

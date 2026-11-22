@@ -44,6 +44,8 @@ def test_parse_choice():
     assert t11.parse_choice("คำตอบ: ค", 4) == 2
     assert t11.parse_choice("ข", 4) == 1
     assert t11.parse_choice("ไม่ทราบ", 4) is None
+    assert t11.parse_choice("คำตอบคือ ก", 4) == 0
+    assert t11.parse_choice("คำตอบคือ ข.", 4) == 1
 
 
 def test_answer_choice_puts_pack_in_prompt():
