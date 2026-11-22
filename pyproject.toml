@@ -8,7 +8,7 @@ version = "0.18.3"
 description = "Offline Thai intent router that tolerates typos. Small, CPU-only, no dependencies. Made with Sesame."
 readme = "README.md"
 license = "MIT"
-license-files = ["LICENSE", "DATA_LICENSE", "NOTICE"]
+license-files = ["LICENSE", "DATA_LICENSE", "NOTICE", "LICENSE-TER-AI.md", "LICENSE-TER-AI-1.0.md"]
 authors = [{ name = "Klanarong Tammakatuek (klanarongz2009-sketch)" }]
 requires-python = ">=3.11"
 dependencies = []

@@ -241,10 +241,11 @@ terai tth --engine mtl --mtl-steps 32 "สวัสดีครับ" -o th32.w
 
 ## License
 
-แต่ละส่วนใช้ license ต่างกัน ข้อความเต็มอยู่ใน [LICENSE](LICENSE), [DATA_LICENSE](DATA_LICENSE) และ [NOTICE](NOTICE) ถ้าสรุปตรงนี้ไม่ตรงกับไฟล์เหล่านั้น ให้ยึดไฟล์เป็นหลัก ตารางเต็มอยู่ใน [README ภาษาอังกฤษ](README.md#license)
+แต่ละส่วนใช้ license ต่างกัน ข้อความเต็มอยู่ใน [LICENSE](LICENSE), [DATA_LICENSE](DATA_LICENSE), [NOTICE](NOTICE), [TER-AI License 2.0 ฉบับเสนอ](LICENSE-TER-AI.md) และ [ข้อความเดิมของ TER-AI License 1.0](LICENSE-TER-AI-1.0.md) ถ้าสรุปตรงนี้ไม่ตรงกับไฟล์เหล่านั้น ให้ยึดไฟล์เป็นหลัก ตารางเต็มอยู่ใน [README ภาษาอังกฤษ](README.md#license)
 
-- **Code:** MIT ใช้เชิงพาณิชย์ได้ ยกเว้น 9 ไฟล์ Tagentic ที่ติด `SPDX-License-Identifier: LicenseRef-TER-AI-1.0` และยังใช้เงื่อนไขใน [LICENSE-TER-AI.md](LICENSE-TER-AI.md)
-- **ไฟล์ภายใต้ TER-AI License 1.0:** ใช้เชิงพาณิชย์และฝึก AI ได้ ต้องให้เครดิต "TER-AI (klanarongz2009-sketch)" และไฟล์ที่แก้ต้องใช้ license เดียวกันพร้อมเปิด source
+- **Code:** MIT ใช้เชิงพาณิชย์ได้ ยกเว้นไฟล์ที่ระบุ license เฉพาะอย่างชัดเจนด้านล่าง
+- **ไฟล์เดิมภายใต้ TER-AI License 1.0 ([ข้อความเก็บถาวร](LICENSE-TER-AI-1.0.md)):** มี 9 ไฟล์ที่ติด `SPDX-License-Identifier: LicenseRef-TER-AI-1.0`; marker เดิมยังคงอยู่และยังใช้เงื่อนไข 1.0
+- **ไฟล์ที่อาจระบุ TER-AI License 2.0 ([ฉบับเสนอ](LICENSE-TER-AI.md)):** เป็นข้อเสนอแยกเพื่อพิจารณา ยังไม่มีไฟล์ที่ติด `SPDX-License-Identifier: LicenseRef-TER-AI-2.0`; ไม่เปลี่ยน license ของไฟล์ v1.0, MIT, ข้อมูล GPL-3.0, ชุดความรู้ CC BY-SA 4.0 หรือ third-party weights
 - **โมเดล intent และข้อมูลของโปรเจกต์ (รวมโมเดลและข้อมูลของ TERM AI):** MIT ใช้เชิงพาณิชย์ได้
 - **ชุดความรู้จาก Wikipedia ภาษาไทย:** CC BY-SA 4.0 ใช้เชิงพาณิชย์ได้ แต่ต้องให้เครดิตผู้เขียน Wikipedia และแจกต่อด้วย license เดียวกัน
 - **ตารางโน้ตและ weights ของโมเดล MuML 1.0 ใน MuML 1.0 WA (จาก Nottingham Music Database, `docs/muml-1.0-int8.bin`):** GPL-3.0 ใช้เชิงพาณิชย์ได้ตามเงื่อนไขของ GPL-3.0
