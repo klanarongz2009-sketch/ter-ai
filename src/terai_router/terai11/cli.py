@@ -26,6 +26,10 @@ def main(argv=None) -> int:
     a = ap.parse_args(argv)
     if a.cmd == "info":
         p = load_pack()
+        if a.json:
+            print(json.dumps({"model": MODEL_ID, "count": p["count"], "source": p["source"], "license": p["license"],
+                              "retrieved": p["retrieved"]}, ensure_ascii=False))
+            return 0
         print(f"{MODEL_ID}: {p['count']} entries from {PACK_SOURCE} ({PACK_LICENSE}), retrieved {p['retrieved']}")
         return 0
     if not a.text:
@@ -35,16 +39,28 @@ def main(argv=None) -> int:
         print(json.dumps({k: v for k, v in r.items() if k != "entry"}, ensure_ascii=False) if a.json else r["text"])
         return 0 if r["found"] else 1
     if a.cmd == "search":
+        if a.json:
+            print(json.dumps([{"title": e["title"], "meanings": e["meanings"], "citation": cite(e)} for e in search(a.text)],
+                             ensure_ascii=False))
+            return 0
         for e in search(a.text):
             print(f"{e['title']}: {'; '.join(e['meanings'][:2])}\n  {cite(e)}")
         return 0
+    if a.cmd == "essay" and a.proverb and explain(a.proverb)["found"] is False:
+        print(explain(a.proverb)["text"], file=sys.stderr)
+        return 1
     from ..brain.local import LocalLM
 
     t = Terai11(LocalLM(model=a.model))
     if a.cmd == "ask":
-        print(t.ask(a.text))
+        ans = t.ask(a.text)
+        print(json.dumps({"model": MODEL_ID, "answer": ans}, ensure_ascii=False) if a.json else ans)
         return 0
-    r = t.essay(a.text, a.proverb)
+    try:
+        r = t.essay(a.text, a.proverb)
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
     if a.json:
         print(json.dumps(r, ensure_ascii=False, indent=1))
     else:

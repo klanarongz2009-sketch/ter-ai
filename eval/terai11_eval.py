@@ -1,10 +1,11 @@
 # SPDX-License-Identifier: LicenseRef-TER-AI-2.0
 """Evaluate TERAI1 (baseline) vs TERAI1.1 on the frozen set eval/terai11_heldout_v1.json.
 
-Both arms use the same local Gemma 4 E2B GGUF through ``LocalLM`` (temperature 0 for questions, seed 0).
+Both arms use the same local Gemma 4 E2B GGUF (QAT Q4_0, ``LocalLM(model=\"e2b\")``). The \"terai1\" arm is
+the TERAI1 base model with a plain prompt, not the ``terai chat --brain terai1`` route (temperature 0 for questions, seed 0).
 Results are appended to a JSONL file so an interrupted run resumes. Summary: ``--summary``.
 
-  python eval/terai11_eval.py --arm terai1 --part proverbs --out eval/results/terai11_v1.jsonl
+  python eval/terai11_eval.py --arm terai1 --part proverbs --out eval/results/my_run.jsonl
   python eval/terai11_eval.py --arm terai11 --part essays --limit 10 --out ...
   python eval/terai11_eval.py --summary eval/results/terai11_v1.jsonl
 """
@@ -94,8 +95,13 @@ def run(args) -> int:
     return 0
 
 
-def summary(path: str) -> int:
+def summary(path: str, rescore: bool = False) -> int:
     rows = [json.loads(x) for x in Path(path).read_text(encoding="utf-8").splitlines()]
+    if rescore:
+        for r in rows:
+            if r["part"] == "essays":
+                r["rubric"] = rubric(r["text"], None)
+                r["score"] = sum(r["rubric"].values())
     agg = collections.defaultdict(lambda: [0, 0])
     crit = collections.defaultdict(lambda: [0, 0])
     for r in rows:
@@ -121,7 +127,9 @@ if __name__ == "__main__":
     ap.add_argument("--arm", choices=["terai1", "terai11"])
     ap.add_argument("--part", choices=["proverbs", "essays"])
     ap.add_argument("--limit", type=int, default=0)
-    ap.add_argument("--out", default=str(ROOT / "eval" / "results" / "terai11_v1.jsonl"))
+    ap.add_argument("--out", default=str(ROOT / "eval" / "results" / "terai11_run.jsonl"),
+                    help="new results file (eval/results/terai11_v1.jsonl is the committed reference run)")
+    ap.add_argument("--rescore", action="store_true", help="with --summary: recompute the essay rubric from stored texts")
     ap.add_argument("--summary")
     a = ap.parse_args()
-    sys.exit(summary(a.summary) if a.summary else run(a))
+    sys.exit(summary(a.summary, a.rescore) if a.summary else run(a))

@@ -6,11 +6,16 @@ CC BY-SA 4.0), so the proverb part measures in-pack knowledge, not coverage of a
 Essay prompts are written for this project (TER-AI License 2.0). Output: eval/terai11_heldout_v1.json
 (100 proverb items + 40 essay prompts) and eval/terai11_dev_v1.json (20 proverb items + 5 essays,
 used for prompt checks; the held-out file is never used for tuning). SHA-256 goes into eval/SHA256SUMS.
+
+Note on v1: terai11_heldout_v1.json is the frozen artifact checked by its hash. It was generated before two
+builder fixes (sorted pool for "complete" distractors, figurative meaning as the answer), so re-running this
+script does not reproduce v1 byte for byte; a future v2 must be written under a new name.
 """
 from __future__ import annotations
 
 import json
 import random
+import re
 import sys
 from pathlib import Path
 
@@ -32,7 +37,20 @@ TOPICS = [
 ]
 
 
+IDIOMATIC = re.compile(r"โดยปริยาย|เปรียบ|หมายถึง|สำนวน")
+NOT_IDIOM = re.compile(r"^ชื่อ")
+
+
+def idiom_meaning(e: dict) -> str:
+    """The meaning used as the answer: skip names (songs, plants ...), prefer figurative senses."""
+    ms = [m for m in e["meanings"] if not NOT_IDIOM.match(m)] or e["meanings"]
+    return next((m for m in ms if IDIOMATIC.search(m)), ms[0]) if len(ms) > 1 and not IDIOMATIC.search(ms[0]) else ms[0]
+
+
 def main() -> int:
+    if (ROOT / "eval" / "terai11_heldout_v1.json").exists() and "--force" not in sys.argv:
+        print("eval/terai11_heldout_v1.json is frozen; pass --force and write a new version instead")
+        return 1
     rng = random.Random(1101)
     entries = [e for e in load_pack()["entries"] if 4 <= len(norm(e["title"])) <= 30 and e["meanings"]]
     rng.shuffle(entries)
@@ -51,7 +69,7 @@ def main() -> int:
     def distractors(e, field, k=3):
         pool = [x for x in entries if x["title"] != e["title"]]
         picks = rng.sample(pool, k)
-        return [p["meanings"][0] if field == "meaning" else p["title"] for p in picks]
+        return [idiom_meaning(p) if field == "meaning" else p["title"] for p in picks]
 
     def mcq(kind, question, right, wrong, e):
         opts = wrong + [right]
@@ -63,11 +81,11 @@ def main() -> int:
         out = []
         for e in take(lambda e: True, n_meaning):
             out.append(mcq("meaning", f"สำนวน «{e['title']}» มีความหมายตรงกับข้อใด",
-                           e["meanings"][0], distractors(e, "meaning"), e))
+                           idiom_meaning(e), distractors(e, "meaning"), e))
         for e in take(lambda e: " " in e["title"].strip(), n_complete):
             head, tail = e["title"].strip().rsplit(" ", 1)
             pool = [x["title"].strip().rsplit(" ", 1)[-1] for x in entries if " " in x["title"].strip()]
-            wrong = rng.sample([t for t in set(pool) if t != tail], 3)
+            wrong = rng.sample(sorted({t for t in pool if t != tail}), 3)
             out.append(mcq("complete", f"เติมสำนวนให้ครบ: «{head} ...»", tail, wrong, e))
         for e in take(lambda e: any(norm(e["title"]) in norm(x) for x in e["examples"]), n_usage):
             ex = next(x for x in e["examples"] if norm(e["title"]) in norm(x))

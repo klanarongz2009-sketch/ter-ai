@@ -36,9 +36,10 @@ TERAI1 plain prompt: about 22 seconds).
 
 Frozen held-out set: `eval/terai11_heldout_v1.json` (SHA-256 in `eval/SHA256SUMS`), built by
 `eval/terai11_build.py` with seed 1101. A separate dev file was used for prompt checks; the held-out
-file was not used for tuning. Both arms ran the same Gemma 4 E2B Q4_K_M GGUF on CPU through
+file was not used for tuning. Both arms ran the same Gemma 4 E2B QAT Q4_0 GGUF on CPU through
 `LocalLM`, temperature 0 for questions, 0.3 for essays, seed 0. Raw outputs:
-`eval/results/terai11_v1.jsonl`. Reproduce with `eval/terai11_eval.py`.
+`eval/results/terai11_v1.jsonl` (essay rubric fields recomputed with the current `rubric()`; re-check with
+`eval/terai11_eval.py --summary eval/results/terai11_v1.jsonl --rescore`). Reproduce with `eval/terai11_eval.py`.
 
 | Part (held-out) | TERAI1 (base) | TERAI1.1 |
 |---|---|---|
@@ -47,15 +48,15 @@ file was not used for tuning. Both arms ran the same Gemma 4 E2B Q4_K_M GGUF on 
 | - complete the idiom (4-way) | 11/20 | 18/20 |
 | - fill the blank in an example sentence (4-way) | 9/20 | 10/20 |
 | - real or made-up idiom | 13/20 | 20/20 |
-| Essays: automatic rubric points | 170/280 | 170/2801 |
+| Essays: automatic rubric points | 180/280 | 269/280 |
 
 Essay rubric, essays passing each check (40 prompts):
 
 | Check | TERAI1 | TERAI1.1 |
 |---|---|---|
 | Three or more paragraphs | 40/40 | 40/40 |
-| Uses an idiom from the pack | 9/40 | 36/40 |
-| Idiom paragraph overlaps the idiom's meaning (trigram proxy) | 1/40 | 28/40 |
+| Uses an idiom from the pack (title of 4+ characters) | 17/40 | 40/40 |
+| Idiom paragraph overlaps the idiom's meaning (trigram proxy) | 3/40 | 29/40 |
 | Thai script (>= 95% of letters) | 40/40 | 40/40 |
 | Length 400-4000 characters | 40/40 | 40/40 |
 | No markdown headings or bullets | 0/40 | 40/40 |
@@ -71,6 +72,12 @@ Essay rubric, essays passing each check (40 prompts):
   repeated sentences), whether an idiom from the pack appears, and a character-trigram overlap between
   that paragraph and the idiom's meaning. It is a proxy. It does not grade argument quality, style or
   grammar, and no human grading was done. TERAI1's markdown headings in essays count against it.
+- **Two answer keys are weak.** Items 17 and 18 (meaning) use the first Wiktionary sense, which is the
+  literal sense / a song title rather than the idiom's figurative meaning. Both arms got both right;
+  without them: TERAI1 55/98, TERAI1.1 86/98. The frozen v1 file is kept as is (its hash is the
+  contract); the builder now picks the figurative sense, for a future v2.
+- **The "terai1" arm is the TERAI1 base model with a plain prompt** (`LocalLM(model="e2b")`, the
+  QAT Q4_0 GGUF), not the full `terai chat --brain terai1` route with its system prompt.
 - **One run, one seed, CPU only.** No confidence intervals.
 - The idiom TERAI1.1 picks is not always a good fit for the topic; the overlap check does not catch that.
 - "Fill the blank" moved by one item (9 -> 10/20): treat that as no measurable change.

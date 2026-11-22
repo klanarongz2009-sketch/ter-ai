@@ -69,16 +69,22 @@ def lookup(phrase: str) -> Optional[Dict[str, Any]]:
 
 
 def find_in_text(text: str, limit: int = 5, min_len: int = 4) -> List[Dict[str, Any]]:
-    """Pack entries whose title occurs in ``text`` (longest first, non-overlapping titles preferred)."""
+    """Pack entries whose title occurs in ``text``, longest first.
+
+    A shorter title is kept when it also occurs outside the spans of the longer titles already kept
+    (so "กบในกะลา" and "กบในกะลาครอบ" asked side by side both come back).
+    """
     t = norm(text)
     hits = [e for k, e in load_pack()["_index"].items() if len(k) >= min_len and k in t]
     hits.sort(key=lambda e: -len(norm(e["title"])))
     out: List[Dict[str, Any]] = []
+    rest = t
     for e in hits:
         k = norm(e["title"])
-        if any(k in norm(o["title"]) for o in out):
+        if k not in rest:
             continue
         out.append(e)
+        rest = rest.replace(k, "\x00")
         if len(out) >= limit:
             break
     return out
@@ -107,7 +113,7 @@ def pack_context(entries: List[Dict[str, Any]]) -> str:
         return "คลังสำนวน: (ไม่พบรายการที่ตรง)"
     lines = ["คลังสำนวน (" + PACK_SOURCE + ", " + PACK_LICENSE + "):"]
     for e in entries:
-        lines.append(f"- {e['title']}: " + "; ".join(e["meanings"][:2]))
+        lines.append(f"- {e['title']}: " + "; ".join(e["meanings"]))
     return "\n".join(lines)
 
 
@@ -180,6 +186,8 @@ class Terai11:
 
     # -- essays
     def outline(self, topic: str, proverb: Optional[str] = None) -> Dict[str, Any]:
+        if proverb and lookup(proverb) is None:
+            raise ValueError(f"ไม่พบ «{proverb}» ในคลังสำนวนของ TERAI1.1 (ไม่เดา และไม่เปลี่ยนเป็นสำนวนอื่นเอง)")
         entries = [lookup(proverb)] if proverb and lookup(proverb) else search(topic, limit=4)
         need = f"ต้องใช้สำนวน «{entries[0]['title']}»" if proverb and entries else "เลือกสำนวนจากคลังที่เข้ากับหัวข้อ 1 สำนวน (ถ้าไม่มีที่เข้า ไม่ต้องใช้)"
         reply = self._chat(
@@ -247,7 +255,7 @@ def rubric(text: str, proverb: Optional[str] = None) -> Dict[str, bool]:
         entry = lookup(proverb)
         present = norm(proverb) in norm(text)
     else:
-        found = find_in_text(text or "", limit=1, min_len=6)
+        found = find_in_text(text or "", limit=1, min_len=4)
         entry = found[0] if found else None
         present = entry is not None
     meaning_ok = False

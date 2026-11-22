@@ -307,7 +307,7 @@ terai terai11 essay "ความสำคัญของการอ่าน�
 ```
 
 Frozen held-out set, same base model and settings for both: proverb items 57/100 (TERAI1) -> 88/100
-(TERAI1.1); automatic essay rubric 170/280 -> 264/280. The proverb items come from the pack, and the
+(TERAI1.1); automatic essay rubric 180/280 -> 269/280. The proverb items come from the pack, and the
 essay rubric is an automatic proxy without human grading. Details, limits and licenses:
 [docs/TERAI1.1.md](docs/TERAI1.1.md).
 

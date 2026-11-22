@@ -95,3 +95,28 @@ def test_heldout_frozen():
     assert hashlib.sha256(data).hexdigest() in sums
     d = json.loads(data)
     assert len(d["proverb_items"]) == 100 and len(d["essays"]) == 40
+
+
+def test_unknown_required_proverb_is_refused():
+    import pytest
+    with pytest.raises(ValueError):
+        t11.Terai11(FakeLM([])).essay("หัวข้อ", proverb="ไม่มีสำนวนนี้แน่นอน")
+    assert cli_main(["essay", "หัวข้อ", "--proverb", "ไม่มีสำนวนนี้แน่นอน"]) == 1
+
+
+def test_find_in_text_keeps_shorter_title_used_separately():
+    long_ = next(e for e in t11.load_pack()["entries"]
+                 if any(t11.norm(o["title"]) in t11.norm(e["title"]) and o is not e and len(t11.norm(o["title"])) >= 4
+                        for o in t11.load_pack()["entries"]))
+    short = next(o for o in t11.load_pack()["entries"] if o is not long_ and len(t11.norm(o["title"])) >= 4
+                 and t11.norm(o["title"]) in t11.norm(long_["title"]))
+    titles = [e["title"] for e in t11.find_in_text(long_["title"] + " และ " + short["title"])]
+    assert long_["title"] in titles and short["title"] in titles
+    assert [e["title"] for e in t11.find_in_text(long_["title"])][0] == long_["title"]
+
+
+def test_cli_json_search_and_info(capsys):
+    assert cli_main(["info", "--json"]) == 0
+    assert json.loads(capsys.readouterr().out)["model"] == "TERAI1.1"
+    assert cli_main(["search", "กบในกะลา", "--json"]) == 0
+    assert json.loads(capsys.readouterr().out)[0]["citation"]
