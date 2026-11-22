@@ -1,4 +1,4 @@
-"""End-of-service notices for MuML, Temmo and SANKPUP (2027-01-10)."""
+"""End-of-service notices: TTH (2026-11-30); MuML, Temmo and SANKPUP (2027-01-10)."""
 import io
 import os
 import subprocess
@@ -63,7 +63,7 @@ def test_cli_notice_once(monkeypatch, component):
     deprecations.cli_notice(component, stream=buf)
     text = buf.getvalue()
     assert text.count("\n") == 1
-    assert text.startswith("note: ") and "2027-01-10" in text and "Tagentic" in text
+    assert text.startswith("note: ") and deprecations.EOS_DATES[component] in text and "Tagentic" in text
 
 
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
@@ -72,3 +72,38 @@ def test_sankpup_cli_prints_notice(monkeypatch, capsys, tmp_path):
     monkeypatch.setattr(deprecations, "_noticed", set())
     assert cli.main(["a red boat", "--engine", "offline", "-o", str(tmp_path / "boat.svg")]) == 0
     assert "SANKPUP is deprecated" in capsys.readouterr().err
+
+
+def test_tth_date_and_import_does_not_warn():
+    assert deprecations.EOS_DATES["tth"] == "2026-11-30"
+    # terai chat imports terai_router.tth for option help even without --speak: importing must stay silent.
+    assert "end of service" not in _import_stderr("terai_router.tth, terai_router.cli")
+
+
+def test_tth_object_warns_once(monkeypatch):
+    from terai_router import tth
+    monkeypatch.setattr(deprecations, "_warned", set())
+    with pytest.warns(DeprecationWarning, match="TTH .*2026-11-30"):
+        tth.TTH(engine="edge")
+    import warnings
+    with warnings.catch_warnings(record=True) as rec:
+        warnings.simplefilter("always")
+        tth.TTH(engine="edge")
+        tth.prepare("12 ครับ")
+    assert not [w for w in rec if "end of service" in str(w.message)]
+
+
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
+def test_terai_tth_cli_prints_notice(monkeypatch, capsys):
+    from terai_router import cli
+    monkeypatch.setattr(deprecations, "_noticed", set())
+    try:
+        cli.tth_main(["--dry-run", "สวัสดี"])
+    except SystemExit:
+        pass
+    assert "TTH (all versions" in capsys.readouterr().err
+
+
+def test_tth_message_allows_forks_and_others_do_not():
+    assert "Other repositories may continue or fine-tune it" in deprecations.message("tth")
+    assert "fine-tune" not in deprecations.message("muml")

@@ -39,6 +39,8 @@ import shutil
 import subprocess
 import tempfile
 
+from .deprecations import warn as _eos_warn
+
 # ---------------------------------------------------------------------------------------------------------
 # Voices
 # ---------------------------------------------------------------------------------------------------------
@@ -376,6 +378,7 @@ class WayuEngine:
     output = '.wav'
 
     def __init__(self, model=WAYU_MODEL, device=None):
+        _eos_warn("tth")
         self.model = model
         self.device = device
         self._tts = None
@@ -484,6 +487,7 @@ class MtlEngine:
 
     def __init__(self, model=MTL_MODEL, lang='th', ref_audio=None, ref_text=None, num_step=MTL_STEPS,
                  cache_dir=None, wayu=None):
+        _eos_warn("tth")
         self.model = model
         self.lang = lang
         self.ref_audio = ref_audio
@@ -607,6 +611,7 @@ class TTH:
 
     def __init__(self, engine='auto', voice=None, speed=1.0, polite=None, fallback=True, max_chars=MAX_CHARS,
                  seed=0, engines=None, lang='th', ref_audio=None, ref_text=None, mtl_steps=MTL_STEPS):
+        _eos_warn("tth")
         if engine not in ('auto',) + ENGINES:
             raise ValueError('engine must be auto, wayu, edge or mtl')
         lang = (lang or 'th').strip()

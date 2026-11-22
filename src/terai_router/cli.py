@@ -78,6 +78,8 @@ def _make_tth(a):
 
 
 def tth_main(argv=None):
+    from .deprecations import cli_notice
+    cli_notice("tth")
     from . import tth as T
     ap = argparse.ArgumentParser(prog='terai tth',
                                  description='TTH: Thai text-to-speech for TER-AI. Local engine Wayu-Paxa-TTS-Edge '
@@ -209,6 +211,8 @@ def chat_main(argv=None):
         brain.lm.vision = True
     tth = None
     if a.speak:
+        from .deprecations import cli_notice
+        cli_notice("tth")
         try:
             tth = _make_tth(a)
         except ValueError as e:
