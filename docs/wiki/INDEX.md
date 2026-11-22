@@ -21,7 +21,7 @@ Current project state: [README](../../README.md) · [Changelog](../../CHANGELOG.
 | [`Knowledge-Pack.md`](https://github.com/klanarongz2009-sketch/ter-ai/wiki/Knowledge-Pack) | [KNOWLEDGE_PACK.md](KNOWLEDGE_PACK.md) | historical knowledge-pack metadata |
 | [`MuML.md`](https://github.com/klanarongz2009-sketch/ter-ai/wiki/MuML) | [MUML.md](MUML.md) | README + MUML docs |
 | [`SANKPUP.md`](https://github.com/klanarongz2009-sketch/ter-ai/wiki/SANKPUP) | [SANKPUP.md](SANKPUP.md) | README SANKPUP |
-| [`TERM-AI.md`](https://github.com/klanarongz2009-sketch/ter-ai/wiki/TERM-AI) | [TERM_AI.md](TERM_AI.md) | TERM-AI.md |
+| [`TERM-AI.md`](https://github.com/klanarongz2009-sketch/ter-ai/wiki/TERM-AI) | [TERM_AI.md](TERM_AI.md) | [current trial guide](../TERM-AI.md); stable sunset link plan in [TERM_AI.md](TERM_AI.md#sunset-sequence) |
 | [`TTH.md`](https://github.com/klanarongz2009-sketch/ter-ai/wiki/TTH) | [TTH.md](TTH.md) | README TTH |
 | [`Tagentic1.md`](https://github.com/klanarongz2009-sketch/ter-ai/wiki/Tagentic1) | [TAGENTIC1.md](TAGENTIC1.md) | Tagentic docs |
 | `_Sidebar.md` | [INDEX.md](INDEX.md) | navigation mapped here |
