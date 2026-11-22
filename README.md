@@ -627,6 +627,7 @@ Planned:
 
 - The repository's 1.0 criteria are unchanged by the model ids (TERAI1, MuML 1.0, MUML 1.0 HIQ, Temmo 1.0); the repository stays 0.X.Y until they are met.
 - v1.0 will add more languages, starting with English, each with its own training data, frozen test set and a 90% accuracy bar.
+- TER-AI 2.9 Qwen fine-tuning is an investigation proposal, not an implementation or release commitment; see [the model roadmap](docs/TERAI2.9_ROADMAP.md).
 
 In progress (not released):
 
