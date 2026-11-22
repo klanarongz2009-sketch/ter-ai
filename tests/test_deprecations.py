@@ -187,7 +187,19 @@ def test_temmo_voice_survives_warnings_as_errors(monkeypatch, tmp_path):
 
     monkeypatch.setattr(pipeline.subprocess, "run", fake_run)
     monkeypatch.setenv("PYTHONWARNINGS", "error")
+    monkeypatch.setenv("TEMMO_TTH_PYTHON", sys.executable)
     report = {"warnings": [], "assets": []}
     out = pipeline.make_voice({"voice": {"intro": "สวัสดี"}}, tmp_path, report)
     assert list(out) == ["intro"], report["warnings"]
     assert not report["warnings"]
+
+
+def test_standalone_sankpup_cli_survives_warnings_as_errors(tmp_path):
+    """Codex P2: python -W error -m terai_router.sankpup.cli must still render."""
+    out = tmp_path / "cat.svg"
+    p = subprocess.run([sys.executable, "-W", "error::DeprecationWarning", "-m", "terai_router.sankpup.cli",
+                        "cat", "--engine", "offline", "-o", str(out)],
+                       capture_output=True, text=True, encoding="utf-8", timeout=120)
+    assert p.returncode == 0, p.stderr
+    assert out.exists()
+    assert "end of service on 2027-01-10" in p.stderr
