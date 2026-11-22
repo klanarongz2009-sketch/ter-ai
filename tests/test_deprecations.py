@@ -129,6 +129,20 @@ def test_entry_point_temmo_and_muml_print_notice_once(tmp_path):
         assert out.stderr.count("end of service") == 1 and name in out.stderr
 
 
+def test_entry_point_tth_and_chat_speak_survive_warnings_as_errors(tmp_path):
+    out = _run_terai(["tth", "--dry-run", "สวัสดี"], tmp_path)
+    assert out.returncode == 0, out.stderr
+    assert out.stderr.count("end of service on 2026-11-30") == 1
+    assert out.stderr.startswith("note: TTH")
+    env = dict(os.environ, PYTHONPATH=SRC + os.pathsep + os.environ.get("PYTHONPATH", ""))
+    chat = subprocess.run([sys.executable, "-W", "error::DeprecationWarning", "-m", "terai_router", "chat", "--speak",
+                           "--brain", "rules", "--session", str(tmp_path / "s.jsonl"),
+                           "--speak-dir", str(tmp_path / "tth")],
+                          input="/quit\n", capture_output=True, text=True, env=env, timeout=120, cwd=tmp_path)
+    assert chat.returncode == 0, chat.stderr
+    assert chat.stderr.count("end of service on 2026-11-30") == 1
+
+
 def test_edge_engine_warns(monkeypatch):
     from terai_router import tth
     monkeypatch.setattr(deprecations, "_warned", set())
