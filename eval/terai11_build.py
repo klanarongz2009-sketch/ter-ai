@@ -51,8 +51,13 @@ def main() -> int:
     # The v1 files are frozen (eval/SHA256SUMS). A rebuild never overwrites
     # them: pass --version vN (N >= 2) to write terai11_{heldout,dev}_vN.json.
     version = sys.argv[sys.argv.index("--version") + 1] if "--version" in sys.argv else "v1"
-    if version == "v1" and (ROOT / "eval" / "terai11_heldout_v1.json").exists():
-        print("eval/terai11_heldout_v1.json is frozen; pass --version v2 (or later) to write a new version")
+    # Lower-case vN only, so "V1" cannot alias the frozen file on
+    # case-insensitive filesystems; never write over an existing set.
+    if not re.fullmatch(r"v[1-9][0-9]*", version):
+        print(f"--version must look like v2, v3 ... (got {version!r})")
+        return 1
+    if (ROOT / "eval" / f"terai11_heldout_{version}.json").exists():
+        print(f"eval/terai11_heldout_{version}.json already exists (v1 is frozen); pass a new --version")
         return 1
     rng = random.Random(1101)
     entries = [e for e in load_pack()["entries"] if 4 <= len(norm(e["title"])) <= 30 and e["meanings"]]

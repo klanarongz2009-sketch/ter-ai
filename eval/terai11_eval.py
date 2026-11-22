@@ -35,22 +35,35 @@ def essay_prompt(item: dict) -> str:
             "ความยาวประมาณ 200-300 คำ")
 
 
-def run(args) -> int:
-    from terai_router.brain.local import LocalLM
+def set_sha256(path: Path) -> str:
+    """Hash of the set with line endings normalised, so a CRLF checkout resumes."""
+    return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
 
-    data = json.loads(SET.read_text(encoding="utf-8"))
-    out = Path(args.out)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    sha = hashlib.sha256(SET.read_bytes()).hexdigest()
+
+def load_done(out: Path, sha: str):
+    """(arm, part, idx) rows already in ``out``; None if any row is from another set."""
     done = set()
     if out.exists():
         for line in out.read_text(encoding="utf-8").splitlines():
             r = json.loads(line)
-            # Resume only rows produced from this exact evaluation set.
             if r.get("set_sha256") != sha:
-                print(f"{out} has rows from another evaluation set; use a new --out", file=sys.stderr)
-                return 2
+                return None
             done.add((r["arm"], r["part"], r["idx"]))
+    return done
+
+
+def run(args) -> int:
+    from terai_router.brain.local import LocalLM
+
+    SET = Path(args.set)
+    data = json.loads(SET.read_text(encoding="utf-8"))
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    sha = set_sha256(SET)
+    done = load_done(out, sha)  # resume only rows produced from this exact set
+    if done is None:
+        print(f"{out} has rows from another evaluation set; use a new --out", file=sys.stderr)
+        return 2
     lm = LocalLM(model="e2b", auto_download=False)
     t11 = Terai11(lm)
     items = data["proverb_items"] if args.part == "proverbs" else data["essays"]
@@ -130,6 +143,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--arm", choices=["terai1", "terai11"])
     ap.add_argument("--part", choices=["proverbs", "essays"])
+    ap.add_argument("--set", default=str(SET), help="evaluation set (default: frozen terai11_heldout_v1.json)")
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--out", default=str(ROOT / "eval" / "results" / "terai11_run.jsonl"),
                     help="new results file (eval/results/terai11_v1.jsonl is the committed reference run)")

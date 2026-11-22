@@ -130,3 +130,27 @@ def test_cli_json_search_and_info(capsys):
     assert json.loads(capsys.readouterr().out)["model"] == "TERAI1.1"
     assert cli_main(["search", "กบในกะลา", "--json"]) == 0
     assert json.loads(capsys.readouterr().out)[0]["citation"]
+
+
+def _load_eval():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("terai11_eval", ROOT / "eval" / "terai11_eval.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_eval_resume_checks_set_hash(tmp_path):
+    ev = _load_eval()
+    lf = tmp_path / "set.json"
+    lf.write_bytes(b'{"a": 1}\n')
+    crlf = tmp_path / "set_crlf.json"
+    crlf.write_bytes(b'{"a": 1}\r\n')
+    sha = ev.set_sha256(lf)
+    assert ev.set_sha256(crlf) == sha
+    out = tmp_path / "run.jsonl"
+    assert ev.load_done(out, sha) == set()
+    out.write_text(json.dumps({"arm": "terai1", "part": "proverbs", "idx": 0, "set_sha256": sha}) + "\n",
+                   encoding="utf-8")
+    assert ev.load_done(out, sha) == {("terai1", "proverbs", 0)}
+    assert ev.load_done(out, "0" * 64) is None
