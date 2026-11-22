@@ -108,6 +108,8 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Optional[List[str]] = None) -> int:
+    from ..deprecations import cli_notice
+    cli_notice("muml")
     argv = strip_hiq_flags(list(sys.argv[1:] if argv is None else argv))
     a = build_parser().parse_args(argv)
     if a.credits:

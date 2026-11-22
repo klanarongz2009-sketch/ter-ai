@@ -17,6 +17,7 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from ..deprecations import warn as _eos_warn
 from . import gemma, offline
 from .render import RenderError, render
 from .sanitize import SvgError, sanitize_svg
@@ -57,6 +58,7 @@ def generate(prompt: str, engine: str = "auto", model: str | None = None, seed: 
     it is installed and its weights are already on disk, else offline).
     With ``fallback`` the offline generator answers if Gemma fails.
     """
+    _eos_warn("sankpup")
     prompt = (prompt or "").strip()
     if not prompt:
         raise ValueError("prompt is empty")

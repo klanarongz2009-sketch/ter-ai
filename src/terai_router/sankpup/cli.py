@@ -53,6 +53,8 @@ def _list_models() -> None:
 
 
 def main(argv=None) -> int:
+    from ..deprecations import cli_notice
+    cli_notice("sankpup")
     a = build_parser().parse_args(argv)
     if a.list_models:
         _list_models()

@@ -32,9 +32,19 @@ Use it as the first step of a Thai chatbot, a voice command, or an IoT switch: r
 
 ### Also in this repository (secondary)
 
-The wider project also includes local chat, Thai speech (TTH), SVG graphics (SANKPUP) and music tools (MuML); some optional components download models or use online services. See the sections below for exact offline scope, current release status, model/data licenses and limitations. Code and optional model/data licenses differ; check the [license table](#license) before commercial use.
+The wider project also includes local chat, Thai speech (TTH), SVG graphics (SANKPUP, deprecated) and music tools (MuML, deprecated); some optional components download models or use online services. See the sections below for exact offline scope, current release status, model/data licenses and limitations. Code and optional model/data licenses differ; check the [license table](#license) before commercial use.
 
 > **Project notice:** TER-AI is an indie project and may pause or close with little warning. Read the [project notice](PROJECT_NOTICE.md).
+
+## Deprecation notice
+
+**MuML (MuML 1.0 WA and MUML 1.0 HIQ), Temmo 1.0 and SANKPUP are deprecated. Their end of service is 2027-01-10.**
+
+- **Why:** TER-AI is a Thai-language AI suite built around the Terai models and Tagentic. These three components (music, game making and pictures from SVG code) are outside that scope.
+- **Until 2027-01-10:** they stay in the repository and keep working as they do now. Each one prints an end-of-service notice when its `terai` subcommand starts (`terai muml`, `terai muml-wa`, `terai temmo`, `terai sankpup`) and raises a `DeprecationWarning` once per process in Python (on import of `terai_router.muml_wa`, `terai_router.muml_hiq` or `terai_router.temmo`, and on the first `terai_router.sankpup.generate()` call).
+- **On or after 2027-01-10:** they may be removed from `main`, with their tabs in the browser demo. Releases tagged before that date keep them.
+- **What to do:** if you use one of them, pin a release tagged before 2027-01-10, for example `pip install "terai-router @ git+https://github.com/klanarongz2009-sketch/ter-ai.git@v0.18.3"`. There is no replacement in this repository.
+- **Not affected:** the intent router, Chat with TERAI1 and TERAI1SML, TTH and Tagentic1. The Gemma 4 downloader in `terai_router.sankpup.gemma` is shared by TERAI1 chat and Tagentic; it is not deprecated and does not warn.
 
 ## Versions: repository and models
 
@@ -47,9 +57,9 @@ The repository version and the model versions are separate. MuML 1.0 was the fir
 |---|---|---|
 | TERAI1 | Chat model (beta): local Gemma 4 E2B writes replies, TER-AI rules are tools, reads images. Named TERAI1BETA in v0.16.0; renamed in v0.17.0 | v0.16.0 |
 | TERAI1SML | Unreleased prototype: small text-only Qwen2.5-0.5B-Instruct Q2_K; TER-AI rules are tools; does not read images. | - |
-| MuML 1.0 | Note writer behind MuML 1.0 WA (trained network `muml-1.0-net` since v0.15.0) | v0.12.0 |
-| MUML 1.0 HIQ | Text-to-music audio | v0.13.0 |
-| Temmo 1.0 | Small indie game maker (prototype, not released) | - |
+| MuML 1.0 | Note writer behind MuML 1.0 WA (trained network `muml-1.0-net` since v0.15.0). **Deprecated, end of service 2027-01-10.** | v0.12.0 |
+| MUML 1.0 HIQ | Text-to-music audio. **Deprecated, end of service 2027-01-10.** | v0.13.0 |
+| Temmo 1.0 | Small indie game maker (prototype, not released). **Deprecated, end of service 2027-01-10.** | - |
 | TER-AI-0.5 | Intent model inside TERM AI (limited-time trial) | v0.14.0 |
 
 `terai --version` prints both, for example `terai-router 0.18.3 / model TERAI1`, and `terai models` lists every model id. The rule lives in `src/terai_router/versions.py`; a new version of one model changes only its own row there. Model ids keep their spelling; the one exception is the v0.17.0 rename of TERAI1BETA to TERAI1 ("beta" is its status, not part of its name). `--brain terai1beta` and `--engine terai1beta` still work and print a deprecation notice. TERAI1SML is currently an unreleased prototype on `main`; it is not included in v0.18.0. After installing the current source, select it with `terai chat --brain terai1sml`; install its text-only weights with `terai chat --brain terai1sml --setup`.
@@ -428,6 +438,8 @@ terai tth --engine mtl --mtl-steps 32 "สวัสดีครับ" -o th32.w
 
 ## SANKPUP: pictures from code (v0.11.0)
 
+> **Deprecated:** end of service 2027-01-10. See the [deprecation notice](#deprecation-notice).
+
 SANKPUP (from Thai "สร้างภาพ", "make a picture") turns a Thai or English prompt into a picture made purely from
 code. It is a workflow, not a native image model: a language model (or the offline generator) writes SVG code,
 SANKPUP sanitizes that code, then renders it to PNG and converts it to JPG. Nothing is drawn by a pixel or
@@ -472,6 +484,8 @@ save(art, "house.png", save_code=True)   # house.png + house.svg
   the browser.
 
 ## MuML 1.0 WA: music in the browser (v0.12.0; MuML 1.0 network since v0.15.0)
+
+> **Deprecated:** end of service 2027-01-10. See the [deprecation notice](#deprecation-notice).
 
 MuML 1.0 WA (MuML 1.0 Web Audio API) is the browser member of the MuML music family. Type a prompt in Thai or
 English, for example `เพลงร็อกมันส์ๆ 140 bpm คีย์ E minor 30 วินาที` or `rock reel key of D 120 bpm 30 seconds`,
@@ -533,6 +547,8 @@ terai muml-wa "folk jig D major" --writer markov    # the old Markov v1 writer
   that reads it stays MIT. Details: [DATA_LICENSE](DATA_LICENSE), [NOTICE](NOTICE).
 
 ## MUML 1.0 HIQ: text-to-music audio (v0.13.0)
+
+> **Deprecated:** end of service 2027-01-10. See the [deprecation notice](#deprecation-notice).
 
 MUML 1.0 HIQ is the high-quality member of the MuML music family: a Thai or English prompt (and optional lyrics) in, a real audio file out, on a CPU with 8 GB RAM, free and offline after the first download. It is built on other open models; the weights are not fine-tuned. HIQ tunes the conditioning: a prompt adapter turns Thai prompts into English music tags (genre, Thai instruments such as phin and khaen, mood) and moves BPM, length, key and meter into their own fields.
 
@@ -625,21 +641,19 @@ python bench/bench_typhoon.py   # Typhoon comparison (downloads about 2.5 GB)
 
 Planned:
 
-- The repository's 1.0 criteria are unchanged by the model ids (TERAI1, MuML 1.0, MUML 1.0 HIQ, Temmo 1.0); the repository stays 0.X.Y until they are met.
+- The repository's 1.0 criteria are unchanged by the model id TERAI1; the repository stays 0.X.Y until they are met. MuML 1.0, MUML 1.0 HIQ and Temmo 1.0 are no longer part of them (see Ending).
 - v1.0 will add more languages, starting with English, each with its own training data, frozen test set and a 90% accuracy bar.
 - TER-AI 2.9 Qwen fine-tuning is an investigation proposal, not an implementation or release commitment; see [the model roadmap](docs/TERAI2.9_ROADMAP.md).
 
 In progress (not released):
 
-- MuML 1.0 training code and a CLI that writes from the network outside MuML 1.0 WA: the training scripts are not in
-  this repository yet (only the export script `training/muml_wa/export_net.py` is).
 - TTH-MTL benchmark: TTH-MTL is released in v0.17.0 (see [TTH-MTL](#tth-mtl-more-languages-and-voice-cloning-v0170)), but no speech quality, speed or memory measurement of it is in this repository yet.
-- Temmo 1.0: an AI that makes small indie games. A prototype (not released) is in this repository and in the Temmo tab of the live demo, with one sample game made by local Gemma 4 E2B.
 - Tagentic (first version Tagentic1, beta): the TER-AI thinking + agentic model. It runs on local Gemma 4 E2B (an open model used as the base; TER-AI did not train it), thinks in short lines, each with the tool it uses and what came back, and reads, searches, writes and edits files in a workspace folder and runs Python or shell to check code. Writes, edits, code runs and memory saves ask first (`--yes` allows them). It loads four personal memory files in order: `User.md`, `Systemprompt.md`, `Memory.md`, `Systemskill.md` (with the [ai-memory-continuity](https://github.com/klanarongz2009-sketch/ai-memory-continuity) skill, MIT); `User.md` and `Memory.md` stay on your machine (`~/.terai/tagentic`), never in this repository. Workspace context is separate: `terai tagentic --init-context` creates non-overwriting starters for `Userprompt.md`, `Project.md`, `Agent.md`, `Docs/`, `Log/`, and `Project/Hiperframes.md`; the three root files are included in the prompt, while matching docs, project notes, and logs are read on demand. See the [context quick-start guide](docs/TAGENTIC_CONTEXT.md). `terai tagentic` opens a session: the model greets first, then you chat and give tasks; `terai tagentic "task"` runs one task. Relay mode runs one turn per command for a chat app that passes messages on: `terai tagentic --session NAME --start --json`, `--message "TEXT"`, `--approve` / `--deny` (a write or run waiting for the user), `--reset`; the session is kept in `<memory folder>/sessions/NAME.json` and each command prints one JSON object (`trace`, `answer`, `pending_action`, `timing_s`). For a relay that calls once per turn, `python -m terai_router.tagentic.server call -- <same arguments>` runs the command on a persistent local server (a unix socket in `<memory folder>/run/`, no network port) that keeps the model loaded, reuses the KV cache of the shared prompt prefix, and exits after 30 minutes idle (`TERAI_TAGENTIC_IDLE`); output and exit code are the same as `terai tagentic`. Measured on an 8-vCPU VM without GPU (2026-10-28): first turn about 66 s model load from disk plus 45 s, later turns 7-24 s, and about 50 s for the one turn after `User.md` or `Memory.md` changes (the whole prompt is read again). Every reply is the model's own text: no fixed replies and no output filter. Its identity (Tagentic from TER-AI / Klanarongz2009 on GitHub, not developed by Google) is set by the system prompt only, so the base Gemma 4 model can still sometimes answer that it was developed by Google. Since v0.18.0-rc1 it also loads `Knowledge.md`, shared knowledge that a fact checker verified against real sources; anyone can propose an entry with the `add_knowledge` tool or `/add` on Telegram, and it waits in `Knowledge-inbox.md` until it is checked (`python -m terai_router.tagentic.knowledge`). `--public` runs a restricted mode decided in code: no `User.md` or `Memory.md`, only the calculator, datetime, units and add_knowledge tools, sessions in a separate folder. `terai tagentic telegram` runs it as a Telegram bot with your own bot token: owner chats get the full model with Allow / Deny buttons, every other chat and group gets the public mode with per-chat rate limits; every text the bot writes itself is English and starts with `[System]`, the model's own replies are sent as written. See [Tagentic1 on Telegram](docs/TAGENTIC_TELEGRAM.md). Questions, bug reports and ideas: the Tagentic telegram bot community section on GitHub Discussions ([general](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-telegram-bot-community), [Q&A](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-bot-q-a), [bug reports](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-bot-bug-reports), [ideas](https://github.com/klanarongz2009-sketch/ter-ai/discussions/categories/tagentic-bot-ideas)), where the automated support bot Teemate may answer first. **Beta, first released as a release candidate in v0.18.0-rc1; included in stable v0.18.0.**
 
 Ending:
 
 - TERM AI (limited-time trial since v0.14.0): stops working at 2027-01-01 00:00:00 Asia/Bangkok (UTC+7) and will be removed from the repository then.
+- MuML (MuML 1.0 WA and MUML 1.0 HIQ), Temmo 1.0 and SANKPUP: deprecated, end of service 2027-01-10 (see the [deprecation notice](#deprecation-notice)). No new work is planned for them: the MuML 1.0 training code and network CLI outside MuML 1.0 WA will not be added, and the Temmo 1.0 prototype will not be released. They may be removed from `main` on or after that date.
 
 ## FAQ
 

@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Deprecated
+- MuML (MuML 1.0 WA and MUML 1.0 HIQ), Temmo 1.0 and SANKPUP reach end of service on 2027-01-10: TER-AI is a Thai-language AI suite built around the Terai models and Tagentic, and these components are outside that scope. They keep working until then and may be removed from `main` on or after that date; releases tagged earlier keep them. There is no replacement in this repository. New module `terai_router.deprecations`: each component raises a `DeprecationWarning` once per process (on import of `muml_wa`, `muml_hiq` and `temmo`; on the first `sankpup.generate()` call, because `sankpup.gemma` is shared with TERAI1 chat and Tagentic and is not deprecated) and its `terai` subcommand prints a one-line notice on stderr. README (EN/TH), PROJECT_NOTICE (EN/TH) and the component tables mark them deprecated, and the README roadmap (EN/TH) moves them from "In progress" and the 1.0 criteria to "Ending" (the archived `docs/wiki/ROADMAP.md` snapshot is unchanged); `tests/test_deprecations.py` checks the warnings, and pytest ignores this warning elsewhere (`filterwarnings` in `pyproject.toml`).
+
 ### Changed
 - Point both TERM AI Wiki source references to the preserved v0.14.0 `trial.py` tag and retain the sunset-sequence anchor.
 - Clarify the TERM AI sunset source-plan scope and separate Wiki/navigation and issue #6 follow-up.

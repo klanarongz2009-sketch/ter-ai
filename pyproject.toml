@@ -67,3 +67,5 @@ terai_router = ["data/*.json", "sankpup/data/*.json", "muml_wa/data/*.json", "mu
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# MuML, Temmo and SANKPUP warn about their 2027-01-10 end of service; tests/test_deprecations.py checks it.
+filterwarnings = ["ignore:.*end of service on 2027-01-10:DeprecationWarning"]
