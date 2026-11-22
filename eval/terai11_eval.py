@@ -41,14 +41,18 @@ def run(args) -> int:
     data = json.loads(SET.read_text(encoding="utf-8"))
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
+    sha = hashlib.sha256(SET.read_bytes()).hexdigest()
     done = set()
     if out.exists():
         for line in out.read_text(encoding="utf-8").splitlines():
             r = json.loads(line)
+            # Resume only rows produced from this exact evaluation set.
+            if r.get("set_sha256") != sha:
+                print(f"{out} has rows from another evaluation set; use a new --out", file=sys.stderr)
+                return 2
             done.add((r["arm"], r["part"], r["idx"]))
     lm = LocalLM(model="e2b", auto_download=False)
     t11 = Terai11(lm)
-    sha = hashlib.sha256(SET.read_bytes()).hexdigest()
     items = data["proverb_items"] if args.part == "proverbs" else data["essays"]
     if args.limit:
         items = items[:args.limit]
@@ -132,4 +136,6 @@ if __name__ == "__main__":
     ap.add_argument("--rescore", action="store_true", help="with --summary: recompute the essay rubric from stored texts")
     ap.add_argument("--summary")
     a = ap.parse_args()
+    if not a.summary and not (a.arm and a.part):
+        ap.error("--arm and --part are required for an evaluation run (or use --summary)")
     sys.exit(summary(a.summary, a.rescore) if a.summary else run(a))

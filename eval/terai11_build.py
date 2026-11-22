@@ -48,8 +48,11 @@ def idiom_meaning(e: dict) -> str:
 
 
 def main() -> int:
-    if (ROOT / "eval" / "terai11_heldout_v1.json").exists() and "--force" not in sys.argv:
-        print("eval/terai11_heldout_v1.json is frozen; pass --force and write a new version instead")
+    # The v1 files are frozen (eval/SHA256SUMS). A rebuild never overwrites
+    # them: pass --version vN (N >= 2) to write terai11_{heldout,dev}_vN.json.
+    version = sys.argv[sys.argv.index("--version") + 1] if "--version" in sys.argv else "v1"
+    if version == "v1" and (ROOT / "eval" / "terai11_heldout_v1.json").exists():
+        print("eval/terai11_heldout_v1.json is frozen; pass --version v2 (or later) to write a new version")
         return 1
     rng = random.Random(1101)
     entries = [e for e in load_pack()["entries"] if 4 <= len(norm(e["title"])) <= 30 and e["meanings"]]
@@ -115,13 +118,13 @@ def main() -> int:
             out.append({"topic": t, "instruction": "เขียนเรียงความ 5 ย่อหน้า และใช้สำนวนไทยที่เหมาะกับหัวข้ออย่างน้อย 1 สำนวน"})
         return out
 
-    held = {"version": "terai11_heldout_v1", "seed": 1101,
+    held = {"version": f"terai11_heldout_{version}", "seed": 1101,
             "note": "frozen; never use for tuning. Proverb items come from the TERAI1.1 pack (in-pack knowledge).",
             "pack_license": "items quote Thai Wiktionary text: CC BY-SA 4.0",
             "proverb_items": items(40, 20, 20, 10), "essays": essays(TOPICS[:40])}
-    dev = {"version": "terai11_dev_v1", "seed": 1101, "proverb_items": items(8, 4, 4, 2),
+    dev = {"version": f"terai11_dev_{version}", "seed": 1101, "proverb_items": items(8, 4, 4, 2),
            "essays": essays(["ความสุขในชีวิตประจำวัน", "การเดินทาง", "อาหารไทยในสายตาโลก", "กีฬาสี", "ห้องสมุด"])}
-    for name, obj in (("terai11_heldout_v1.json", held), ("terai11_dev_v1.json", dev)):
+    for name, obj in ((f"terai11_heldout_{version}.json", held), (f"terai11_dev_{version}.json", dev)):
         (ROOT / "eval" / name).write_text(json.dumps(obj, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print(len(held["proverb_items"]), "held-out proverb items,", len(held["essays"]), "essays;",
           len(dev["proverb_items"]), "dev items")
